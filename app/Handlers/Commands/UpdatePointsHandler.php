@@ -125,12 +125,16 @@ class UpdatePointsHandler {
 		// Check if the channel actually exists.
 		if ( ! $this->twitchApi->validChannel($command->channel))
 		{
-			throw new InvalidChannelException($command->channel);
+			$this->log->info('Invalid channel: "' . $command->channel . '"', [__METHOD__]);
+
+			return new InvalidChannelException($command->channel);
 		}
 
 		// Check if the chanel is online.
 		if ( ! $this->twitchApi->channelOnline($command->channel))
 		{
+			$this->log->info('"' . $command->channel . '" is offline.', [__METHOD__]);
+
 			$this->setAllUsersOffline($command->channel, $command->chatUserRepository);
 
 			return new StreamOfflineException($command->channel);

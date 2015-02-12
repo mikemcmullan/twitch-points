@@ -23,7 +23,7 @@ class RepositoryServiceProvider extends ServiceProvider {
 	{
 		$this->app->bind(
 			'App\Repositories\ChatUsers\ChatUserRepository',
-			'App\Repositories\ChatUsers\RedisChatUserRepository'
+			'App\Repositories\ChatUsers\MySqlChatUserRepository'
 		);
 	}
 
