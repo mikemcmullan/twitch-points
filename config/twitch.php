@@ -29,7 +29,7 @@ return [
         | use the default channel.
         |
         */
-        'default_channel' => 'xxleroy1605xx',
+        'default_channel' => 'angrypug_',
 
         /*
         |--------------------------------------------------------------------------
