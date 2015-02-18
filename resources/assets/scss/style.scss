@@ -1,0 +1,27 @@
+@import '../../../public/bower_components/bootstrap-sass-official/assets/stylesheets/bootstrap/_variables.scss';
+@import '../../../public/bower_components/bootstrap-sass-official/assets/stylesheets/bootstrap/_mixins.scss';
+@import '../../../public/bower_components/bootstrap-social/bootstrap-social';
+@import '_font-awesome';
+
+body {
+    padding-top: 70px;
+    background-image: url(../img/footer_lodyas/footer_lodyas.png);
+}
+
+#top-nav {
+    box-shadow: 0px 1px 4px #000;
+}
+
+.btn-twitch { @include btn-social(#6441a5); }
+
+.points-results-form {
+    margin-bottom: $line-height-computed;
+}
+
+.points-results-table {
+    margin-bottom: 0;
+
+    td {
+        vertical-align: inherit !important;
+    }
+}

@@ -40,8 +40,13 @@ class Authenticate {
 			}
 			else
 			{
-				return redirect()->guest('auth/login');
+				return redirect()->guest(route('login_path'));
 			}
+		}
+
+		if ($request->segment(1) === 'system-control' && ! (bool) $this->auth->user()['allowed_to_track_points'])
+		{
+			return redirect()->back()->with('message', 'You\'re not allowed to use this feature.');
 		}
 
 		return $next($request);

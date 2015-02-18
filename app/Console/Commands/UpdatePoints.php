@@ -1,12 +1,12 @@
 <?php namespace App\Console\Commands;
 
-use App\Commands\UpdatePoints as UpdatePointsCommand;
+use App\Commands\UpdatePointsCommand;
 use App\Exceptions\InvalidChannelException;
 use App\Exceptions\StreamOfflineException;
 use App\Repositories\ChatUsers\ChatUserRepository;
+use App\Repositories\TrackPointsSessions\TrackPointsSession;
 use Illuminate\Console\Command;
 use Illuminate\Foundation\Bus\DispatchesCommands;
-use PHPBenchTime\Timer;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Input\InputArgument;
 
@@ -34,13 +34,20 @@ class UpdatePoints extends Command {
 	private $chatUserRepository;
 
 	/**
+	 * @var TrackPointsSession
+	 */
+	private $pointsSession;
+
+	/**
 	 * Create a new command instance.
 	 * @param ChatUserRepository $chatUserRepository
+	 * @param TrackPointsSession $pointsSession
 	 */
-	public function __construct(ChatUserRepository $chatUserRepository)
+	public function __construct(ChatUserRepository $chatUserRepository, TrackPointsSession $pointsSession)
 	{
 		parent::__construct();
 		$this->chatUserRepository = $chatUserRepository;
+		$this->pointsSession = $pointsSession;
 	}
 
 	/**
@@ -50,51 +57,47 @@ class UpdatePoints extends Command {
 	 */
 	public function fire()
 	{
-		$channel = $this->argument('channel');
+		$sessions = $this->pointsSession->allUncompletedSessions();
+		$startTime = microtime(true);
 
-		$timer = new Timer();
-		$timer->start();
+		foreach ($sessions as $session)
+		{
+			$this->runUpdate($session['user']['name']);
+		}
 
+		$end = microtime(true) - $startTime;
+		\Log::info(sprintf('Execution time: %s', $end));
+		$this->info(sprintf('Command executed in %s seconds', $end));
+	}
+
+	/**
+	 * @param $channel
+	 */
+	private function runUpdate($channel)
+	{
 		try
 		{
 			$response = $this->dispatch(new UpdatePointsCommand($channel, $this->chatUserRepository));
 
-			if ($response instanceof StreamOfflineException)
+			if ($response instanceof StreamOfflineException || $response instanceof InvalidChannelException)
 			{
 				throw new $response($response->getMessage());
 			}
 		}
-		catch(InvalidChannelException $e)
+		catch (InvalidChannelException $e)
 		{
 			$this->error(sprintf('Channel "%s" is not valid.', $e->getMessage()));
 		}
-		catch(StreamOfflineException $e)
+		catch (StreamOfflineException $e)
 		{
 			$this->error(sprintf('Channel "%s" is offline.', $e->getMessage()));
 		}
-		catch(\Exception $e)
+		catch (\Exception $e)
 		{
 			$trace = $e->getTrace();
 			$class = $trace[0]['class'];
 
 			$this->error(sprintf("[%s]\n\n%s", $class, $e->getMessage()));
 		}
-
-		$end = $timer->end()['total'];
-		\Log::info(sprintf('Execution time: %s', $end));
-		$this->info(sprintf('Command executed in %s seconds', $end));
-	}
-
-
-	/**
-	 * Get the console command arguments.
-	 *
-	 * @return array
-	 */
-	protected function getArguments()
-	{
-		return [
-			['channel', InputArgument::REQUIRED, 'Channel Name.'],
-		];
 	}
 }

@@ -39,7 +39,7 @@ return [
 	|
 	*/
 
-	'timezone' => 'UTC',
+	'timezone' => 'America/Toronto',
 
 	/*
 	|--------------------------------------------------------------------------
@@ -136,6 +136,8 @@ return [
 		'Illuminate\Validation\ValidationServiceProvider',
 		'Illuminate\View\ViewServiceProvider',
 
+		'Illuminate\Html\HtmlServiceProvider',
+
 		/*
 		 * Application Service Providers...
 		 */
@@ -145,7 +147,8 @@ return [
 		'App\Providers\EventServiceProvider',
 		'App\Providers\RouteServiceProvider',
 
-		'App\Providers\RepositoryServiceProvider'
+		'App\Providers\RepositoryServiceProvider',
+		'App\Providers\TwitchServiceProvider'
 
 	],
 
@@ -194,6 +197,9 @@ return [
 		'URL'       => 'Illuminate\Support\Facades\URL',
 		'Validator' => 'Illuminate\Support\Facades\Validator',
 		'View'      => 'Illuminate\Support\Facades\View',
+
+		'Html'		=> 'Illuminate\Html\HtmlFacade',
+		'Form'		=> 'Illuminate\Html\FormFacade',
 
 	],
 

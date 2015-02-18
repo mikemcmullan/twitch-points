@@ -22,7 +22,7 @@ class Kernel extends ConsoleKernel {
 	 */
 	protected function schedule(Schedule $schedule)
 	{
-//		$schedule->command('points:update angrypug_')->everyFiveMinutes();
+		$schedule->command('points:update')->everyFiveMinutes();
 	}
 
 }

@@ -22,7 +22,7 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
 	 *
 	 * @var array
 	 */
-	protected $fillable = ['name', 'email', 'password'];
+	protected $fillable = ['name', 'email', 'logo', 'access_token', 'allowed_to_track_points', 'track_points'];
 
 	/**
 	 * The attributes excluded from the model's JSON form.
@@ -30,5 +30,10 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
 	 * @var array
 	 */
 	protected $hidden = ['password', 'remember_token'];
+
+	public function trackPoints()
+	{
+		return $this->hasMany('App\TrackPointsSession');
+	}
 
 }

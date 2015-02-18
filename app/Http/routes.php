@@ -1,17 +1,39 @@
 <?php
 
-use App\Services\UpdateDBChatUsers;
+Route::get('/', [
+    'uses'  => 'PointsController@checkPoints',
+    'as'    => 'home_path'
+]);
 
-get('/', function(\App\Repositories\ChatUsers\ChatUserRepository $repo, \App\Services\TwitchApi $twitchApi)
+Route::get('/check-points', [
+    'uses'  => 'PointsController@checkPoints',
+    'as'    => 'check_points_path'
+]);
+
+Route::get('/system-control', [
+    'uses'  => 'PointsController@systemControl',
+    'as'    => 'system_control_path'
+]);
+
+Route::patch('/system-control', [
+    'uses'  => 'PointsController@startSystem',
+    'as'    => 'start_system_path'
+]);
+
+Route::get('/login', [
+    'uses'  => 'AuthController@login',
+    'as'    => 'login_path'
+]);
+
+Route::get('/logout', [
+    'uses'  => 'AuthController@logout',
+    'as'    => 'logout_path'
+]);
+
+Route::group(['prefix' => 'api', 'namespace' => 'API'], function()
 {
-    $channel = 'xxleroy1605xx';
-
-    $timer = new \PHPBenchTime\Timer();
-    $timer->start();
-
-    $user = $repo->user($channel, 'glite81');
-
-    var_dump($user);
-
-    dd($timer->end());
+    Route::get('/points', [
+        'as'    => 'points_path',
+        'uses'  => 'PointsController@index'
+    ]);
 });
