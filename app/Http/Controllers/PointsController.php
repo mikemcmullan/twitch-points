@@ -11,8 +11,6 @@ class PointsController extends Controller {
 
 	public function __construct()
     {
-        \Auth::loginUsingId(1);
-        \DB::enableQueryLog();
         $this->middleware('auth', ['except' => 'checkPoints']);
     }
 
