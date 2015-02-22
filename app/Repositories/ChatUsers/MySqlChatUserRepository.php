@@ -165,6 +165,21 @@ class MySqlChatUserRepository extends AbstractChatUserRepository implements Chat
         });
     }
 
+	/**
+     * Offline all the users for a channel.
+     *
+     * @param $channel
+     * @return mixed
+     */
+    public function offlineAllForChannel($channel)
+    {
+        return $this->db->table('chat_users')
+            ->where('channel', '=', $channel)
+            ->update([
+                'start_time' => null
+            ]);
+    }
+
     /**
      * @param $users
      * @return array

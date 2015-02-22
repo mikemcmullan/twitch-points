@@ -2,11 +2,11 @@
 
 use Illuminate\Database\Eloquent\Model;
 
-class TrackPointsSession extends Model {
+class TrackSession extends Model {
+
+    protected $table = 'track_points_sessions';
 
     protected $fillable = ['user_id', 'complete', 'stream_length'];
-
-//    protected $dates = [];
 
     public function user()
     {

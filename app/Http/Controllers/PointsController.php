@@ -5,6 +5,7 @@ use App\Http\Requests;
 use App\Http\Controllers\Controller;
 
 use App\Repositories\ChatUsers\ChatUserRepository;
+use App\Repositories\TrackPointsSessions\TrackSessionRepository;
 use Illuminate\Http\Request;
 
 class PointsController extends Controller {
@@ -17,7 +18,7 @@ class PointsController extends Controller {
     public function checkPoints(Request $request, ChatUserRepository $chatUserRepository)
     {
         $handle = $request->get('handle');
-        $data = ['handle' => $handle];
+        $data = ['handle' => strtolower($handle)];
 
         if ($handle)
         {
@@ -30,18 +31,16 @@ class PointsController extends Controller {
         return view('check-points', $data);
     }
 
-    public function systemControl(Request $request)
+    public function systemControl(TrackSessionRepository $trackPointsSession)
     {
-        $systemStarted = ! \Auth::user()['trackPoints']->isEmpty();
+        $systemStarted = (bool) $trackPointsSession->findUncompletedSession(\Auth::user());
 
         return view('system-control', compact('systemStarted'));
     }
 
     public function startSystem()
     {
-        $user = \Auth::user();
-
-        $this->dispatch(new StartSystemCommand($user));
+        $this->dispatch(new StartSystemCommand(\Auth::user()));
 
         return redirect()->back();
     }

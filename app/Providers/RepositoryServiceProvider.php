@@ -32,14 +32,14 @@ class RepositoryServiceProvider extends ServiceProvider {
 		);
 
 		$this->app->bind(
-			'App\Repositories\TrackPointsSessions\TrackPointsSession',
-			'App\Repositories\TrackPointsSessions\EloquentTrackPointsSession'
+			'App\Repositories\TrackPointsSessions\TrackSessionRepository',
+			'App\Repositories\TrackPointsSessions\EloquentTrackSessionRepository'
 		);
 
-		$this->app['auth']->extend('repo', function($app)
-		{
-			return $app->make('App\Repositories\Users\UserRepository');
-		});
+//		$this->app['auth']->extend('repo', function($app)
+//		{
+//			return $app->make('App\Repositories\Users\UserRepository');
+//		});
 	}
 
 }

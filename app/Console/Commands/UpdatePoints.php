@@ -4,7 +4,7 @@ use App\Commands\UpdatePointsCommand;
 use App\Exceptions\InvalidChannelException;
 use App\Exceptions\StreamOfflineException;
 use App\Repositories\ChatUsers\ChatUserRepository;
-use App\Repositories\TrackPointsSessions\TrackPointsSession;
+use App\Repositories\TrackPointsSessions\TrackSessionRepository;
 use Illuminate\Console\Command;
 use Illuminate\Foundation\Bus\DispatchesCommands;
 use Symfony\Component\Console\Input\InputOption;
@@ -40,10 +40,11 @@ class UpdatePoints extends Command {
 
 	/**
 	 * Create a new command instance.
+	 *
 	 * @param ChatUserRepository $chatUserRepository
-	 * @param TrackPointsSession $pointsSession
+	 * @param TrackSessionRepository $pointsSession
 	 */
-	public function __construct(ChatUserRepository $chatUserRepository, TrackPointsSession $pointsSession)
+	public function __construct(ChatUserRepository $chatUserRepository, TrackSessionRepository $pointsSession)
 	{
 		parent::__construct();
 		$this->chatUserRepository = $chatUserRepository;

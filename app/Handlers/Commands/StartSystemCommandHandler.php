@@ -2,22 +2,31 @@
 
 use App\Commands\StartSystemCommand;
 
-use App\Repositories\Users\UserRepository;
+use App\Repositories\ChatUsers\ChatUserRepository;
+use App\Repositories\TrackPointsSessions\TrackSessionRepository;
 
 class StartSystemCommandHandler {
 
 	/**
-	 * @var UserRepository
+	 * @var TrackSessionRepository
 	 */
-	private $userRepository;
+	private $trackSessionRepository;
+
+	/**
+	 * @var ChatUserRepository
+	 */
+	private $chatUserRepository;
 
 	/**
 	 * Create the command handler.
-	 * @param UserRepository $userRepository
+	 *
+	 * @param TrackSessionRepository $trackSessionRepository
+	 * @param ChatUserRepository $chatUserRepository
 	 */
-	public function __construct(UserRepository $userRepository)
+	public function __construct(TrackSessionRepository $trackSessionRepository, ChatUserRepository $chatUserRepository)
 	{
-		$this->userRepository = $userRepository;
+		$this->trackSessionRepository = $trackSessionRepository;
+		$this->chatUserRepository = $chatUserRepository;
 	}
 
 	/**
@@ -28,12 +37,16 @@ class StartSystemCommandHandler {
 	 */
 	public function handle(StartSystemCommand $command)
 	{
-		if ($command->user['trackPoints']->isEmpty())
+		$session = $this->trackSessionRepository->findUncompletedSession($command->user);
+
+		if ( ! $session)
 		{
-			return $this->userRepository->createTrackPointsSession($command->user);
+			return $this->trackSessionRepository->create($command->user);
 		}
 
-		return $this->userRepository->endTrackPointsSession($command->user);
+		$this->chatUserRepository->offlineAllForChannel($command->user['name']);
+
+		return $this->trackSessionRepository->end($session);
 	}
 
 }
