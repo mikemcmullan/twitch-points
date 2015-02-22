@@ -19,7 +19,7 @@
     <tr>
         <td>{{ $user['handle'] }}</td>
         <td>{{ $user['total_minutes_online'] }}</td>
-        <td>{{ $user['points'] }}</td>
+        <td>{{ round($user['points']) }}</td>
     </tr>
     @endif
     </tbody>

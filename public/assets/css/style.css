@@ -2745,9 +2745,6 @@ body {
 .points-results-form {
   margin-bottom: 20px; }
 
-/* line 21, ../../../resources/assets/scss/style.scss */
-.points-results-table {
-  margin-bottom: 0; }
-  /* line 24, ../../../resources/assets/scss/style.scss */
-  .points-results-table td {
-    vertical-align: inherit !important; }
+/* line 24, ../../../resources/assets/scss/style.scss */
+.points-results-table td {
+  vertical-align: inherit !important; }
