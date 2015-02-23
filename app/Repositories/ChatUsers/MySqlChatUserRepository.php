@@ -2,6 +2,7 @@
 
 namespace App\Repositories\ChatUsers;
 
+use App\User;
 use Illuminate\Contracts\Config\Repository as ConfigRepository;
 use Illuminate\Database\DatabaseManager;
 use Illuminate\Support\Collection;
@@ -35,12 +36,12 @@ class MySqlChatUserRepository extends AbstractChatUserRepository implements Chat
     }
 
     /**
-     * @param $channel
+     * @param User $user
      * @return Collection
      */
-    public function users($channel)
+    public function users(User $user)
     {
-        $users = $this->db->table('chat_users')->where('channel', '=', $channel)->get();
+        $users = $this->db->table('chat_users')->where('user_id', '=', $user['id'])->get();
 
         return new Collection($this->mapUsers($users));
     }
@@ -48,14 +49,14 @@ class MySqlChatUserRepository extends AbstractChatUserRepository implements Chat
     /**
      * Get a single user.
      *
-     * @param $channel
+     * @param User $user
      * @param $handle
      * @return array
      */
-    public function user($channel, $handle)
+    public function user(User $user, $handle)
     {
         return $this->db->table('chat_users')
-            ->where('channel', '=', $channel)
+            ->where('user_id', '=', $user['id'])
             ->where('handle', '=', $handle)
             ->first();
     }
@@ -63,14 +64,14 @@ class MySqlChatUserRepository extends AbstractChatUserRepository implements Chat
     /**
      * Create a new chat user.
      *
-     * @param $channel
+     * @param User $user
      * @param $handle
      * @return
      */
-    public function create($channel, $handle)
+    public function create(User $user, $handle)
     {
         return $this->db->table('chat_users')->insert([
-            'channel'       => $channel,
+            'user_id'       => $user['id'],
             'handle'        => $handle,
             'start_time'    => $this->time,
             'points'        => $this->config->get('twitch.points.award_new')
@@ -80,16 +81,16 @@ class MySqlChatUserRepository extends AbstractChatUserRepository implements Chat
     /**
      * Create many chat users.
      *
-     * @param $channel
+     * @param User $user
      * @param Collection $handles
      */
-    public function createMany($channel, Collection $handles)
+    public function createMany(User $user, Collection $handles)
     {
-        $this->db->transaction(function() use($channel, $handles)
+        $this->db->transaction(function() use($user, $handles)
         {
             foreach ($handles as $handle)
             {
-                $this->create($channel, $handle);
+                $this->create($user, $handle);
             }
         });
     }
@@ -97,15 +98,15 @@ class MySqlChatUserRepository extends AbstractChatUserRepository implements Chat
     /**
      * Update an existing chat user.
      *
-     * @param $channel
+     * @param User $user
      * @param $handle
      * @param int $totalMinutesOnline
      * @param int $points
      */
-    public function update($channel, $handle, $totalMinutesOnline = 0, $points = 0)
+    public function update(User $user, $handle, $totalMinutesOnline = 0, $points = 0)
     {
         return $this->db->table('chat_users')
-            ->where('channel', '=', $channel)
+            ->where('user_id', '=', $user['id'])
             ->where('handle', '=', $handle)
             ->update([
                 'start_time'            => $this->time,
@@ -117,16 +118,16 @@ class MySqlChatUserRepository extends AbstractChatUserRepository implements Chat
     /**
      * Update many users.
      *
-     * @param $channel
+     * @param User $user
      * @param Collection $users
      */
-    public function updateMany($channel, Collection $users)
+    public function updateMany(User $user, Collection $users)
     {
-        $this->db->transaction(function() use($channel, $users)
+        $this->db->transaction(function() use($user, $users)
         {
-            foreach ($users as $user)
+            foreach ($users as $chatUser)
             {
-                $this->update($channel, $user['handle'], $user['total_minutes_online'], $user['points']);
+                $this->update($user, $chatUser['handle'], $chatUser['total_minutes_online'], $chatUser['points']);
             }
         });
     }
@@ -134,14 +135,14 @@ class MySqlChatUserRepository extends AbstractChatUserRepository implements Chat
     /**
      * Set a user to offline.
      *
-     * @param $channel
+     * @param User $user
      * @param $handle
      * @return mixed
      */
-    public function offline($channel, $handle)
+    public function offline(User $user, $handle)
     {
         return $this->db->table('chat_users')
-            ->where('channel', '=', $channel)
+            ->where('user_id', '=', $user['id'])
             ->where('handle', '=', $handle)
             ->update([
                 'start_time' => null
@@ -151,16 +152,16 @@ class MySqlChatUserRepository extends AbstractChatUserRepository implements Chat
     /**
      * Offline many users.
      *
-     * @param $channel
+     * @param User $user
      * @param Collection $handles
      */
-    public function offlineMany($channel, Collection $handles)
+    public function offlineMany(User $user, Collection $handles)
     {
-        $this->db->transaction(function() use($channel, $handles)
+        $this->db->transaction(function() use($user, $handles)
         {
             foreach ($handles as $handle)
             {
-                $this->offline($channel, $handle['handle']);
+                $this->offline($user, $handle['handle']);
             }
         });
     }
@@ -168,13 +169,13 @@ class MySqlChatUserRepository extends AbstractChatUserRepository implements Chat
 	/**
      * Offline all the users for a channel.
      *
-     * @param $channel
+     * @param User $user
      * @return mixed
      */
-    public function offlineAllForChannel($channel)
+    public function offlineAllForChannel(User $user)
     {
         return $this->db->table('chat_users')
-            ->where('channel', '=', $channel)
+            ->where('user_id', '=', $user['id'])
             ->update([
                 'start_time' => null
             ]);

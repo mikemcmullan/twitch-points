@@ -3,16 +3,12 @@
 namespace App\Services;
 
 use App\Repositories\ChatUsers\ChatUserRepository;
+use App\User;
 use Carbon\Carbon;
 use Illuminate\Contracts\Config\Repository as ConfigRepository;
 use Illuminate\Support\Collection;
 
 class UpdateDBChatUsers {
-
-    /**
-     * @var String
-     */
-    private $channel;
 
     /**
      * @var ConfigRepository
@@ -25,15 +21,20 @@ class UpdateDBChatUsers {
     private $chatUserRepository;
 
     /**
-     * @param $channel
+     * @var User
+     */
+    private $user;
+
+    /**
+     * @param User $user
      * @param ConfigRepository $config
      * @param ChatUserRepository $chatUserRepository
      */
-    public function __construct($channel, ConfigRepository $config, ChatUserRepository $chatUserRepository)
+    public function __construct(User $user, ConfigRepository $config, ChatUserRepository $chatUserRepository)
     {
-        $this->channel = $channel;
         $this->config = $config;
         $this->chatUserRepository = $chatUserRepository;
+        $this->user = $user;
     }
 
     /**
@@ -43,7 +44,7 @@ class UpdateDBChatUsers {
      */
     public function newOnlineUsers(Collection $users)
     {
-        return $this->chatUserRepository->createMany($this->channel, $users);
+        return $this->chatUserRepository->createMany($this->user, $users);
     }
 
     /**
@@ -70,7 +71,7 @@ class UpdateDBChatUsers {
             $onlineUsers->push($user);
         }
 
-        return $this->chatUserRepository->updateMany($this->channel, $onlineUsers);
+        return $this->chatUserRepository->updateMany($this->user, $onlineUsers);
     }
 
     /**
@@ -80,7 +81,7 @@ class UpdateDBChatUsers {
      */
     public function offlineUsers(Collection $users)
     {
-        return $this->chatUserRepository->offlineMany($this->channel, $users);
+        return $this->chatUserRepository->offlineMany($this->user, $users);
     }
 
     /**

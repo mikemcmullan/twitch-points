@@ -2,83 +2,84 @@
 
 namespace App\Repositories\ChatUsers;
 
+use App\User;
 use Illuminate\Support\Collection;
 
 interface ChatUserRepository {
 
     /**
-     * @param $channel
+     * @param User $user
      * @return Collection
      */
-    public function users($channel);
+    public function users(User $user);
 
     /**
      * Get a single user.
      *
-     * @param $channel
+     * @param User $user
      * @param $handle
      * @return array
      */
-    public function user($channel, $handle);
+    public function user(User $user, $handle);
 
     /**
      * Create a new chat user.
      *
-     * @param $channel
+     * @param User $user
      * @param $handle
      * @return
      */
-    public function create($channel, $handle);
+    public function create(User $user, $handle);
 
     /**
      * Create many chat users.
      *
-     * @param $channel
+     * @param User $user
      * @param Collection $handles
      */
-    public function createMany($channel, Collection $handles);
+    public function createMany(User $user, Collection $handles);
 
     /**
      * Update an existing chat user.
      *
-     * @param $channel
+     * @param User $user
      * @param $handle
      * @param int $totalMinutesOnline
      * @param int $points
      */
-    public function update($channel, $handle, $totalMinutesOnline, $points);
+    public function update(User $user, $handle, $totalMinutesOnline, $points);
 
     /**
      * Update many users.
      *
-     * @param $channel
+     * @param User $user
      * @param Collection $users
      */
-    public function updateMany($channel, Collection $users);
+    public function updateMany(User $user, Collection $users);
 
     /**
      * Set a user to offline.
      *
-     * @param $channel
+     * @param User $user
      * @param $handle
      * @return mixed
      */
-    public function offline($channel, $handle);
+    public function offline(User $user, $handle);
 
     /**
      * Offline many users.
      *
-     * @param $channel
+     * @param User $user
      * @param Collection $handles
      */
-    public function offlineMany($channel, Collection $handles);
+    public function offlineMany(User $user, Collection $handles);
 
     /**
      * Offline all the users for a channel.
      *
-     * @param $channel
+     * @param User $user
      * @return mixed
      */
-    public function offlineAllForChannel($channel);
+    public function offlineAllForChannel(User $user);
 
 }

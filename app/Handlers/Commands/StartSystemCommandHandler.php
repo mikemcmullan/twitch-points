@@ -44,7 +44,7 @@ class StartSystemCommandHandler {
 			return $this->trackSessionRepository->create($command->user);
 		}
 
-		$this->chatUserRepository->offlineAllForChannel($command->user['name']);
+		$this->chatUserRepository->offlineAllForChannel($command->user);
 
 		return $this->trackSessionRepository->end($session);
 	}

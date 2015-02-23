@@ -8,6 +8,7 @@ use App\Services\DownloadChatList;
 use App\Services\SortChatUsers;
 use App\Services\TwitchApi;
 use App\Services\UpdateDBChatUsers;
+use App\User;
 use Illuminate\Contracts\Logging\Log;
 use Illuminate\Support\Collection;
 
@@ -56,31 +57,31 @@ class UpdatePointsCommandHandler {
 	/**
 	 * Sort the users into online users, new online users and offline users.
 	 *
-	 * @param $channel
+	 * @param User $user
 	 * @param Collection $liveChatUsers
 	 * @param ChatUserRepository $chatUserRepository
 	 * @return SortChatUsers
 	 */
-	private function sortChatUsers($channel, Collection $liveChatUsers, ChatUserRepository $chatUserRepository)
+	private function sortChatUsers(User $user, Collection $liveChatUsers, ChatUserRepository $chatUserRepository)
 	{
-		$this->log->info('Sorting Chat Users for ' . $channel, [__METHOD__]);
+		$this->log->info('Sorting Chat Users for ' . $user['name'], [__METHOD__]);
 
-		return new SortChatUsers($liveChatUsers, $chatUserRepository->users($channel));
+		return new SortChatUsers($liveChatUsers, $chatUserRepository->users($user));
 	}
 
 	/**
 	 * Update the DB with new users, online users and offline users.
 	 *
-	 * @param $channel
+	 * @param User $user
 	 * @param SortChatUsers $sorter
 	 * @param ChatUserRepository $chatUserRepository
 	 */
-	private function updateDB($channel, SortChatUsers $sorter, ChatUserRepository $chatUserRepository)
+	private function updateDB(User $user, SortChatUsers $sorter, ChatUserRepository $chatUserRepository)
 	{
-		$this->log->info('Updating DB Chat Users for ' . $channel, [__METHOD__]);
+		$this->log->info('Updating DB Chat Users for ' . $user['name'], [__METHOD__]);
 
 		$updater = new UpdateDBChatUsers(
-			$channel,
+			$user,
 			app('Illuminate\Contracts\Config\Repository'),
 			$chatUserRepository
 		);
@@ -93,19 +94,20 @@ class UpdatePointsCommandHandler {
 	/**
 	 * Set all users of a channel to offline.
 	 *
-	 * @param $channel
+	 * @param User $user
 	 * @param ChatUserRepository $chatUserRepository
+	 *
 	 * @return bool
 	 */
-	private function setAllUsersOffline($channel, ChatUserRepository $chatUserRepository)
+	private function setAllUsersOffline(User $user, ChatUserRepository $chatUserRepository)
 	{
 		$updater = new UpdateDBChatUsers(
-			$channel,
+			$user,
 			app('Illuminate\Contracts\Config\Repository'),
 			$chatUserRepository
 		);
 
-		$updater->setAllUsersOffline($chatUserRepository->users($channel));
+		$updater->setAllUsersOffline($chatUserRepository->users($user));
 
 		return true;
 	}
@@ -120,27 +122,27 @@ class UpdatePointsCommandHandler {
 	public function handle(UpdatePointsCommand $command)
 	{
 		// Check if the channel actually exists.
-		if ( ! $this->twitchApi->validChannel($command->channel))
+		if ( ! $this->twitchApi->validChannel($command->user['name']))
 		{
-			$this->log->info('Invalid channel: "' . $command->channel . '"', [__METHOD__]);
+			$this->log->info('Invalid channel: "' . $command->user['name'] . '"', [__METHOD__]);
 
-			return new InvalidChannelException($command->channel);
+			return new InvalidChannelException($command->user['name']);
 		}
 
 		// Check if the chanel is online.
-		if ( ! $this->twitchApi->channelOnline($command->channel))
+		if ( ! $this->twitchApi->channelOnline($command->user['name']))
 		{
-			$this->log->info('"' . $command->channel . '" is offline.', [__METHOD__]);
+			$this->log->info('"' . $command->user['name'] . '" is offline.', [__METHOD__]);
 
-			$this->setAllUsersOffline($command->channel, $command->chatUserRepository);
+			$this->setAllUsersOffline($command->user, $command->chatUserRepository);
 
-			return new StreamOfflineException($command->channel);
+			return new StreamOfflineException($command->user['name']);
 		}
 
-		$liveChatList 	= $this->downloadChatList($command->channel);
-		$sorter 		= $this->sortChatUsers($command->channel, $liveChatList, $command->chatUserRepository);
+		$liveChatList 	= $this->downloadChatList($command->user['name']);
+		$sorter 		= $this->sortChatUsers($command->user, $liveChatList, $command->chatUserRepository);
 
-		$this->updateDB($command->channel, $sorter, $command->chatUserRepository);
+		$this->updateDB($command->user, $sorter, $command->chatUserRepository);
 	}
 
 }

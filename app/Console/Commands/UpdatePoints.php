@@ -63,7 +63,7 @@ class UpdatePoints extends Command {
 
 		foreach ($sessions as $session)
 		{
-			$this->runUpdate($session['user']['name']);
+			$this->runUpdate($session['user']);
 		}
 
 		$end = microtime(true) - $startTime;
