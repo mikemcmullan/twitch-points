@@ -22,11 +22,13 @@ class EloquentUserRepository implements UserRepository
     private $pointsSession;
 
     /**
+     * @param User $user
      * @param TrackSessionRepository $pointsSession
      */
-    public function __construct(TrackSessionRepository $pointsSession)
+    public function __construct(User $user, TrackSessionRepository $pointsSession)
     {
         $this->pointsSession = $pointsSession;
+        $this->user = $user;
     }
 
     /**

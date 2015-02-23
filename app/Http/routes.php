@@ -20,6 +20,11 @@ Route::patch('/system-control', [
     'as'    => 'start_system_path'
 ]);
 
+Route::get('/leaderboard', [
+    'uses'  => 'PointsController@leaderboard',
+    'as'    => 'leaderboard_path'
+]);
+
 Route::get('/login', [
     'uses'  => 'AuthController@login',
     'as'    => 'login_path'
