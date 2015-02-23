@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>AngryPug's Pup Points Tracker</title>
+    <title>AngryPug's Pug Points Tracker</title>
 
     <!-- Bootstrap -->
     {!! Html::style('assets/css/bootstrap.css') !!}
@@ -26,7 +26,7 @@
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
-            {!! link_to_route('home_path', 'AngryPug\'s Pup Points Tracker', [], ['class' => 'navbar-brand']) !!}
+            {!! link_to_route('home_path', 'AngryPug\'s Pug Points Tracker', [], ['class' => 'navbar-brand']) !!}
         </div>
 
         <div class="collapse navbar-collapse" id="top-navbar-collapse">
