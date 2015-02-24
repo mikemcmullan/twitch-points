@@ -8,7 +8,7 @@
             <div class="col-md-12">
 
                 <div class="page-header">
-                    <h1>Pup Points Checker</h1>
+                    <h1>Pug Points Checker</h1>
                 </div><!-- .page-header -->
 
                 @include('partials.flash')
