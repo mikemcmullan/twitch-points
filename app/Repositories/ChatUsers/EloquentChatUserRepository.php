@@ -25,6 +25,11 @@ class EloquentChatUserRepository {
 	 */
 	private $chatUser;
 
+	/**
+	 * @param ChatUser $chatUser
+	 * @param DatabaseManager $db
+	 * @param Repository $config
+	 */
 	public function __construct(ChatUser $chatUser, DatabaseManager $db, Repository $config)
 	{
 		$this->db = $db;
@@ -32,11 +37,41 @@ class EloquentChatUserRepository {
 		$this->chatUser = $chatUser;
 	}
 
-	public function allForUser(User $user)
+	/**
+	 * Get all chatUsers that belong to a User.
+	 *
+	 * @param User $user
+	 * @param null $limit
+	 *
+	 * @return mixed
+	 */
+	public function allForUser(User $user, $limit = null)
+	{
+		$query = $this->chatUser
+			->where('user_id', $user['id'])
+			->orderBy('points', 'desc');
+
+		if ($limit > 0)
+		{
+			$query->limit(25);
+		}
+
+		return $query->get();
+	}
+
+	/**
+	 * Find a chatUser by their handle.
+	 *
+	 * @param User $user
+	 * @param $handle
+	 *
+	 * @return mixed
+	 */
+	public function findByHandle(User $user, $handle)
 	{
 		return $this->chatUser
 			->where('user_id', $user['id'])
-			->orderBy('points', 'desc')
-			->get();
+			->where('handle', $handle)
+			->first();
 	}
 }
