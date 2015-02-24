@@ -8,13 +8,13 @@
             <div class="col-md-12">
 
                 <div class="page-header">
-                    <h1>Leaderboard</h1>
+                    <h1>Scoreboard</h1>
                 </div><!-- .page-header -->
 
                 @include('partials.flash')
 
                 <div class="panel panel-default" id="points-panel">
-                    <div class="panel-heading">Leaderboard</div>
+                    <div class="panel-heading">Overall Scoreboard</div>
                     <div class="panel-body">
                         <table class="table table-bordered points-results-table">
                             <thead>

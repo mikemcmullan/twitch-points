@@ -12,29 +12,47 @@ use Illuminate\Http\Request;
 
 class PointsController extends Controller {
 
-	public function __construct()
+    /**
+     *
+     */
+    public function __construct()
     {
         $this->middleware('auth', ['except' => 'checkPoints']);
     }
 
-    public function checkPoints(Request $request, ChatUserRepository $chatUserRepository, UserRepository $userRepository)
+    /**
+     * Responds to GET request to check points.
+     *
+     * @param Request $request
+     * @param EloquentChatUserRepository $chatUser
+     * @param UserRepository $userRepository
+     *
+     * @return \Illuminate\View\View
+     */
+    public function checkPoints(Request $request, EloquentChatUserRepository $chatUser, UserRepository $userRepository)
     {
-        $handle = $request->get('handle');
-        $data = ['handle' => strtolower($handle)];
+        $data = [
+            'handle' => strtolower($request->get('handle')),
+            'user' => null,
+        ];
 
-        if ($handle)
+        $user = $userRepository->findByName(\Config::get('twitch.points.default_channel'));
+
+        if ($data['handle'])
         {
-            $channel = \Config::get('twitch.points.default_channel');
-            $user = $userRepository->findByName($channel);
-            
-            $user = $chatUserRepository->user($user, $handle);
-
-            $data['user'] = ! empty($user) ? $user : [];
+            $data['user'] = $chatUser->findByHandle($user, $data['handle']);
         }
+
+        $data['chatUsers'] = $chatUser->allForUser($user, 25);
 
         return view('check-points', $data);
     }
 
+	/**
+     * @param TrackSessionRepository $trackPointsSession
+     *
+     * @return \Illuminate\View\View
+     */
     public function systemControl(TrackSessionRepository $trackPointsSession)
     {
         $systemStarted = (bool) $trackPointsSession->findUncompletedSession(\Auth::user());
@@ -42,15 +60,26 @@ class PointsController extends Controller {
         return view('system-control', compact('systemStarted'));
     }
 
-    public function leaderboard(EloquentChatUserRepository $chatUser, UserRepository $userRepository)
+	/**
+     * @param EloquentChatUserRepository $chatUser
+     * @param UserRepository $userRepository
+     *
+     * @return \Illuminate\View\View
+     */
+    public function scoreboard(EloquentChatUserRepository $chatUser, UserRepository $userRepository)
     {
-        $user = $userRepository->findByName('angrypug_');
+        $user = $userRepository->findByName(\Config::get('twitch.points.default_channel'));
 
         $data['chatUsers'] = $chatUser->allForUser($user);
 
-        return view('leaderboard', $data);
+        return view('scoreboard', $data);
     }
 
+	/**
+     * Responds to PATCH request to start the system.
+     *
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function startSystem()
     {
         $this->dispatch(new StartSystemCommand(\Auth::user()));

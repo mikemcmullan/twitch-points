@@ -33,6 +33,7 @@
         @if (Auth::check())
             <ul class="nav navbar-nav">
                 <li{!! in_array(Route::currentRouteName(), ['check_points_path', 'home_path']) ? ' class="active"' : '' !!}><a href="{!! route('check_points_path') !!}">Check Points</a></li>
+                <li{!! Route::currentRouteName() === 'scoreboard_path' ? ' class="active"' : '' !!}><a href="{!! route('scoreboard_path') !!}">Scoreboard</a></li>
                 <li{!! Route::currentRouteName() === 'system_control_path' ? ' class="active"' : '' !!}><a href="{!! route('system_control_path') !!}">System Control</a></li>
             </ul>
 
@@ -43,6 +44,7 @@
         @else
             <div class="nav navbar-nav">
                 <li{!! in_array(Route::currentRouteName(), ['check_points_path', 'home_path']) ? ' class="active"' : '' !!}><a href="{!! route('check_points_path') !!}">Check Points</a></li>
+                <li{!! Route::currentRouteName() === 'scoreboard_path' ? ' class="active"' : '' !!}><a href="{!! route('scoreboard_path') !!}">Scoreboard</a></li>
             </div>
 
             <ul class="nav navbar-nav navbar-right">
