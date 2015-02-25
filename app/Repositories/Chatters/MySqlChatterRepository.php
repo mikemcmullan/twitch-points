@@ -74,7 +74,9 @@ class MySqlChatterRepository extends AbstractChatterRepository implements Chatte
             'user_id'       => $user['id'],
             'handle'        => $handle,
             'start_time'    => $this->time,
-            'points'        => $this->config->get('twitch.points.award_new')
+            'points'        => $this->config->get('twitch.points.award_new'),
+            'created_at'    => $this->time,
+            'updated_at'    => $this->time
         ]);
     }
 
@@ -111,7 +113,8 @@ class MySqlChatterRepository extends AbstractChatterRepository implements Chatte
             ->update([
                 'start_time'            => $this->time,
                 'total_minutes_online'  => $this->db->raw('total_minutes_online + ' . $totalMinutesOnline),
-                'points'                => $this->db->raw('points + ' . $points)
+                'points'                => $this->db->raw('points + ' . $points),
+                'updated_at'            => $this->time
             ]);
     }
 
@@ -145,7 +148,8 @@ class MySqlChatterRepository extends AbstractChatterRepository implements Chatte
             ->where('user_id', '=', $user['id'])
             ->where('handle', '=', $handle)
             ->update([
-                'start_time' => null
+                'start_time' => null,
+                'updated_at' => $this->time
             ]);
     }
 
@@ -177,7 +181,8 @@ class MySqlChatterRepository extends AbstractChatterRepository implements Chatte
         return $this->db->table('chatters')
             ->where('user_id', '=', $user['id'])
             ->update([
-                'start_time' => null
+                'start_time' => null,
+                'updated_at' => $this->time
             ]);
     }
 
