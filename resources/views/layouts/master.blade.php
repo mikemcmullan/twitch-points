@@ -57,6 +57,18 @@
 
 @yield('content')
 
+<footer id="bottom-footer">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="text-center">
+                    AngryPug's Pug Points Tracker was created by {!! link_to('https://twitter.com/mikemcmullan', 'Mike McMullan') !!} a.k.a {!! link_to('http://twitch.tv/mcsmike', 'MCSMike') !!}
+                </div>
+            </div><!-- .col-*-* -->
+        </div><!-- .row -->
+    </div><!-- .container -->
+</footer><!-- footer -->
+
 <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
 <script src="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.2/js/bootstrap.min.js"></script>
 </body>
