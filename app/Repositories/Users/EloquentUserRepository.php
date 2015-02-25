@@ -4,10 +4,6 @@ namespace App\Repositories\Users;
 
 use App\Repositories\TrackPointsSessions\TrackSessionRepository;
 use App\User;
-use Carbon\Carbon;
-use Illuminate\Auth\EloquentUserProvider;
-use Illuminate\Contracts\Auth\UserProvider;
-use Illuminate\Contracts\Hashing\Hasher as HasherContract;
 
 class EloquentUserRepository implements UserRepository
 {
