@@ -49,7 +49,8 @@ class EloquentChatterRepository {
 	{
 		$query = $this->chatter
 			->where('user_id', $user['id'])
-			->orderBy('points', 'desc');
+			->orderBy('points', 'desc')
+			->whereNotIn('handle', $this->config->get('twitch.points.hidden_chatters', []));
 
 		if ($limit > 0)
 		{
