@@ -26,6 +26,11 @@ class EloquentChatterRepository {
 	private $chatter;
 
 	/**
+	 * @var Collection
+	 */
+	private $hiddenChatters;
+
+	/**
 	 * @param Chatter $chatter
 	 * @param DatabaseManager $db
 	 * @param Repository $config
@@ -35,6 +40,15 @@ class EloquentChatterRepository {
 		$this->db = $db;
 		$this->config = $config;
 		$this->chatter = $chatter;
+		$this->hiddenChatters = new Collection;
+	}
+
+	/**
+	 * @return Collection
+	 */
+	public function getHiddenChatters()
+	{
+		return $this->hiddenChatters;
 	}
 
 	/**
@@ -50,7 +64,7 @@ class EloquentChatterRepository {
 		$query = $this->chatter
 			->where('user_id', $user['id'])
 			->orderBy('points', 'desc')
-			->whereNotIn('handle', $this->config->get('twitch.points.hidden_chatters', []));
+			->whereNotIn('handle', $this->hiddenChatters->all());
 
 		if ($limit > 0)
 		{
