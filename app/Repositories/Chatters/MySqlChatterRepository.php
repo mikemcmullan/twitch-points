@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Repositories\ChatUsers;
+namespace App\Repositories\Chatters;
 
 use App\User;
 use Illuminate\Contracts\Config\Repository as ConfigRepository;
@@ -11,7 +11,7 @@ use Illuminate\Support\Collection;
  * Class MySqlChatUserRepository
  * @package App\Repositories\ChatUsers
  */
-class MySqlChatUserRepository extends AbstractChatUserRepository implements ChatUserRepository {
+class MySqlChatterRepository extends AbstractChatterRepository implements ChatterRepository {
 
     /**
      * @var DatabaseManager
@@ -41,7 +41,7 @@ class MySqlChatUserRepository extends AbstractChatUserRepository implements Chat
      */
     public function users(User $user)
     {
-        $users = $this->db->table('chat_users')->where('user_id', '=', $user['id'])->get();
+        $users = $this->db->table('chatters')->where('user_id', '=', $user['id'])->get();
 
         return new Collection($this->mapUsers($users));
     }
@@ -55,7 +55,7 @@ class MySqlChatUserRepository extends AbstractChatUserRepository implements Chat
      */
     public function user(User $user, $handle)
     {
-        return $this->db->table('chat_users')
+        return $this->db->table('chatters')
             ->where('user_id', '=', $user['id'])
             ->where('handle', '=', $handle)
             ->first();
@@ -70,7 +70,7 @@ class MySqlChatUserRepository extends AbstractChatUserRepository implements Chat
      */
     public function create(User $user, $handle)
     {
-        return $this->db->table('chat_users')->insert([
+        return $this->db->table('chatters')->insert([
             'user_id'       => $user['id'],
             'handle'        => $handle,
             'start_time'    => $this->time,
@@ -105,7 +105,7 @@ class MySqlChatUserRepository extends AbstractChatUserRepository implements Chat
      */
     public function update(User $user, $handle, $totalMinutesOnline = 0, $points = 0)
     {
-        return $this->db->table('chat_users')
+        return $this->db->table('chatters')
             ->where('user_id', '=', $user['id'])
             ->where('handle', '=', $handle)
             ->update([
@@ -141,7 +141,7 @@ class MySqlChatUserRepository extends AbstractChatUserRepository implements Chat
      */
     public function offline(User $user, $handle)
     {
-        return $this->db->table('chat_users')
+        return $this->db->table('chatters')
             ->where('user_id', '=', $user['id'])
             ->where('handle', '=', $handle)
             ->update([
@@ -174,7 +174,7 @@ class MySqlChatUserRepository extends AbstractChatUserRepository implements Chat
      */
     public function offlineAllForChannel(User $user)
     {
-        return $this->db->table('chat_users')
+        return $this->db->table('chatters')
             ->where('user_id', '=', $user['id'])
             ->update([
                 'start_time' => null

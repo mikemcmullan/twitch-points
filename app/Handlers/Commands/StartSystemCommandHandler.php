@@ -2,7 +2,7 @@
 
 use App\Commands\StartSystemCommand;
 
-use App\Repositories\ChatUsers\ChatUserRepository;
+use App\Repositories\Chatters\ChatterRepository;
 use App\Repositories\TrackPointsSessions\TrackSessionRepository;
 
 class StartSystemCommandHandler {
@@ -15,18 +15,18 @@ class StartSystemCommandHandler {
 	/**
 	 * @var ChatUserRepository
 	 */
-	private $chatUserRepository;
+	private $chatterRepository;
 
 	/**
 	 * Create the command handler.
 	 *
 	 * @param TrackSessionRepository $trackSessionRepository
-	 * @param ChatUserRepository $chatUserRepository
+	 * @param ChatterRepository $chatterRepository
 	 */
-	public function __construct(TrackSessionRepository $trackSessionRepository, ChatUserRepository $chatUserRepository)
+	public function __construct(TrackSessionRepository $trackSessionRepository, ChatterRepository $chatterRepository)
 	{
 		$this->trackSessionRepository = $trackSessionRepository;
-		$this->chatUserRepository = $chatUserRepository;
+		$this->chatterRepository = $chatterRepository;
 	}
 
 	/**
@@ -44,7 +44,7 @@ class StartSystemCommandHandler {
 			return $this->trackSessionRepository->create($command->user);
 		}
 
-		$this->chatUserRepository->offlineAllForChannel($command->user);
+		$this->chatterRepository->offlineAllForChannel($command->user);
 
 		return $this->trackSessionRepository->end($session);
 	}

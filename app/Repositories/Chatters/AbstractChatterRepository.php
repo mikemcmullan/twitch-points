@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Repositories\ChatUsers;
+namespace App\Repositories\Chatters;
 
 use Carbon\Carbon;
 
@@ -8,7 +8,7 @@ use Carbon\Carbon;
  * Class AbstractChatUserRepository
  * @package App\Repositories\ChatUsers
  */
-class AbstractChatUserRepository {
+class AbstractChatterRepository {
 
     /**
      * @var string

@@ -4,8 +4,8 @@ use App\Commands\StartSystemCommand;
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
 
-use App\Repositories\ChatUsers\ChatUserRepository;
-use App\Repositories\ChatUsers\EloquentChatUserRepository;
+use App\Repositories\Chatters\ChatUserRepository;
+use App\Repositories\Chatters\EloquentChatterRepository;
 use App\Repositories\TrackPointsSessions\TrackSessionRepository;
 use App\Repositories\Users\UserRepository;
 use Illuminate\Http\Request;
@@ -24,12 +24,12 @@ class PointsController extends Controller {
      * Responds to GET request to check points.
      *
      * @param Request $request
-     * @param EloquentChatUserRepository $chatUser
+     * @param EloquentChatterRepository $chatterRepository
      * @param UserRepository $userRepository
      *
      * @return \Illuminate\View\View
      */
-    public function checkPoints(Request $request, EloquentChatUserRepository $chatUser, UserRepository $userRepository)
+    public function checkPoints(Request $request, EloquentChatterRepository $chatterRepository, UserRepository $userRepository)
     {
         $data = [
             'handle' => strtolower($request->get('handle')),
@@ -40,10 +40,10 @@ class PointsController extends Controller {
 
         if ($data['handle'])
         {
-            $data['user'] = $chatUser->findByHandle($user, $data['handle']);
+            $data['user'] = $chatterRepository->findByHandle($user, $data['handle']);
         }
 
-        $data['chatUsers'] = $chatUser->allForUser($user, 25);
+        $data['chatUsers'] = $chatterRepository->allForUser($user, 25);
 
         return view('check-points', $data);
     }
@@ -61,16 +61,16 @@ class PointsController extends Controller {
     }
 
 	/**
-     * @param EloquentChatUserRepository $chatUser
+     * @param EloquentChatterRepository $chatterRepository
      * @param UserRepository $userRepository
      *
      * @return \Illuminate\View\View
      */
-    public function scoreboard(EloquentChatUserRepository $chatUser, UserRepository $userRepository)
+    public function scoreboard(EloquentChatterRepository $chatterRepository, UserRepository $userRepository)
     {
         $user = $userRepository->findByName(\Config::get('twitch.points.default_channel'));
 
-        $data['chatUsers'] = $chatUser->allForUser($user);
+        $data['chatUsers'] = $chatterRepository->allForUser($user);
 
         return view('scoreboard', $data);
     }

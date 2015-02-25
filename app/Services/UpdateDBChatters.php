@@ -2,13 +2,13 @@
 
 namespace App\Services;
 
-use App\Repositories\ChatUsers\ChatUserRepository;
+use App\Repositories\Chatters\ChatterRepository;
 use App\User;
 use Carbon\Carbon;
 use Illuminate\Contracts\Config\Repository as ConfigRepository;
 use Illuminate\Support\Collection;
 
-class UpdateDBChatUsers {
+class UpdateDBChatters {
 
     /**
      * @var ConfigRepository
@@ -18,7 +18,7 @@ class UpdateDBChatUsers {
     /**
      * @var ChatUserRepository
      */
-    private $chatUserRepository;
+    private $chatterRepository;
 
     /**
      * @var User
@@ -28,12 +28,12 @@ class UpdateDBChatUsers {
     /**
      * @param User $user
      * @param ConfigRepository $config
-     * @param ChatUserRepository $chatUserRepository
+     * @param ChatterRepository $chatterRepository
      */
-    public function __construct(User $user, ConfigRepository $config, ChatUserRepository $chatUserRepository)
+    public function __construct(User $user, ConfigRepository $config, ChatterRepository $chatterRepository)
     {
         $this->config = $config;
-        $this->chatUserRepository = $chatUserRepository;
+        $this->chatterRepository = $chatterRepository;
         $this->user = $user;
     }
 
@@ -42,9 +42,9 @@ class UpdateDBChatUsers {
      *
      * @param Collection $users
      */
-    public function newOnlineUsers(Collection $users)
+    public function newChatters(Collection $users)
     {
-        return $this->chatUserRepository->createMany($this->user, $users);
+        return $this->chatterRepository->createMany($this->user, $users);
     }
 
     /**
@@ -52,7 +52,7 @@ class UpdateDBChatUsers {
      *
      * @param Collection $users
      */
-    public function onlineUsers(Collection $users)
+    public function onlineChatters(Collection $users)
     {
         $onlineUsers = new Collection();
 
@@ -71,7 +71,7 @@ class UpdateDBChatUsers {
             $onlineUsers->push($user);
         }
 
-        return $this->chatUserRepository->updateMany($this->user, $onlineUsers);
+        return $this->chatterRepository->updateMany($this->user, $onlineUsers);
     }
 
     /**
@@ -79,19 +79,19 @@ class UpdateDBChatUsers {
      *
      * @param Collection $users
      */
-    public function offlineUsers(Collection $users)
+    public function offlineChatters(Collection $users)
     {
-        return $this->chatUserRepository->offlineMany($this->user, $users);
+        return $this->chatterRepository->offlineMany($this->user, $users);
     }
 
     /**
      * Set all users to offline by setting their start_time to null.
      *
-     * @param Collection $users
+     * @return bool
      */
-    public function setAllUsersOffline(Collection $users)
+    public function setAllChattersOffline()
     {
-        return $this->offlineUsers($users);
+        return $this->chatterRepository->offlineAllForChannel($this->user);
     }
 
     /**

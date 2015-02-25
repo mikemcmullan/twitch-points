@@ -22,8 +22,8 @@ class RepositoryServiceProvider extends ServiceProvider {
 	public function register()
 	{
 		$this->app->bind(
-			'App\Repositories\ChatUsers\ChatUserRepository',
-			'App\Repositories\ChatUsers\MySqlChatUserRepository'
+			'App\Repositories\Chatters\ChatterRepository',
+			'App\Repositories\Chatters\MySqlChatterRepository'
 		);
 
 		$this->app->bind(

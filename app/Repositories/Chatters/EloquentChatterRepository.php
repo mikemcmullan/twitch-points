@@ -1,14 +1,14 @@
 <?php
 
-namespace App\Repositories\ChatUsers;
+namespace App\Repositories\Chatters;
 
-use App\ChatUser;
+use App\Chatter;
 use App\User;
 use Illuminate\Contracts\Config\Repository;
 use Illuminate\Database\DatabaseManager;
 use Illuminate\Support\Collection;
 
-class EloquentChatUserRepository {
+class EloquentChatterRepository {
 
 	/**
 	 * @var DatabaseManager
@@ -21,20 +21,20 @@ class EloquentChatUserRepository {
 	private $config;
 
 	/**
-	 * @var ChatUser
+	 * @var Chatter
 	 */
-	private $chatUser;
+	private $chatter;
 
 	/**
-	 * @param ChatUser $chatUser
+	 * @param Chatter $chatter
 	 * @param DatabaseManager $db
 	 * @param Repository $config
 	 */
-	public function __construct(ChatUser $chatUser, DatabaseManager $db, Repository $config)
+	public function __construct(Chatter $chatter, DatabaseManager $db, Repository $config)
 	{
 		$this->db = $db;
 		$this->config = $config;
-		$this->chatUser = $chatUser;
+		$this->chatter = $chatter;
 	}
 
 	/**
@@ -47,7 +47,7 @@ class EloquentChatUserRepository {
 	 */
 	public function allForUser(User $user, $limit = null)
 	{
-		$query = $this->chatUser
+		$query = $this->chatter
 			->where('user_id', $user['id'])
 			->orderBy('points', 'desc');
 
@@ -69,7 +69,7 @@ class EloquentChatUserRepository {
 	 */
 	public function findByHandle(User $user, $handle)
 	{
-		return $this->chatUser
+		return $this->chatter
 			->where('user_id', $user['id'])
 			->where('handle', $handle)
 			->first();

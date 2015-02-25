@@ -3,7 +3,7 @@
 use App\Commands\UpdatePointsCommand;
 use App\Exceptions\InvalidChannelException;
 use App\Exceptions\StreamOfflineException;
-use App\Repositories\ChatUsers\ChatUserRepository;
+use App\Repositories\Chatters\ChatterRepository;
 use App\Repositories\TrackPointsSessions\TrackSessionRepository;
 use Illuminate\Console\Command;
 use Illuminate\Foundation\Bus\DispatchesCommands;
@@ -29,9 +29,9 @@ class UpdatePoints extends Command {
 	protected $description = 'Update chat list for a channel.';
 
 	/**
-	 * @var ChatUserRepository
+	 * @var ChatterRepository
 	 */
-	private $chatUserRepository;
+	private $chatterRepository;
 
 	/**
 	 * @var TrackPointsSession
@@ -41,13 +41,13 @@ class UpdatePoints extends Command {
 	/**
 	 * Create a new command instance.
 	 *
-	 * @param ChatUserRepository $chatUserRepository
+	 * @param ChatterRepository $chatterRepository
 	 * @param TrackSessionRepository $pointsSession
 	 */
-	public function __construct(ChatUserRepository $chatUserRepository, TrackSessionRepository $pointsSession)
+	public function __construct(ChatterRepository $chatterRepository, TrackSessionRepository $pointsSession)
 	{
 		parent::__construct();
-		$this->chatUserRepository = $chatUserRepository;
+		$this->chatterRepository = $chatterRepository;
 		$this->pointsSession = $pointsSession;
 	}
 
@@ -67,6 +67,7 @@ class UpdatePoints extends Command {
 		}
 
 		$end = microtime(true) - $startTime;
+		$this->info(memory_get_usage());
 		\Log::info(sprintf('Execution time: %s', $end));
 		$this->info(sprintf('Command executed in %s seconds', $end));
 	}
@@ -78,7 +79,7 @@ class UpdatePoints extends Command {
 	{
 		try
 		{
-			$response = $this->dispatch(new UpdatePointsCommand($channel, $this->chatUserRepository));
+			$response = $this->dispatch(new UpdatePointsCommand($channel, $this->chatterRepository));
 
 			if ($response instanceof StreamOfflineException || $response instanceof InvalidChannelException)
 			{

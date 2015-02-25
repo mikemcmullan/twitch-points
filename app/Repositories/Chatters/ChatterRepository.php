@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Repositories\ChatUsers;
+namespace App\Repositories\Chatters;
 
 use App\User;
 use Illuminate\Support\Collection;
 
-interface ChatUserRepository {
+interface ChatterRepository {
 
     /**
      * @param User $user

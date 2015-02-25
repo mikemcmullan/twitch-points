@@ -3,11 +3,11 @@
 use App\Commands\UpdatePointsCommand;
 use App\Exceptions\InvalidChannelException;
 use App\Exceptions\StreamOfflineException;
-use App\Repositories\ChatUsers\ChatUserRepository;
+use App\Repositories\Chatters\ChatterRepository;
 use App\Services\DownloadChatList;
-use App\Services\SortChatUsers;
+use App\Services\SortChatters;
 use App\Services\TwitchApi;
-use App\Services\UpdateDBChatUsers;
+use App\Services\UpdateDBChatters;
 use App\User;
 use Illuminate\Contracts\Logging\Log;
 use Illuminate\Support\Collection;
@@ -55,59 +55,60 @@ class UpdatePointsCommandHandler {
 	}
 
 	/**
-	 * Sort the users into online users, new online users and offline users.
+	 * Sort the chatters into online, new online and offline chatters.
 	 *
 	 * @param User $user
-	 * @param Collection $liveChatUsers
-	 * @param ChatUserRepository $chatUserRepository
-	 * @return SortChatUsers
+	 * @param Collection $liveChatters
+	 * @param ChatterRepository $chatterRepository
+	 *
+	 * @return SortChatters
 	 */
-	private function sortChatUsers(User $user, Collection $liveChatUsers, ChatUserRepository $chatUserRepository)
+	private function sortChatters(User $user, Collection $liveChatters, ChatterRepository $chatterRepository)
 	{
 		$this->log->info('Sorting Chat Users for ' . $user['name'], [__METHOD__]);
 
-		return new SortChatUsers($liveChatUsers, $chatUserRepository->users($user));
+		return new SortChatters($liveChatters, $chatterRepository->users($user));
 	}
 
 	/**
 	 * Update the DB with new users, online users and offline users.
 	 *
 	 * @param User $user
-	 * @param SortChatUsers $sorter
-	 * @param ChatUserRepository $chatUserRepository
+	 * @param SortChatters $sorter
+	 * @param ChatterRepository $chatterRepository
 	 */
-	private function updateDB(User $user, SortChatUsers $sorter, ChatUserRepository $chatUserRepository)
+	private function updateDB(User $user, SortChatters $sorter, ChatterRepository $chatterRepository)
 	{
 		$this->log->info('Updating DB Chat Users for ' . $user['name'], [__METHOD__]);
 
-		$updater = new UpdateDBChatUsers(
+		$updater = new UpdateDBChatters(
 			$user,
 			app('Illuminate\Contracts\Config\Repository'),
-			$chatUserRepository
+			$chatterRepository
 		);
 
-		$updater->newOnlineUsers($sorter->newOnlineUsers());
-		$updater->onlineUsers($sorter->onlineUsers());
-		$updater->offlineUsers($sorter->offlineUsers());
+		$updater->newChatters($sorter->newChatters());
+		$updater->onlineChatters($sorter->onlineChatters());
+		$updater->offlineChatters($sorter->offlineChatters());
 	}
 
 	/**
 	 * Set all users of a channel to offline.
 	 *
 	 * @param User $user
-	 * @param ChatUserRepository $chatUserRepository
+	 * @param ChatterRepository $chatterRepository
 	 *
 	 * @return bool
 	 */
-	private function setAllUsersOffline(User $user, ChatUserRepository $chatUserRepository)
+	private function setAllChattersOffline(User $user, ChatterRepository $chatterRepository)
 	{
-		$updater = new UpdateDBChatUsers(
+		$updater = new UpdateDBChatters(
 			$user,
 			app('Illuminate\Contracts\Config\Repository'),
-			$chatUserRepository
+			$chatterRepository
 		);
 
-		$updater->setAllUsersOffline($chatUserRepository->users($user));
+		$updater->setAllChattersOffline($chatterRepository->users($user));
 
 		return true;
 	}
@@ -117,7 +118,7 @@ class UpdatePointsCommandHandler {
 	 *
 	 * @param  UpdatePointsCommand $command
 	 * @return StreamOfflineException
-	 * @throws InvalidChannelException
+	 * @return InvalidChannelException
 	 */
 	public function handle(UpdatePointsCommand $command)
 	{
@@ -134,15 +135,15 @@ class UpdatePointsCommandHandler {
 		{
 			$this->log->info('"' . $command->user['name'] . '" is offline.', [__METHOD__]);
 
-			$this->setAllUsersOffline($command->user, $command->chatUserRepository);
+			$this->setAllChattersOffline($command->user, $command->chatterRepository);
 
 			return new StreamOfflineException($command->user['name']);
 		}
 
 		$liveChatList 	= $this->downloadChatList($command->user['name']);
-		$sorter 		= $this->sortChatUsers($command->user, $liveChatList, $command->chatUserRepository);
+		$sorter 		= $this->sortChatters($command->user, $liveChatList, $command->chatterRepository);
 
-		$this->updateDB($command->user, $sorter, $command->chatUserRepository);
+		$this->updateDB($command->user, $sorter, $command->chatterRepository);
 	}
 
 }

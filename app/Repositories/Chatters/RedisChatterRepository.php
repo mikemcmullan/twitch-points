@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Repositories\ChatUsers;
+namespace App\Repositories\Chatters;
 
 use Carbon\Carbon;
 use Illuminate\Contracts\Config\Repository as ConfigRepository;
@@ -11,7 +11,7 @@ use Illuminate\Support\Collection;
  * Class RedisChatUserRepository
  * @package App\Repositories\ChatUsers*
  */
-class RedisChatUserRepository extends AbstractChatUserRepository implements ChatUserRepository {
+class RedisChatterRepository extends AbstractChatterRepository implements ChatterRepository {
 
     /**
      * @var Database
