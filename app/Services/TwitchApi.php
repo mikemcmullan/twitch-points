@@ -52,12 +52,9 @@ class TwitchApi {
      */
     public function chatList($channel)
     {
-//        return $this->cache->remember('chatList:' . $channel, 10, function() use($channel)
-//        {
-            $response = $this->httpClient->get(sprintf('https://tmi.twitch.tv/group/user/%s/chatters', $channel));
+        $response = $this->httpClient->get(sprintf('https://tmi.twitch.tv/group/user/%s/chatters', $channel));
 
-            return $this->parseChatList((string) $response->getBody());
-//        });
+        return $this->parseChatList((string) $response->getBody());
     }
 
     /**
