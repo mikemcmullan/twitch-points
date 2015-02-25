@@ -48,10 +48,6 @@ class RepositoryServiceProvider extends ServiceProvider {
 			'App\Repositories\TrackPointsSessions\TrackSessionRepository',
 			'App\Repositories\TrackPointsSessions\EloquentTrackSessionRepository'
 		);
-//		$this->app['auth']->extend('repo', function($app)
-//		{
-//			return $app->make('App\Repositories\Users\UserRepository');
-//		});
 	}
 
 }
