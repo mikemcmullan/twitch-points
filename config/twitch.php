@@ -46,24 +46,24 @@ return [
         | Points Awarded / Interval
         |--------------------------------------------------------------------------
         |
-        | How many points are awards per interval in minutes.
+        | How many points are awards per interval in minutes. The interval can
+        | change depending on if the channel is online or offline.
         |
-        | ex. For every 5 minutes of being online the user is rewarded 1 point.
-        |
-        */
-        'interval' => 15,
-        'awarded' => 5,
-
-        /*
-        |--------------------------------------------------------------------------
-        | Points Awarded To New Users.
-        |--------------------------------------------------------------------------
-        |
-        | How many points are awarded to a new user.
+        | ex. The chatter is awarded 5 points per 15 minutes while the streamer
+        |     is online. But only 1 point per 30 minutes if the streamer is
+        |     offline.
         |
         */
-        'award_new' => 0
+        'online' => [
+            'interval' => 15,
+            'awarded' => 5,
+        ],
 
+
+        'offline' => [
+            'interval' => 30,
+            'awarded' => 1
+        ]
     ]
 
 ];

@@ -26,15 +26,22 @@ class UpdateDBChatters {
     private $user;
 
     /**
+     * @var bool
+     */
+    private $channelStatus;
+
+    /**
      * @param User $user
      * @param ConfigRepository $config
      * @param ChatterRepository $chatterRepository
+     * @param bool $channelStatus
      */
-    public function __construct(User $user, ConfigRepository $config, ChatterRepository $chatterRepository)
+    public function __construct(User $user, ConfigRepository $config, ChatterRepository $chatterRepository, $channelStatus)
     {
         $this->config = $config;
         $this->chatterRepository = $chatterRepository;
         $this->user = $user;
+        $this->channelStatus = $channelStatus;
     }
 
     /**
@@ -102,8 +109,10 @@ class UpdateDBChatters {
      */
     private function calculatePoints($minutesOnline = 0)
     {
-        $pointInterval = $this->config->get('twitch.points.interval');
-        $pointsAwarded = $this->config->get('twitch.points.awarded');
+        $status = $this->channelStatus === true ? 'online' : 'offline';
+
+        $pointInterval = $this->config->get("twitch.points.{$status}.interval");
+        $pointsAwarded = $this->config->get("twitch.points.{$status}.awarded");
 
         $pointsPerMinute = $pointsAwarded / $pointInterval;
 

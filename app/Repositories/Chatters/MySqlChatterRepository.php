@@ -74,7 +74,6 @@ class MySqlChatterRepository extends AbstractChatterRepository implements Chatte
             'user_id'       => $user['id'],
             'handle'        => $handle,
             'start_time'    => $this->time,
-            'points'        => $this->config->get('twitch.points.award_new'),
             'created_at'    => $this->time,
             'updated_at'    => $this->time
         ]);

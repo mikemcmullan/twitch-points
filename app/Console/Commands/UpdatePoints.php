@@ -80,11 +80,6 @@ class UpdatePoints extends Command {
 		try
 		{
 			$response = $this->dispatch(new UpdatePointsCommand($channel, $this->chatterRepository));
-
-			if ($response instanceof StreamOfflineException || $response instanceof InvalidChannelException)
-			{
-				throw new $response($response->getMessage());
-			}
 		}
 		catch (InvalidChannelException $e)
 		{

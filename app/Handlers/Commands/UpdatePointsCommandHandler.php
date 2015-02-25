@@ -76,15 +76,17 @@ class UpdatePointsCommandHandler {
 	 * @param User $user
 	 * @param SortChatters $sorter
 	 * @param ChatterRepository $chatterRepository
+	 * @param $channelStatus
 	 */
-	private function updateDB(User $user, SortChatters $sorter, ChatterRepository $chatterRepository)
+	private function updateDB(User $user, SortChatters $sorter, ChatterRepository $chatterRepository, $channelStatus)
 	{
 		$this->log->info('Updating DB Chat Users for ' . $user['name'], [__METHOD__]);
 
 		$updater = new UpdateDBChatters(
 			$user,
 			app('Illuminate\Contracts\Config\Repository'),
-			$chatterRepository
+			$chatterRepository,
+			$channelStatus
 		);
 
 		$updater->newChatters($sorter->newChatters());
@@ -93,32 +95,10 @@ class UpdatePointsCommandHandler {
 	}
 
 	/**
-	 * Set all users of a channel to offline.
-	 *
-	 * @param User $user
-	 * @param ChatterRepository $chatterRepository
-	 *
-	 * @return bool
-	 */
-	private function setAllChattersOffline(User $user, ChatterRepository $chatterRepository)
-	{
-		$updater = new UpdateDBChatters(
-			$user,
-			app('Illuminate\Contracts\Config\Repository'),
-			$chatterRepository
-		);
-
-		$updater->setAllChattersOffline($chatterRepository->users($user));
-
-		return true;
-	}
-
-	/**
 	 * Handle the command.
 	 *
 	 * @param  UpdatePointsCommand $command
-	 * @return StreamOfflineException
-	 * @return InvalidChannelException
+	 * @throws InvalidChannelException
 	 */
 	public function handle(UpdatePointsCommand $command)
 	{
@@ -127,23 +107,24 @@ class UpdatePointsCommandHandler {
 		{
 			$this->log->info('Invalid channel: "' . $command->user['name'] . '"', [__METHOD__]);
 
-			return new InvalidChannelException($command->user['name']);
+			throw new InvalidChannelException($command->user['name']);
 		}
+
+		// Initially set the channel to be online.
+		$channelStatus = true;
 
 		// Check if the chanel is online.
 		if ( ! $this->twitchApi->channelOnline($command->user['name']))
 		{
 			$this->log->info('"' . $command->user['name'] . '" is offline.', [__METHOD__]);
 
-			$this->setAllChattersOffline($command->user, $command->chatterRepository);
-
-			return new StreamOfflineException($command->user['name']);
+			$channelStatus = false;
 		}
 
 		$liveChatList 	= $this->downloadChatList($command->user['name']);
 		$sorter 		= $this->sortChatters($command->user, $liveChatList, $command->chatterRepository);
 
-		$this->updateDB($command->user, $sorter, $command->chatterRepository);
+		$this->updateDB($command->user, $sorter, $command->chatterRepository, $channelStatus);
 	}
 
 }
