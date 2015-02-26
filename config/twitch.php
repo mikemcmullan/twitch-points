@@ -61,7 +61,7 @@ return [
 
 
         'offline' => [
-            'interval' => 30,
+            'interval' => 60,
             'awarded' => 1
         ]
     ]
