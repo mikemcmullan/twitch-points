@@ -56,7 +56,7 @@ return [
         */
         'online' => [
             'interval' => 15,
-            'awarded' => 2,
+            'awarded' => 1,
         ],
 
 
