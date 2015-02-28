@@ -17,7 +17,7 @@ class PointsController extends Controller {
      */
     public function __construct()
     {
-        $this->middleware('auth', ['except' => 'checkPoints']);
+        $this->middleware('auth', ['except' => ['checkPoints', 'scoreboard']]);
     }
 
     /**
