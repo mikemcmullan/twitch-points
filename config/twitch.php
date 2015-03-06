@@ -39,7 +39,7 @@ return [
         | A list of chat handles that shouldn't be shown on the scoreboard.
         |
         */
-        'hidden_chatters' => ['angrypug_', 'nightbot', 'angrypugbot'],
+        'hidden_chatters' => ['angrypug_', 'nightbot', 'angrypugbot', 'mcsmike', 'aodphreak', 'sqweezy_jibbs', 'anonymouslender'],
 
         /*
         |--------------------------------------------------------------------------
