@@ -70,7 +70,7 @@ class PointsController extends Controller {
     {
         $user = $userRepository->findByName(\Config::get('twitch.points.default_channel'));
 
-        $data['chatUsers'] = $chatterRepository->allForUser($user);
+        $data['chatUsers'] = $chatterRepository->paginate(100)->allForUser($user);
 
         return view('scoreboard', $data);
     }

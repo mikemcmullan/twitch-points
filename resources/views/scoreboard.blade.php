@@ -35,6 +35,10 @@
                             @endforeach
                             </tbody>
                         </table>
+
+                        <div class="text-center">
+                            {!! $chatUsers->render() !!}
+                        </div>
                     </div><!-- .panel-body -->
                 </div><!-- .panel -->
             </div><!-- .col-*-* -->

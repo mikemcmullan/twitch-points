@@ -31,6 +31,11 @@ class EloquentChatterRepository {
 	private $hiddenChatters;
 
 	/**
+	 * @var
+	 */
+	private $perPage;
+
+	/**
 	 * @param Chatter $chatter
 	 * @param DatabaseManager $db
 	 * @param Repository $config
@@ -52,6 +57,18 @@ class EloquentChatterRepository {
 	}
 
 	/**
+	 * @param $perPage
+	 *
+	 * @return $this
+	 */
+	public function paginate($perPage)
+	{
+		$this->perPage = (int) $perPage;
+
+		return $this;
+	}
+
+	/**
 	 * Get all chatUsers that belong to a User.
 	 *
 	 * @param User $user
@@ -68,10 +85,10 @@ class EloquentChatterRepository {
 
 		if ($limit > 0)
 		{
-			$query->limit(25);
+			$query = $query->limit($limit);
 		}
 
-		return $query->get();
+		return $this->perPage > 0 ? $query->paginate($this->perPage) : $query->get();
 	}
 
 	/**
