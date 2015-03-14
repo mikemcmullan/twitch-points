@@ -35,11 +35,12 @@ class MySqlChatterRepository extends AbstractChatterRepository implements Chatte
         $this->config = $config;
     }
 
-    /**
+	/**
      * @param User $user
+     *
      * @return Collection
      */
-    public function users(User $user)
+    public function allForUser(User $user)
     {
         $users = $this->db->table('chatters')->where('user_id', '=', $user['id'])->get();
 
@@ -47,18 +48,16 @@ class MySqlChatterRepository extends AbstractChatterRepository implements Chatte
     }
 
     /**
-     * Get a single user.
-     *
      * @param User $user
      * @param $handle
      * @return array
      */
-    public function user(User $user, $handle)
+    public function findByHandle(User $user, $handle)
     {
         return $this->db->table('chatters')
-            ->where('user_id', '=', $user['id'])
-            ->where('handle', '=', $handle)
-            ->first();
+                        ->where('user_id', '=', $user['id'])
+                        ->where('handle', '=', $handle)
+                        ->first();
     }
 
     /**
@@ -87,13 +86,14 @@ class MySqlChatterRepository extends AbstractChatterRepository implements Chatte
      */
     public function createMany(User $user, Collection $handles)
     {
-        $this->db->transaction(function() use($user, $handles)
+        $this->db->beginTransaction();
+
+        foreach ($handles as $handle)
         {
-            foreach ($handles as $handle)
-            {
-                $this->create($user, $handle);
-            }
-        });
+            $this->create($user, $handle);
+        }
+
+        $this->db->commit();
     }
 
     /**
@@ -125,13 +125,14 @@ class MySqlChatterRepository extends AbstractChatterRepository implements Chatte
      */
     public function updateMany(User $user, Collection $users)
     {
-        $this->db->transaction(function() use($user, $users)
+        $this->db->beginTransaction();
+
+        foreach ($users as $chatUser)
         {
-            foreach ($users as $chatUser)
-            {
-                $this->update($user, $chatUser['handle'], $chatUser['total_minutes_online'], $chatUser['points']);
-            }
-        });
+            $this->update($user, $chatUser['handle'], $chatUser['total_minutes_online'], $chatUser['points']);
+        }
+
+        $this->db->commit();
     }
 
     /**
@@ -160,13 +161,14 @@ class MySqlChatterRepository extends AbstractChatterRepository implements Chatte
      */
     public function offlineMany(User $user, Collection $handles)
     {
-        $this->db->transaction(function() use($user, $handles)
+        $this->db->beginTransaction();
+
+        foreach ($handles as $handle)
         {
-            foreach ($handles as $handle)
-            {
-                $this->offline($user, $handle['handle']);
-            }
-        });
+            $this->offline($user, $handle['handle']);
+        }
+
+        $this->db->commit();
     }
 
 	/**
@@ -200,19 +202,21 @@ class MySqlChatterRepository extends AbstractChatterRepository implements Chatte
             ]);
     }
 
-	/**
-     * @param User $user
-     * @param Collection $handles
+    /**
+     * @param Collection $chatters
+     *
+     * @return mixed|void
      */
-    public function updateRankMany(User $user, Collection $handles)
+    public function updateRankMany(Collection $chatters)
     {
-        $this->db->transaction(function() use($user, $handles)
+        $this->db->beginTransaction();
+
+        foreach ($chatters as $chatter)
         {
-            foreach ($handles as $handle)
-            {
-                $this->updateRank($handle['id'], $handle['rank']);
-            }
-        });
+            $this->updateRank($chatter['id'], $chatter['rank']);
+        }
+
+        $this->db->commit();
     }
 
     /**

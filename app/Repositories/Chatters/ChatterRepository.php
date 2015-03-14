@@ -7,20 +7,22 @@ use Illuminate\Support\Collection;
 
 interface ChatterRepository {
 
-    /**
+	/**
+     * Get all chatters belonging to a user.
+     *
      * @param User $user
-     * @return Collection
+     * @return mixed
      */
-    public function users(User $user);
+    public function allForUser(User $user);
 
     /**
-     * Get a single user.
+     * Find a single chatter by their handle and which users owns them.
      *
      * @param User $user
      * @param $handle
      * @return array
      */
-    public function user(User $user, $handle);
+    public function findByHandle(User $user, $handle);
 
     /**
      * Create a new chat user.
