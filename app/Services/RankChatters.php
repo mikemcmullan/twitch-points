@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Repositories\Chatters\ChatterRepository;
 use App\Repositories\Chatters\EloquentChatterRepository;
 use App\User;
 use Illuminate\Support\Collection;
@@ -20,17 +21,22 @@ class RankChatters {
 
 	/**
 	 * @param User $user
-	 * @param EloquentChatterRepository $chatterRepository
+	 * @param ChatterRepository $chatterRepository
 	 */
-	public function __construct(User $user, EloquentChatterRepository $chatterRepository)
+	public function __construct(User $user, ChatterRepository $chatterRepository)
 	{
 		$this->user = $user;
 		$this->chatterRepository = $chatterRepository;
 	}
 
+	/**
+	 * Run the ranking.
+	 */
 	public function rank()
 	{
-		$chatters = $this->chatterRepository->allForUser($this->user);
+		// Should replace in future.
+		$chatters = app(EloquentChatterRepository::class)->allForUser($this->user);
+
 		$rankings = new Collection();
 		$rank = 1;
 
@@ -46,6 +52,6 @@ class RankChatters {
 			$rank++;
 		}
 
-		$this->chatterRepository->updateRankings($rankings);
+		$this->chatterRepository->updateRankMany($rankings);
 	}
 }

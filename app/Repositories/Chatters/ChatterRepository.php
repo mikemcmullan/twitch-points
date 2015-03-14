@@ -84,4 +84,21 @@ interface ChatterRepository {
      */
     public function offlineAllForChannel(User $user);
 
+	/**
+     * Update the rank of a chatter.
+     *
+     * @param $chatterId
+     * @param $rank
+     * @return mixed
+     */
+    public function updateRank($chatterId, $rank);
+
+	/**
+     * Update the rank of many chatters.
+     *
+     * @param Collection $chatters
+     * @return mixed
+     */
+    public function updateRankMany(Collection $chatters);
+
 }

@@ -2,9 +2,7 @@
 
 use App\Commands\UpdatePointsCommand;
 use App\Exceptions\InvalidChannelException;
-use App\Exceptions\StreamOfflineException;
 use App\Repositories\Chatters\ChatterRepository;
-use App\Repositories\Chatters\EloquentChatterRepository;
 use App\Services\DownloadChatList;
 use App\Services\RankChatters;
 use App\Services\SortChatters;
@@ -63,7 +61,7 @@ class UpdatePointsCommandHandler {
 	{
 		$this->log->info('Sorting Chat Users for ' . $user['name'], [__METHOD__]);
 
-		return new SortChatters($liveChatters, $chatterRepository->users($user));
+		return new SortChatters($liveChatters, $chatterRepository->allForUser($user));
 	}
 
 	/**
@@ -89,7 +87,7 @@ class UpdatePointsCommandHandler {
 		$updater->onlineChatters($sorter->onlineChatters());
 		$updater->offlineChatters($sorter->offlineChatters());
 
-		(new RankChatters($user, app(EloquentChatterRepository::class)))->rank();
+		(new RankChatters($user, $chatterRepository))->rank();
 	}
 
 	/**
