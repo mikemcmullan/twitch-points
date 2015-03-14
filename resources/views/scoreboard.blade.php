@@ -32,7 +32,7 @@
                                     <td>{{ $user['rank'] }}</td>
                                     <td>{{ $user['handle'] }}</td>
                                     <td>{{ $user['total_minutes_online'] }}</td>
-                                    <td>{{ round($user['points']) }}</td>
+                                    <td>{{ floor($user['points']) }}</td>
                                 </tr>
                             @endforeach
                             </tbody>
