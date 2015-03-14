@@ -46,7 +46,7 @@
                             <thead>
                             <tr>
                                 <th>Name</th>
-                                <th>Minutes Online</th>
+                                <th>Time Online</th>
                                 <th>Points</th>
                             </tr>
                             </thead>
