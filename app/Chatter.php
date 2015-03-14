@@ -10,4 +10,9 @@ class Chatter extends Model {
 	{
 		return sprintf('%d hours, %d minutes', floor($minutes/60), $minutes%60);
 	}
+
+	public function getRankAttribute($rank)
+	{
+		return ! $rank ? 'N/A' : $rank;
+	}
 }
