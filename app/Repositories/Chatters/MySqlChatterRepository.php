@@ -186,6 +186,36 @@ class MySqlChatterRepository extends AbstractChatterRepository implements Chatte
     }
 
     /**
+     * @param $chatterId
+     * @param $rank
+     *
+     * @return mixed
+     */
+    public function updateRank($chatterId, $rank)
+    {
+        return $this->db->table('chatters')
+            ->where('id', $chatterId)
+            ->update([
+                'rank' => $rank
+            ]);
+    }
+
+	/**
+     * @param User $user
+     * @param Collection $handles
+     */
+    public function updateRankMany(User $user, Collection $handles)
+    {
+        $this->db->transaction(function() use($user, $handles)
+        {
+            foreach ($handles as $handle)
+            {
+                $this->updateRank($handle['id'], $handle['rank']);
+            }
+        });
+    }
+
+    /**
      * @param $users
      * @return array
      */

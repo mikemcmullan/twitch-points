@@ -106,4 +106,24 @@ class EloquentChatterRepository {
 			->where('handle', $handle)
 			->first();
 	}
+
+	/**
+	 * Update chatters ranking.
+	 *
+	 * @param Collection $chatters
+	 */
+	public function updateRankings(Collection $chatters)
+	{
+		$this->db->transaction(function() use($chatters)
+		{
+			foreach ($chatters as $chatter)
+			{
+				$this->chatter
+					->where('id', $chatter['id'])
+					->update([
+						'rank' => $chatter['rank']
+					]);
+			}
+		});
+	}
 }

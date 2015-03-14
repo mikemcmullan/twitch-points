@@ -4,7 +4,9 @@ use App\Commands\UpdatePointsCommand;
 use App\Exceptions\InvalidChannelException;
 use App\Exceptions\StreamOfflineException;
 use App\Repositories\Chatters\ChatterRepository;
+use App\Repositories\Chatters\EloquentChatterRepository;
 use App\Services\DownloadChatList;
+use App\Services\RankChatters;
 use App\Services\SortChatters;
 use App\Services\TwitchApi;
 use App\Services\UpdateDBChatters;
@@ -44,12 +46,6 @@ class UpdatePointsCommandHandler {
 	private function downloadChatList($channel)
 	{
 		$this->log->info('Downloading chat list for ' . $channel, [__METHOD__]);
-
-//		$results = \Cache::remember('chatList_' . $channelName, 10, function() use($channelName)
-//		{
-//			$list = $this->twitchApi->chatList($channelName);
-//			return $list;
-//		});
 
 		return $this->twitchApi->chatList($channel);
 	}
@@ -92,6 +88,8 @@ class UpdatePointsCommandHandler {
 		$updater->newChatters($sorter->newChatters());
 		$updater->onlineChatters($sorter->onlineChatters());
 		$updater->offlineChatters($sorter->offlineChatters());
+
+		(new RankChatters($user, app(EloquentChatterRepository::class)))->rank();
 	}
 
 	/**

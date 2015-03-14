@@ -42,9 +42,11 @@
                 <div class="panel panel-default" id="points-panel">
                     <div class="panel-heading">Top 25 Leader board</div>
                     <div class="panel-body">
+
                         <table class="table table-bordered points-results-table">
                             <thead>
                             <tr>
+                                <th>Rank</th>
                                 <th>Name</th>
                                 <th>Time Online</th>
                                 <th>Points</th>
@@ -54,6 +56,7 @@
                             <tbody>
                             @foreach ($chatUsers as $user)
                                 <tr>
+                                    <td>{{ $user['rank'] }}</td>
                                     <td>{{ $user['handle'] }}</td>
                                     <td>{{ $user['total_minutes_online'] }}</td>
                                     <td>{{ round($user['points']) }}</td>
