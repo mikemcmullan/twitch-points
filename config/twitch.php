@@ -33,13 +33,25 @@ return [
 
         /*
         |--------------------------------------------------------------------------
-        | Hidden Chatters
+        | Channel Moderators
         |--------------------------------------------------------------------------
         |
-        | A list of chat handles that shouldn't be shown on the scoreboard.
+        | A list of channel moderator handles.
         |
         */
-        'hidden_chatters' => ['angrypug_', 'nightbot', 'angrypugbot', 'mcsmike', 'aodphreak', 'sqweezy_jibbs', 'anonymouslender'],
+        'channel_mods' => [
+            'angrypug_',
+            'nightbot',
+            'angrypugbot',
+            'mcsmike',
+            'aodphreak',
+            'sqweezy_jibbs',
+            'anonymouslender',
+            'cottoncandybutt',
+            'fearliz',
+            'ninjachris77',
+            'ellie_rose14'
+        ],
 
         /*
         |--------------------------------------------------------------------------

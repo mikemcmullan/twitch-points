@@ -31,7 +31,7 @@ class RepositoryServiceProvider extends ServiceProvider {
 		{
 			$repo = new EloquentChatterRepository($app['App\Chatter'], $app['db'], $app['config']);
 
-			foreach($app['config']->get('twitch.points.hidden_chatters', []) as $handle)
+			foreach($app['config']->get('twitch.points.channel_mods', []) as $handle)
 			{
 				$repo->getHiddenChatters()->push($handle);
 			}
