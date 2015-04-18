@@ -2,8 +2,7 @@
 
 use App\ChatUserCollection;
 use App\Commands\Command;
-
-use App\Repositories\Chatters\ChatterRepository;
+use App\Contracts\Repositories\ChatterRepository;
 use App\Services\DBImportChatUsers;
 use App\User;
 

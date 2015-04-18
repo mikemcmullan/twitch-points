@@ -1,6 +1,6 @@
 <?php namespace App\Providers;
 
-use App\Repositories\Chatters\EloquentChatterRepository;
+use App\Repositories\Chatter\EloquentChatterRepository;
 use Illuminate\Support\ServiceProvider;
 
 class RepositoryServiceProvider extends ServiceProvider {
@@ -23,11 +23,11 @@ class RepositoryServiceProvider extends ServiceProvider {
 	public function register()
 	{
 		$this->app->bind(
-			'App\Repositories\Chatters\ChatterRepository',
-			'App\Repositories\Chatters\MySqlChatterRepository'
+			'App\Contracts\Repositories\ChatterRepository',
+			'App\Repositories\Chatter\MySqlChatterRepository'
 		);
 
-		$this->app->bind('App\Repositories\Chatters\EloquentChatterRepository', function($app)
+		$this->app->bind('App\Repositories\Chatter\EloquentChatterRepository', function($app)
 		{
 			$repo = new EloquentChatterRepository($app['App\Chatter'], $app['db'], $app['config']);
 
@@ -40,13 +40,13 @@ class RepositoryServiceProvider extends ServiceProvider {
 		});
 
 		$this->app->bind(
-			'App\Repositories\Users\UserRepository',
-			'App\Repositories\Users\EloquentUserRepository'
+			'App\Contracts\Repositories\UserRepository',
+			'App\Repositories\User\EloquentUserRepository'
 		);
 
 		$this->app->bind(
-			'App\Repositories\TrackPointsSessions\TrackSessionRepository',
-			'App\Repositories\TrackPointsSessions\EloquentTrackSessionRepository'
+			'App\Contracts\Repositories\TrackSessionRepository',
+			'App\Repositories\TrackPointsSession\EloquentTrackSessionRepository'
 		);
 	}
 

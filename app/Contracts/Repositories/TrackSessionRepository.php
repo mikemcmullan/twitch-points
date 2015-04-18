@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Repositories\TrackPointsSessions;
+namespace App\Contracts\Repositories;
 
 use App\TrackSession;
 use App\User;

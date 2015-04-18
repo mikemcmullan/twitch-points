@@ -2,8 +2,8 @@
 
 namespace App\Services;
 
-use App\Repositories\Chatters\ChatterRepository;
-use App\Repositories\Chatters\EloquentChatterRepository;
+use App\Contracts\Repositories\ChatterRepository;
+use App\Repositories\Chatter\EloquentChatterRepository;
 use App\User;
 use Illuminate\Support\Collection;
 

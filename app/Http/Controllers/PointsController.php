@@ -3,11 +3,9 @@
 use App\Commands\StartSystemCommand;
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
-
-use App\Repositories\Chatters\ChatUserRepository;
-use App\Repositories\Chatters\EloquentChatterRepository;
-use App\Repositories\TrackPointsSessions\TrackSessionRepository;
-use App\Repositories\Users\UserRepository;
+use App\Repositories\Chatter\EloquentChatterRepository;
+use App\Contracts\Repositories\TrackSessionRepository;
+use App\Contracts\Repositories\UserRepository;
 use Illuminate\Http\Request;
 
 class PointsController extends Controller {

@@ -2,7 +2,7 @@
 
 namespace App\Services;
 
-use App\Repositories\Chatters\ChatterRepository;
+use App\Contracts\Repositories\ChatterRepository;
 use App\User;
 use Carbon\Carbon;
 use Illuminate\Contracts\Config\Repository as ConfigRepository;

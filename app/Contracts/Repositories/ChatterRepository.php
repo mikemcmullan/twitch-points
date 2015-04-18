@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Repositories\Chatters;
+namespace App\Contracts\Repositories;
 
 use App\User;
 use Illuminate\Support\Collection;

@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Repositories\TrackPointsSessions;
+namespace App\Repositories\TrackPointsSession;
 
 use App\TrackSession;
-use App\Repositories\TrackPointsSessions\TrackSessionRepository as TrackSessionRepositoryInterface;
+use App\Contracts\Repositories\TrackSessionRepository as TrackSessionRepositoryInterface;
 use App\User;
 use Carbon\Carbon;
 

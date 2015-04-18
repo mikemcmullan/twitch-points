@@ -2,8 +2,8 @@
 
 use App\Commands\StartSystemCommand;
 
-use App\Repositories\Chatters\ChatterRepository;
-use App\Repositories\TrackPointsSessions\TrackSessionRepository;
+use App\Contracts\Repositories\ChatterRepository;
+use App\Contracts\Repositories\TrackSessionRepository;
 
 class StartSystemCommandHandler {
 

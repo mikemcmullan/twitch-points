@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Repositories\Chatters;
+namespace App\Repositories\Chatter;
 
 use Carbon\Carbon;
 use Illuminate\Contracts\Config\Repository as ConfigRepository;

@@ -2,7 +2,7 @@
 
 use App\Commands\UpdatePointsCommand;
 use App\Exceptions\InvalidChannelException;
-use App\Repositories\Chatters\ChatterRepository;
+use App\Contracts\Repositories\ChatterRepository;
 use App\Services\DownloadChatList;
 use App\Services\RankChatters;
 use App\Services\SortChatters;

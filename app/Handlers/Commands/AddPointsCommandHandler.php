@@ -3,7 +3,7 @@
 use App\Commands\AddPointsCommand;
 use App\Contracts\ManagePoints\CanUpdatePoints;
 use App\ManagePoints\UpdatePointsTrait;
-use App\Repositories\Chatters\ChatterRepository;
+use App\Contracts\Repositories\ChatterRepository;
 use Illuminate\Queue\InteractsWithQueue;
 
 class AddPointsCommandHandler implements CanUpdatePoints {

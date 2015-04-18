@@ -2,7 +2,7 @@
 
 namespace App\Services;
 
-use App\Repositories\Users\UserRepository;
+use App\Contracts\Repositories\UserRepository;
 use Illuminate\Contracts\Auth\Guard;
 use Illuminate\Cookie\CookieJar;
 

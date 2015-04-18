@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Repositories\Chatters;
+namespace App\Repositories\Chatter;
 
+use App\Contracts\Repositories\ChatterRepository;
 use App\User;
 use Illuminate\Contracts\Config\Repository as ConfigRepository;
 use Illuminate\Database\DatabaseManager;

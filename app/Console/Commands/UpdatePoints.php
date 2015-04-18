@@ -3,8 +3,8 @@
 use App\Commands\UpdatePointsCommand;
 use App\Exceptions\InvalidChannelException;
 use App\Exceptions\StreamOfflineException;
-use App\Repositories\Chatters\ChatterRepository;
-use App\Repositories\TrackPointsSessions\TrackSessionRepository;
+use App\Contracts\Repositories\ChatterRepository;
+use App\Contracts\Repositories\TrackSessionRepository;
 use Illuminate\Console\Command;
 use Illuminate\Foundation\Bus\DispatchesCommands;
 use Symfony\Component\Console\Input\InputOption;

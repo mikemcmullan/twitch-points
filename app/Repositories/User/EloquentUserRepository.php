@@ -1,8 +1,9 @@
 <?php
 
-namespace App\Repositories\Users;
+namespace App\Repositories\User;
 
-use App\Repositories\TrackPointsSessions\TrackSessionRepository;
+use App\Contracts\Repositories\TrackSessionRepository;
+use App\Contracts\Repositories\UserRepository;
 use App\User;
 
 class EloquentUserRepository implements UserRepository

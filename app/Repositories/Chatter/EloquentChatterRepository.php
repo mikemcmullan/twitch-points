@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Repositories\Chatters;
+namespace App\Repositories\Chatter;
 
 use App\Chatter;
 use App\User;
