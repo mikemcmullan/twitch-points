@@ -20,10 +20,10 @@ trait UpdatePointsTrait {
 	{
 		if ($sign === '-')
 		{
-			return $currentPoints + $points;
+			return (int) $currentPoints - $points;
 		}
 
-		return (int) $currentPoints - $points;
+		return (int) $currentPoints + $points;
 	}
 
 	/**
