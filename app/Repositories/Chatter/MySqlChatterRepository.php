@@ -130,7 +130,7 @@ class MySqlChatterRepository extends AbstractChatterRepository implements Chatte
 
         foreach ($users as $chatUser)
         {
-            $this->update($user, $chatUser['handle'], $chatUser['total_minutes_online'], $chatUser['points']);
+            $this->update($user, $chatUser->handle, $chatUser->total_minutes_online, $chatUser->points);
         }
 
         $this->db->commit();
@@ -166,7 +166,7 @@ class MySqlChatterRepository extends AbstractChatterRepository implements Chatte
 
         foreach ($handles as $handle)
         {
-            $this->offline($user, $handle['handle']);
+            $this->offline($user, $handle->handle);
         }
 
         $this->db->commit();
@@ -214,7 +214,7 @@ class MySqlChatterRepository extends AbstractChatterRepository implements Chatte
 
         foreach ($chatters as $chatter)
         {
-            $this->updateRank($chatter['id'], $chatter['rank']);
+            $this->updateRank($chatter->id, $chatter->rank);
         }
 
         $this->db->commit();
@@ -230,7 +230,7 @@ class MySqlChatterRepository extends AbstractChatterRepository implements Chatte
 
         foreach ($users as $user)
         {
-            $mappedUsers[$user['handle']] = $user;
+            $mappedUsers[$user->handle] = $user;
         }
 
         return $mappedUsers;

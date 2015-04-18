@@ -52,9 +52,9 @@ trait UpdatePointsTrait {
 
 		if ($chatter)
 		{
-			$this->chatterRepository->update($user, $chatter['handle'], 0, $sign . $points);
+			$this->chatterRepository->update($user, $chatter->handle, 0, $sign . $points);
 
-			return $this->calculateTotalPoints($chatter['points'], $points, $sign);
+			return $this->calculateTotalPoints($chatter->points, $points, $sign);
 		}
 
 		throw new UnknownHandleException;

@@ -136,9 +136,9 @@ class SortChatters {
         // where the start_time is null.
         foreach($this->offlineChatters->all() as $chatter)
         {
-            if ($chatter['start_time'] == null)
+            if ($chatter->start_time == null)
             {
-                $this->offlineChatters->forget($chatter['handle']);
+                $this->offlineChatters->forget($chatter->handle);
             }
         }
 

@@ -67,13 +67,13 @@ class UpdateDBChatters {
         {
             $minutesOnline = 0;
 
-            if ($user['start_time'] != null)
+            if ($user->start_time != null)
             {
-                $minutesOnline = Carbon::now()->diffInMinutes(Carbon::parse($user['start_time']));
+                $minutesOnline = Carbon::now()->diffInMinutes(Carbon::parse($user->start_time));
             }
 
-            $user['points'] = $this->calculatePoints($minutesOnline);
-            $user['total_minutes_online'] = $minutesOnline;
+            $user->points = $this->calculatePoints($minutesOnline);
+            $user->total_minutes_online = $minutesOnline;
 
             $onlineUsers->push($user);
         }
