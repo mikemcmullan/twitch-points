@@ -14,25 +14,32 @@ interface CanUpdatePoints {
 	public function getChatterRepository();
 
 	/**
+	 * Get an instance of the user repository.
+	 *
+	 * @return UserRepository
+	 */
+	public function getUserRepository();
+
+	/**
 	 * Add points to a chatter.
 	 *
-	 * @param User $user
+	 * @param $user
 	 * @param $handle
 	 * @param $points
 	 *
 	 * @return mixed
 	 */
-	public function addPoints(User $user, $handle, $points);
+	public function addPoints($user, $handle, $points);
 
 	/**
 	 * Remove points from a chatter.
 	 *
-	 * @param User $user
+	 * @param $user
 	 * @param $handle
 	 * @param $points
 	 *
 	 * @return mixed
 	 */
-	public function removePoints(User $user, $handle, $points);
+	public function removePoints($user, $handle, $points);
 
 }

@@ -1,12 +1,14 @@
 <?php namespace App\Commands;
 
-use App\Commands\Command;
-use App\User;
+use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Queue\SerializesModels;
 
 class RemovePointsCommand extends Command {
 
+	use InteractsWithQueue, SerializesModels;
+
 	/**
-	 * @var User
+	 * @var
 	 */
 	public $user;
 
@@ -23,11 +25,11 @@ class RemovePointsCommand extends Command {
 	/**
 	 * Create a new command instance.
 	 *
-	 * @param User $user
+	 * @param $user
 	 * @param $handle
 	 * @param $points
 	 */
-	public function __construct(User $user, $handle, $points)
+	public function __construct($user, $handle, $points)
 	{
 		$this->user = $user;
 		$this->handle = $handle;

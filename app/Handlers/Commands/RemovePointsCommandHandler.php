@@ -2,9 +2,9 @@
 
 use App\Commands\RemovePointsCommand;
 use App\Contracts\ManagePoints\CanUpdatePoints;
+use App\Contracts\Repositories\UserRepository;
 use App\ManagePoints\UpdatePointsTrait;
 use App\Contracts\Repositories\ChatterRepository;
-use Illuminate\Queue\InteractsWithQueue;
 
 class RemovePointsCommandHandler implements CanUpdatePoints {
 
@@ -16,13 +16,20 @@ class RemovePointsCommandHandler implements CanUpdatePoints {
 	private $chatterRepository;
 
 	/**
+	 * @var UserRepository
+	 */
+	private $userRepository;
+
+	/**
 	 * Create the command handler.
 	 *
 	 * @param ChatterRepository $chatterRepository
+	 * @param UserRepository $userRepository
 	 */
-	public function __construct(ChatterRepository $chatterRepository)
+	public function __construct(ChatterRepository $chatterRepository, UserRepository $userRepository)
 	{
 		$this->chatterRepository = $chatterRepository;
+		$this->userRepository = $userRepository;
 	}
 
 	/**
@@ -33,6 +40,16 @@ class RemovePointsCommandHandler implements CanUpdatePoints {
 	public function getChatterRepository()
 	{
 		return $this->chatterRepository;
+	}
+
+	/**
+	 * Get an instance of the user repository.
+	 *
+	 * @return ChatterRepository
+	 */
+	public function getUserRepository()
+	{
+		return $this->userRepository;
 	}
 
 	/**

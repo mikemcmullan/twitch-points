@@ -2,6 +2,7 @@
 
 namespace App\ManagePoints;
 
+use App\Exceptions\UnknownUserException;
 use App\UnknownHandleException;
 use App\User;
 
@@ -27,7 +28,7 @@ trait UpdatePointsTrait {
 	}
 
 	/**
-	 * @param User $user The user the handle belongs to.
+	 * @param $user         The user the handle belongs to.
 	 * @param $handle       The chat handle of the user.
 	 * @param $points       How many points are being added or removing.
 	 * @param string $sign Indicate whether you are adding or removing points.
@@ -35,9 +36,20 @@ trait UpdatePointsTrait {
 	 *
 	 * @return mixed
 	 * @throws UnknownHandleException
+	 * @throws UnknownUserException
 	 */
-	private function updatePoints(User $user, $handle, $points, $sign = '+')
+	private function updatePoints($user, $handle, $points, $sign = '+')
 	{
+		if ( ! $user instanceof User)
+		{
+			$user = $this->userRepository->findByName($user);
+		}
+
+		if ( ! $user)
+		{
+			throw new UnknownUserException;
+		}
+
 		if ( ! is_numeric($points))
 		{
 			throw new \InvalidArgumentException('Points must be an numeric.');
@@ -48,7 +60,7 @@ trait UpdatePointsTrait {
 			throw new \InvalidArgumentException('Sign must be either + or -.');
 		}
 
-		$chatter = $this->chatterRepository->findByHandle($user, $handle);
+		$chatter = $this->getChatterRepository()->findByHandle($user, $handle);
 
 		if ($chatter)
 		{
@@ -61,21 +73,25 @@ trait UpdatePointsTrait {
 	}
 
 	/**
-	 * @param User $user    The user the handle belongs to.
+	 * @param $user         The user the handle belongs to.
 	 * @param $handle       The chat handle of the user.
 	 * @param $points       How many points are being added or removing.
+	 *
+	 * @return mixed
 	 */
-	public function addPoints(User $user, $handle, $points)
+	public function addPoints($user, $handle, $points)
 	{
 		return $this->updatePoints($user, $handle, $points);
 	}
 
 	/**
-	 * @param User $user    The user the handle belongs to.
+	 * @param $user         The user the handle belongs to.
 	 * @param $handle       The chat handle of the user.
 	 * @param $points       How many points are being added or removing.
+	 *
+	 * @return mixed
 	 */
-	public function removePoints(User $user, $handle, $points)
+	public function removePoints($user, $handle, $points)
 	{
 		return $this->updatePoints($user, $handle, $points, '-');
 	}
