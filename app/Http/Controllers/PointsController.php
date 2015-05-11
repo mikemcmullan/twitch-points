@@ -45,7 +45,7 @@ class PointsController extends Controller {
             'chatter' => null,
         ];
 
-        $channel = $this->channelRepository->findByName('jless');
+        $channel = $this->channelRepository->findByName(\Config::get('twitch.points.default_channel'));
 
         if ($data['handle'])
         {
