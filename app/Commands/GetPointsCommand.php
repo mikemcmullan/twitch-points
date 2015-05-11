@@ -3,7 +3,7 @@
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 
-class RemovePointsCommand extends Command {
+class GetPointsCommand extends Command {
 
 	use InteractsWithQueue, SerializesModels;
 
@@ -18,22 +18,15 @@ class RemovePointsCommand extends Command {
 	public $handle;
 
 	/**
-	 * @var
-	 */
-	public $points;
-
-	/**
 	 * Create a new command instance.
 	 *
 	 * @param $channel
 	 * @param $handle
-	 * @param $points
 	 */
-	public function __construct($channel, $handle, $points)
+	public function __construct($channel, $handle)
 	{
 		$this->channel = $channel;
 		$this->handle = $handle;
-		$this->points = $points;
 	}
 
 }

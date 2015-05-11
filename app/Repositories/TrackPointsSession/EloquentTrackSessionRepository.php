@@ -4,7 +4,7 @@ namespace App\Repositories\TrackPointsSession;
 
 use App\TrackSession;
 use App\Contracts\Repositories\TrackSessionRepository as TrackSessionRepositoryInterface;
-use App\User;
+use App\Channel;
 use Carbon\Carbon;
 
 class EloquentTrackSessionRepository implements TrackSessionRepositoryInterface {
@@ -25,14 +25,14 @@ class EloquentTrackSessionRepository implements TrackSessionRepositoryInterface 
     /**
      * Create a new track session.
      *
-     * @param User $user
+     * @param Channel $channel
      *
      * @return static
      */
-    public function create(User $user)
+    public function create(Channel $channel)
     {
         return $this->pointsSession->create([
-            'user_id' => $user['id']
+            'user_id' => $channel['id']
         ]);
     }
 
@@ -54,18 +54,18 @@ class EloquentTrackSessionRepository implements TrackSessionRepositoryInterface 
     }
 
     /**
-     * Find uncompleted track sessions for a user.
+     * Find uncompleted track sessions for a channel.
      *
-     * @param User $user
+     * @param Channel $channel
      *
      * @return \Illuminate\Database\Eloquent\Collection|static[]
      */
-    public function findUncompletedSession(User $user)
+    public function findUncompletedSession(Channel $channel)
     {
         return $this->pointsSession
-            ->with('user')
+            ->with('channel')
             ->where('complete', false)
-            ->where('user_id', $user['id'])
+            ->where('user_id', $channel['id'])
             ->first();
     }
 
@@ -77,7 +77,7 @@ class EloquentTrackSessionRepository implements TrackSessionRepositoryInterface 
     public function allUncompletedSessions()
     {
         return $this->pointsSession
-            ->with('user')
+            ->with('channel')
             ->where('complete', false)
             ->get();
     }

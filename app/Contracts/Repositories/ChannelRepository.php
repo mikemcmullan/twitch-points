@@ -2,9 +2,9 @@
 
 namespace App\Contracts\Repositories;
 
-use App\User;
+use App\Channel;
 
-interface UserRepository {
+interface ChannelRepository {
 
 	/**
 	 * Find a user by their name or create a new user.
@@ -26,9 +26,9 @@ interface UserRepository {
 	/**
 	 * Update a user.
 	 *
-	 * @param User $user
+	 * @param Channel $channel
 	 * @return bool
 	 */
-	public function update(User $user);
+	public function update(Channel $channel);
 
 }

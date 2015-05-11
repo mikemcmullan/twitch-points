@@ -8,9 +8,9 @@ class TrackSession extends Model {
 
     protected $fillable = ['user_id', 'complete', 'stream_length'];
 
-    public function user()
+    public function channel()
     {
-        return $this->belongsTo('App\User');
+        return $this->belongsTo('App\Channel', 'user_id');
     }
 
 }

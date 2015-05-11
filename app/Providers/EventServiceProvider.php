@@ -11,9 +11,14 @@ class EventServiceProvider extends ServiceProvider {
 	 * @var array
 	 */
 	protected $listen = [
-		'App\Events\ChatListWasDownloaded' => [
-			'App\Handlers\Events\UpdatePoints'
+		'irc-bot.command.points' => [
+			'App\Bot\Commands\GetPoints'
 		],
+
+		'App\Events\ChatListWasDownloaded' => [
+			'App\Handlers\Events\ProcessChatList',
+			'App\Handlers\Events\RankChatters'
+		]
 	];
 
 	/**

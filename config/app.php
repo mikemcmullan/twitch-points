@@ -148,8 +148,7 @@ return [
 		'App\Providers\RouteServiceProvider',
 
 		'App\Providers\RepositoryServiceProvider',
-		'App\Providers\TwitchServiceProvider'
-
+		'App\Providers\TwitchServiceProvider',
 	],
 
 	/*

@@ -2,7 +2,7 @@
 
 namespace App\Services;
 
-use App\Contracts\Repositories\UserRepository;
+use App\Contracts\Repositories\ChannelRepository;
 use Illuminate\Contracts\Auth\Guard;
 use Illuminate\Cookie\CookieJar;
 
@@ -16,7 +16,7 @@ class AuthenticateUser {
     /**
      * @var ChannelRepository
      */
-    private $userRepository;
+    private $channelRepository;
 
     /**
      * @var CookieJar
@@ -30,14 +30,14 @@ class AuthenticateUser {
 
     /**
      * @param TwitchSDKAdapter $twitchSDK
-     * @param UserRepository $userRepository
+     * @param ChannelRepository $channelRepository
      * @param CookieJar $cookieJar
      * @param Guard $auth
      */
-    public function __construct(TwitchSDKAdapter $twitchSDK, UserRepository $userRepository, CookieJar $cookieJar, Guard $auth)
+    public function __construct(TwitchSDKAdapter $twitchSDK, ChannelRepository $channelRepository, CookieJar $cookieJar, Guard $auth)
     {
         $this->twitchSDK = $twitchSDK;
-        $this->userRepository = $userRepository;
+        $this->channelRepository = $channelRepository;
         $this->cookieJar = $cookieJar;
         $this->auth = $auth;
     }
@@ -63,7 +63,7 @@ class AuthenticateUser {
 
         $authUser = $this->twitchSDK->authUserGet($token['access_token']);
 
-        $user = $this->userRepository->findByNameOrCreate($authUser['name'], [
+        $user = $this->channelRepository->findByNameOrCreate($authUser['name'], [
             'email'         => $authUser['email'],
             'logo'          => $authUser['logo'],
             'access_token'  => $token['access_token']
@@ -73,7 +73,7 @@ class AuthenticateUser {
         {
             $user['access_token'] = $token['access_token'];
 
-            $this->userRepository->update($user);
+            $this->channelRepository->update($user);
         }
 
         $this->auth->login($user, true);

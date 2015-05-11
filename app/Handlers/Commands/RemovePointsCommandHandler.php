@@ -1,14 +1,14 @@
 <?php namespace App\Handlers\Commands;
 
 use App\Commands\RemovePointsCommand;
-use App\Contracts\ManagePoints\CanUpdatePoints;
-use App\Contracts\Repositories\UserRepository;
-use App\ManagePoints\UpdatePointsTrait;
+use App\Contracts\ManagePoints\CanManagePoints;
+use App\Contracts\Repositories\ChannelRepository;
+use App\ManagePoints\ManagePointsTrait;
 use App\Contracts\Repositories\ChatterRepository;
 
-class RemovePointsCommandHandler implements CanUpdatePoints {
+class RemovePointsCommandHandler implements CanManagePoints {
 
-	use UpdatePointsTrait;
+	use ManagePointsTrait;
 
 	/**
 	 * @var ChatterRepository
@@ -16,20 +16,20 @@ class RemovePointsCommandHandler implements CanUpdatePoints {
 	private $chatterRepository;
 
 	/**
-	 * @var UserRepository
+	 * @var ChannelRepository
 	 */
-	private $userRepository;
+	private $channelRepository;
 
 	/**
 	 * Create the command handler.
 	 *
 	 * @param ChatterRepository $chatterRepository
-	 * @param UserRepository $userRepository
+	 * @param ChannelRepository $channelRepository
 	 */
-	public function __construct(ChatterRepository $chatterRepository, UserRepository $userRepository)
+	public function __construct(ChatterRepository $chatterRepository, ChannelRepository $channelRepository)
 	{
 		$this->chatterRepository = $chatterRepository;
-		$this->userRepository = $userRepository;
+		$this->channelRepository = $channelRepository;
 	}
 
 	/**
@@ -45,11 +45,11 @@ class RemovePointsCommandHandler implements CanUpdatePoints {
 	/**
 	 * Get an instance of the user repository.
 	 *
-	 * @return ChatterRepository
+	 * @return ChannelRepository
 	 */
-	public function getUserRepository()
+	public function getChannelRepository()
 	{
-		return $this->userRepository;
+		return $this->channelRepository;
 	}
 
 	/**
@@ -60,7 +60,7 @@ class RemovePointsCommandHandler implements CanUpdatePoints {
 	 */
 	public function handle(RemovePointsCommand $command)
 	{
-		return $this->removePoints($command->user, $command->handle, $command->points);
+		return $this->removePoints($command->channel, $command->handle, $command->points);
 	}
 
 }

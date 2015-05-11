@@ -24,24 +24,12 @@ class RepositoryServiceProvider extends ServiceProvider {
 	{
 		$this->app->bind(
 			'App\Contracts\Repositories\ChatterRepository',
-			'App\Repositories\Chatter\MySqlChatterRepository'
+			'App\Repositories\Chatter\RedisChatterRepository'
 		);
 
-		$this->app->bind('App\Repositories\Chatter\EloquentChatterRepository', function($app)
-		{
-			$repo = new EloquentChatterRepository($app['App\Chatter'], $app['db'], $app['config']);
-
-			foreach($app['config']->get('twitch.points.channel_mods', []) as $handle)
-			{
-				$repo->getHiddenChatters()->push($handle);
-			}
-
-			return $repo;
-		});
-
 		$this->app->bind(
-			'App\Contracts\Repositories\UserRepository',
-			'App\Repositories\User\EloquentUserRepository'
+			'App\Contracts\Repositories\ChannelRepository',
+			'App\Repositories\Channel\EloquentChannelRepository'
 		);
 
 		$this->app->bind(

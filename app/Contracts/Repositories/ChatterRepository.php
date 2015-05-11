@@ -2,103 +2,111 @@
 
 namespace App\Contracts\Repositories;
 
-use App\User;
-use Illuminate\Support\Collection;
+use App\Channel;
+use Carbon\Carbon;
+use Predis\Pipeline\Pipeline;
 
 interface ChatterRepository {
 
-	/**
-     * Get all chatters belonging to a user.
+    /**
+     * Get the time the points system was last updated for a channel.
+
+     * @return string
+     */
+    public function lastUpdate();
+
+    /**
+     * Set the time the points system for a channel was last updated.
      *
-     * @param User $user
+     * @param Carbon $time
+     *
      * @return mixed
      */
-    public function allForUser(User $user);
+    public function setLastUpdate(Carbon $time);
+
+	/**
+     * Get all chatters belonging to a channel.
+     *
+     * @param Channel $channel
+     * @return mixed
+     */
+    public function allForChannel(Channel $channel);
+
+    /**
+     * Get the number of chatters a channel has.
+     *
+     * @param Channel $channel
+     * @return int
+     */
+    public function getCountForChannel(Channel $channel);
 
     /**
      * Find a single chatter by their handle and which users owns them.
      *
-     * @param User $user
+     * @param Channel $channel
      * @param $handle
      * @return array
      */
-    public function findByHandle(User $user, $handle);
+    public function findByHandle(Channel $channel, $handle);
 
     /**
-     * Create a new chat user.
+     * Setup pagination for results.
      *
-     * @param User $user
-     * @param $handle
-     * @return
+     * @param int $page
+     * @param int $limit
+     *
+     * @return $this
      */
-    public function create(User $user, $handle);
+    public function paginate($page = 1, $limit = 100);
 
     /**
-     * Create many chat users.
+     * Update/Create a chatter.
      *
-     * @param User $user
-     * @param Collection $handles
-     */
-    public function createMany(User $user, Collection $handles);
-
-    /**
-     * Update an existing chat user.
-     *
-     * @param User $user
+     * @param Channel $channel
      * @param $handle
-     * @param int $totalMinutesOnline
+     * @param int $minutes
      * @param int $points
+     * @param Pipeline $pipe
      */
-    public function update(User $user, $handle, $totalMinutesOnline, $points);
+    public function updateChatter(Channel $channel, $handle, $minutes = 0, $points = 0, Pipeline $pipe = null);
 
     /**
-     * Update many users.
+     * Update/Create a group of chatters.
      *
-     * @param User $user
-     * @param Collection $users
+     * @param Channel $channel
+     * @param array $chatters
+     * @param $minutes
+     * @param $points
      */
-    public function updateMany(User $user, Collection $users);
+    public function updateChatters(Channel $channel, array $chatters, $minutes = 0, $points = 0);
 
     /**
-     * Set a user to offline.
+     * Update/Create a moderator.
      *
-     * @param User $user
+     * @param Channel $channel
      * @param $handle
-     * @return mixed
+     * @param int $minutes
+     * @param int $points
+     * @param Pipeline $pipe
      */
-    public function offline(User $user, $handle);
+    public function updateModerator(Channel $channel, $handle, $minutes = 0, $points = 0, Pipeline $pipe = null);
 
     /**
-     * Offline many users.
+     * Update/Create a group of moderators.
      *
-     * @param User $user
-     * @param Collection $handles
+     * @param Channel $channel
+     * @param array $chatters
+     * @param $minutes
+     * @param $points
      */
-    public function offlineMany(User $user, Collection $handles);
+    public function updateModerators(Channel $channel, array $chatters, $minutes = 0, $points = 0);
 
     /**
-     * Offline all the users for a channel.
+     * Update rankings for chatters.
      *
-     * @param User $user
-     * @return mixed
+     * @param Channel $channel
+     * @param array $chatters
      */
-    public function offlineAllForChannel(User $user);
-
-	/**
-     * Update the rank of a chatter.
-     *
-     * @param $chatterId
-     * @param $rank
-     * @return mixed
-     */
-    public function updateRank($chatterId, $rank);
-
-	/**
-     * Update the rank of many chatters.
-     *
-     * @param Collection $chatters
-     * @return mixed
-     */
-    public function updateRankMany(Collection $chatters);
+    public function updateRankings(Channel $channel, array $chatters);
 
 }

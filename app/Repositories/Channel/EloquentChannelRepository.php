@@ -1,31 +1,31 @@
 <?php
 
-namespace App\Repositories\User;
+namespace App\Repositories\Channel;
 
 use App\Contracts\Repositories\TrackSessionRepository;
-use App\Contracts\Repositories\UserRepository;
-use App\User;
+use App\Contracts\Repositories\ChannelRepository;
+use App\Channel;
 
-class EloquentUserRepository implements UserRepository
+class EloquentChannelRepository implements ChannelRepository
 {
 
     /**
      * @var User
      */
-    private $user;
+    private $channel;
     /**
      * @var TrackPointsSession
      */
     private $pointsSession;
 
     /**
-     * @param User $user
+     * @param Channel $channel
      * @param TrackSessionRepository $pointsSession
      */
-    public function __construct(User $user, TrackSessionRepository $pointsSession)
+    public function __construct(Channel $channel, TrackSessionRepository $pointsSession)
     {
         $this->pointsSession = $pointsSession;
-        $this->user = $user;
+        $this->channel = $channel;
     }
 
     /**
@@ -42,7 +42,7 @@ class EloquentUserRepository implements UserRepository
             return $user;
         }
 
-        return $this->user->create([
+        return $this->channel->create([
             'name'          => $name,
             'email'         => array_get($data, 'email'),
             'logo'          => array_get($data, 'logo'),
@@ -58,17 +58,17 @@ class EloquentUserRepository implements UserRepository
      */
     public function findByName($name)
     {
-        return $this->user->where('name', '=', $name)->first();
+        return $this->channel->where('name', '=', $name)->first();
     }
 
     /**
      * Update a user.
      *
-     * @param User $user
+     * @param Channel $channel
      * @return bool
      */
-    public function update(User $user)
+    public function update(Channel $channel)
     {
-        return $user->save();
+        return $channel->save();
     }
 }

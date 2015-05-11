@@ -27,13 +27,13 @@
                         {!! Form::submit('Check Points', ['class' => 'btn btn-primary', 'id' => 'check-points']) !!}
                         {!! Form::close(); !!}
 
-                        @if ( ! $user && $handle !== '')
+                        @if ( ! $chatter && $handle !== '')
                             <div class="alert alert-warning">
                                 Handle not found.
                             </div>
                         @endif
 
-                        @if ($user)
+                        @if ($chatter)
                             @include("partials/point-results-table")
                         @endif
                     </div><!-- .panel-body -->
@@ -54,12 +54,12 @@
                             </thead>
 
                             <tbody>
-                            @foreach ($chatUsers as $user)
+                            @foreach ($chatters as $chatter)
                                 <tr>
-                                    <td>{{ $user['rank'] }}</td>
-                                    <td>{{ $user['handle'] }}</td>
-                                    <td>{{ $user['total_minutes_online'] }}</td>
-                                    <td>{{ floor($user['points']) }}</td>
+                                    <td>{{ $chatter['rank'] or '--' }}</td>
+                                    <td>{{ $chatter['handle'] }}</td>
+                                    <td>{{ $chatter['minutes'] }}</td>
+                                    <td>{{ floor($chatter['points']) }}</td>
                                 </tr>
                             @endforeach
                             </tbody>

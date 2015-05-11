@@ -1,47 +1,58 @@
 <?php namespace App\Http\Controllers;
 
 use App\Commands\StartSystemCommand;
+use App\Contracts\Repositories\ChatterRepository;
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
-use App\Repositories\Chatter\EloquentChatterRepository;
 use App\Contracts\Repositories\TrackSessionRepository;
-use App\Contracts\Repositories\UserRepository;
+use App\Contracts\Repositories\ChannelRepository;
 use Illuminate\Http\Request;
+use JasonGrimes\Paginator;
 
 class PointsController extends Controller {
 
     /**
-     *
+     * @var ChatterRepository
      */
-    public function __construct()
+    private $chatterRepository;
+    /**
+     * @var ChannelRepository
+     */
+    private $channelRepository;
+
+    /**
+     * @param ChatterRepository $chatterRepository
+     * @param ChannelRepository $channelRepository
+     */
+    public function __construct(ChatterRepository $chatterRepository, ChannelRepository $channelRepository)
     {
         $this->middleware('auth', ['except' => ['checkPoints', 'scoreboard']]);
+        $this->chatterRepository = $chatterRepository;
+        $this->channelRepository = $channelRepository;
     }
 
     /**
      * Responds to GET request to check points.
      *
      * @param Request $request
-     * @param EloquentChatterRepository $chatterRepository
-     * @param UserRepository $userRepository
      *
      * @return \Illuminate\View\View
      */
-    public function checkPoints(Request $request, EloquentChatterRepository $chatterRepository, UserRepository $userRepository)
+    public function checkPoints(Request $request)
     {
         $data = [
             'handle' => strtolower($request->get('handle')),
-            'user' => null,
+            'chatter' => null,
         ];
 
-        $user = $userRepository->findByName(\Config::get('twitch.points.default_channel'));
+        $channel = $this->channelRepository->findByName('jless');
 
         if ($data['handle'])
         {
-            $data['user'] = $chatterRepository->findByHandle($user, $data['handle']);
+            $data['chatter'] = $this->chatterRepository->findByHandle($channel, $data['handle']);
         }
 
-        $data['chatUsers'] = $chatterRepository->allForUser($user, 25);
+        $data['chatters'] = $this->chatterRepository->paginate(1, 25)->allForChannel($channel, 25);
 
         return view('check-points', $data);
     }
@@ -58,17 +69,18 @@ class PointsController extends Controller {
         return view('system-control', compact('systemStarted'));
     }
 
-	/**
-     * @param EloquentChatterRepository $chatterRepository
-     * @param UserRepository $userRepository
+    /**
+     * @param Request $request
      *
      * @return \Illuminate\View\View
      */
-    public function scoreboard(EloquentChatterRepository $chatterRepository, UserRepository $userRepository)
+    public function scoreboard(Request $request)
     {
-        $user = $userRepository->findByName(\Config::get('twitch.points.default_channel'));
+        $user = $this->channelRepository->findByName(\Config::get('twitch.points.default_channel'));
 
-        $data['chatUsers'] = $chatterRepository->paginate(100)->allForUser($user);
+        $data['chatters'] = $this->chatterRepository->paginate($request->get('page', 1), 100)->allForChannel($user);
+        $data['chatterCount'] = $this->chatterRepository->getCountForChannel($user);
+        $data['paginator'] = new Paginator($data['chatterCount'], 100, $request->get('page', 1), route('scoreboard_path') . '?page=(:num)');
 
         return view('scoreboard', $data);
     }

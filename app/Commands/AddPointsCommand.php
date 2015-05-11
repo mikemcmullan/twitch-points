@@ -10,7 +10,7 @@ class AddPointsCommand extends Command {
 	/**
 	 * @var
 	 */
-	public $user;
+	public $channel;
 
 	/**
 	 * @var
@@ -25,13 +25,13 @@ class AddPointsCommand extends Command {
 	/**
 	 * Create a new command instance.
 	 *
-	 * @param $user
+	 * @param $channel
 	 * @param $handle
 	 * @param $points
 	 */
-	public function __construct($user, $handle, $points)
+	public function __construct($channel, $handle, $points)
 	{
-		$this->user = $user;
+		$this->channel = $channel;
 		$this->handle = $handle;
 		$this->points = $points;
 	}

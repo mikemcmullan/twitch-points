@@ -18,10 +18,10 @@
     </tr>
     @else
     <tr>
-        <td>{{ $user['rank'] or 'N/A' }}</td>
-        <td>{{ $user['handle'] }}</td>
-        <td>{{ $user['total_minutes_online'] }}</td>
-        <td>{{ floor($user['points']) }}</td>
+        <td>{{ $chatter['rank'] or '--' }}</td>
+        <td>{{ $chatter['handle'] }}</td>
+        <td>{{ $chatter['minutes'] }}</td>
+        <td>{{ floor($chatter['points']) }}</td>
     </tr>
     @endif
     </tbody>

@@ -14,7 +14,7 @@
                 @include('partials.flash')
 
                 <div class="panel panel-default" id="points-panel">
-                    <div class="panel-heading">Overall Scoreboard</div>
+                    <div class="panel-heading">Overall Scoreboard <em class="pull-right">({{ $chatterCount }} records in total)</em></div>
                     <div class="panel-body">
                         <table class="table table-bordered points-results-table">
                             <thead>
@@ -27,19 +27,19 @@
                             </thead>
 
                             <tbody>
-                            @foreach($chatUsers as $user)
+                            @foreach($chatters as $chatter)
                                 <tr>
-                                    <td>{{ $user['rank'] }}</td>
-                                    <td>{{ $user['handle'] }}</td>
-                                    <td>{{ $user['total_minutes_online'] }}</td>
-                                    <td>{{ floor($user['points']) }}</td>
+                                    <td>{{ $chatter['rank'] or '--'}}</td>
+                                    <td>{{ $chatter['handle'] }}</td>
+                                    <td>{{ $chatter['minutes'] }}</td>
+                                    <td>{{ floor($chatter['points']) }}</td>
                                 </tr>
                             @endforeach
                             </tbody>
                         </table>
 
                         <div class="text-center">
-                            {!! $chatUsers->render() !!}
+                            {!! $paginator !!}
                         </div>
                     </div><!-- .panel-body -->
                 </div><!-- .panel -->

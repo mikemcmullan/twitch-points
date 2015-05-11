@@ -48,7 +48,7 @@ class TwitchApi {
      * Get the chat user list from twitch.
      *
      * @param $channel
-     * @return \Illuminate\Support\Collection
+     * @return array
      */
     public function chatList($channel)
     {
@@ -61,19 +61,22 @@ class TwitchApi {
      * Parse the json chat list.
      *
      * @param $jsonString
-     * @return \Illuminate\Support\Collection
+     * @return array
      */
     private function parseChatList($jsonString)
     {
         $json = json_decode($jsonString, true);
 
-        return collect(array_merge(
-            $json['chatters']['moderators'],
-            $json['chatters']['staff'],
-            $json['chatters']['admins'],
-            $json['chatters']['global_mods'],
-            $json['chatters']['viewers']
-        ));
+        return [
+            'chatters' => array_merge(
+                $json['chatters']['staff'],
+                $json['chatters']['admins'],
+                $json['chatters']['global_mods'],
+                $json['chatters']['viewers']
+            ),
+
+            'moderators' => $json['chatters']['moderators']
+        ];
     }
 
     /**

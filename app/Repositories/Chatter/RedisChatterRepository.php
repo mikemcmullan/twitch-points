@@ -2,16 +2,22 @@
 
 namespace App\Repositories\Chatter;
 
+use App\Channel;
 use Carbon\Carbon;
 use Illuminate\Contracts\Config\Repository as ConfigRepository;
+use Illuminate\Pagination\Paginator;
 use Illuminate\Redis\Database;
 use Illuminate\Support\Collection;
+use App\Contracts\Repositories\ChatterRepository;
+use Predis\Pipeline\Pipeline;
 
-/**
- * Class RedisChatUserRepository
- * @package App\Repositories\ChatUsers*
- */
-class RedisChatterRepository extends AbstractChatterRepository implements ChatterRepository {
+class RedisChatterRepository implements ChatterRepository {
+
+    const CHAT_KEY_FORMAT = 'chat:%s:%s';
+
+    const CHAT_INDEX_KEY_FORMAT = 'chattersIndex:%s';
+
+    const MOD_INDEX_KEY_FORMAT = 'modsIndex:%s';
 
     /**
      * @var Database
@@ -24,14 +30,23 @@ class RedisChatterRepository extends AbstractChatterRepository implements Chatte
     private $channel;
 
     /**
-     * @var string
-     */
-    private $keyFormat = 'chat:{channel}:{handle}';
-
-    /**
      * @var ConfigRepository
      */
     private $config;
+
+	/**
+     * The current page for paginator.
+     *
+     * @var int
+     */
+    private $page = 1;
+
+	/**
+     * How many records per page for the paginator.
+     *
+     * @var int
+     */
+    private $perPage = 0;
 
     /**
      * @param Database $redis
@@ -39,159 +54,215 @@ class RedisChatterRepository extends AbstractChatterRepository implements Chatte
      */
     public function __construct(Database $redis, ConfigRepository $config)
     {
-        parent::__construct();
-
-        $this->redis = $redis;
+        $this->redis = $redis->connection();
         $this->config = $config;
     }
 
-    /**
-     * Get all users for a channel from redis.
-     *
-     * @param $channel
-     * @return Collection
-     */
-    public function users($channel)
-    {
-        $users = $this->redis->keys($this->makeKey($channel, '*'));
+	/**
+     * Get the time the points system was last updated for a channel.
 
-        return new Collection($this->mapUsers($users));
+     * @return string
+     */
+    public function lastUpdate()
+    {
+        $key    = "last_update";
+        $value  = $this->redis->get($key);
+
+        if ($value)
+        {
+            return Carbon::parse($value);
+        }
+    }
+
+	/**
+     * Set the time the points system for a channel was last updated.
+     *
+     * @param Carbon $time
+     *
+     * @return mixed
+     */
+    public function setLastUpdate(Carbon $time)
+    {
+        $key = "last_update";
+
+        return $this->redis->set($key, $time->toDateTimeString());
+    }
+
+	/**
+     * Setup pagination for results.
+     *
+     * @param int $page
+     * @param int $limit
+     *
+     * @return $this
+     */
+    public function paginate($page = 1, $limit = 100)
+    {
+        $this->perPage = (int) $limit;
+        $this->page = (int) $page;
+
+        return $this;
     }
 
     /**
-     * Get a single user.
+     * Get all chatters belonging to a channel.
      *
-     * @param $channel
+     * @param Channel $channel
+     * @return Collection
+     */
+    public function allForChannel(Channel $channel)
+    {
+        $start = 0;
+        $end = -1;
+
+        if ($this->perPage > 0)
+        {
+            $start = $this->perPage * ($this->page - 1);
+            $end = $start + $this->perPage - 1;
+        }
+
+        $chatters = $this->redis->zrevrange($this->makeChatIndexKey($channel['id']), $start, $end);
+        $collection  = new Collection($this->mapUsers($chatters));
+
+        return $collection;
+    }
+
+	/**
+     * Get the number of chatters a channel has.
+     *
+     * @param Channel $channel
+     * @return int
+     */
+    public function getCountForChannel(Channel $channel)
+    {
+        return $this->redis->zcard($this->makeChatIndexKey($channel['id']));
+    }
+
+    /**
+     * Find a single chatter by their handle and which users owns them.
+     *
+     * @param Channel $channel
      * @param $handle
      * @return array
      */
-    public function user($channel, $handle)
+    public function findByHandle(Channel $channel, $handle)
     {
-        $key = $this->makeKey($channel, $handle);
+        $key = $this->makeKey($channel['id'], $handle);
 
         $result = $this->redis->hgetall($key);
 
         if (empty($result))
         {
-            return [];
+            return;
         }
 
         return $this->mapUser($channel, $handle, $result);
     }
 
     /**
-     * Create a new chat user.
+     * Update/Create a chatter.
      *
-     * @param $channel
+     * @param Channel $channel
      * @param $handle
-     * @return
-     */
-    public function create($channel, $handle)
-    {
-        $key = $this->makeKey($channel, $handle);
-
-        return $this->redis->hmset($key, [
-            'start_time'            => $this->time,
-            'total_minutes_online'  => 0,
-            'points'                => $this->config->get('twitch.points.award_new')
-        ]);
-    }
-
-    /**
-     * Create many chat users.
-     *
-     * @param $channel
-     * @param Collection $handles
-     */
-    public function createMany($channel, Collection $handles)
-    {
-        $redis = $this->redis;
-
-        $this->redis->pipeline(function($pipe) use($channel, $handles)
-        {
-            $this->redis = $pipe;
-            foreach ($handles as $handle)
-            {
-                $this->create($channel, $handle);
-            }
-        });
-
-        $this->redis = $redis;
-    }
-
-    /**
-     * Update an existing chat user.
-     *
-     * @param $channel
-     * @param $handle
-     * @param int $totalMinutesOnline
+     * @param int $minutes
      * @param int $points
+     * @param Pipeline $pipe
      */
-    public function update($channel, $handle, $totalMinutesOnline = 0, $points = 0)
+    public function updateChatter(Channel $channel, $handle, $minutes = 0, $points = 0, Pipeline $pipe = null)
     {
-        $key = $this->makeKey($channel, $handle);
+        $key = $this->makeKey($channel['id'], $handle);
 
-        $this->redis->hset($key, 'start_time', $this->time);
-        $this->redis->hincrbyfloat($key, 'points', $points);
-        $this->redis->hincrby($key, 'total_minutes_online', $totalMinutesOnline);
+        if ($pipe === null)
+        {
+            $pipe = $this->redis;
+        }
+
+        $pipe->zincrby($this->makeChatIndexKey($channel['id']), $points, $key);
+        $pipe->hincrbyfloat($key, 'points', $points);
+        $pipe->hincrby($key, 'minutes', $minutes);
+        $pipe->hset($key, 'updated', Carbon::now());
     }
 
-    /**
-     * Update many users.
+	/**
+     * Update/Create a group of chatters.
      *
-     * @param $channel
-     * @param Collection $users
+     * @param Channel $channel
+     * @param array $chatters
+     * @param $minutes
+     * @param $points
      */
-    public function updateMany($channel, Collection $users)
+    public function updateChatters(Channel $channel, array $chatters, $minutes = 0, $points = 0)
     {
-        $redis = $this->redis;
-
-        $this->redis->pipeline(function($pipe) use($channel, $users)
+        $this->redis->pipeline(function($pipe) use($channel, $chatters, $minutes, $points)
         {
-            $this->redis = $pipe;
-            foreach ($users as $user)
+            foreach ($chatters as $chatter)
             {
-                $this->update($channel, $user['handle'], $user['total_minutes_online'], $user['points']);
+                $this->updateChatter($channel, $chatter, $minutes, $points, $pipe);
             }
         });
-
-        $this->redis = $redis;
     }
 
-    /**
-     * Set a user to offline.
+	/**
+     * Update/Create a moderator.
      *
-     * @param $channel
+     * @param Channel $channel
      * @param $handle
-     * @return mixed
+     * @param int $minutes
+     * @param int $points
+     * @param Pipeline $pipe
      */
-    public function offline($channel, $handle)
+    public function updateModerator(Channel $channel, $handle, $minutes = 0, $points = 0, Pipeline $pipe = null)
     {
-        $key = $this->makeKey($channel, $handle);
+        $key = $this->makeKey($channel['id'], $handle);
 
-        return $this->redis->hset($key, 'start_time', null);
+        if ($pipe === null)
+        {
+            $pipe = $this->redis;
+        }
+
+        $pipe->zincrby($this->makeModIndexKey($channel['id']), $points, $key);
+        $pipe->hincrbyfloat($key, 'points', $points);
+        $pipe->hincrby($key, 'minutes', $minutes);
+        $pipe->hset($key, 'mod', true);
+        $pipe->hset($key, 'updated', Carbon::now());
     }
 
     /**
-     * Offline many users.
+     * Update/Create a group of moderators.
      *
-     * @param $channel
-     * @param Collection $handles
+     * @param Channel $channel
+     * @param array $chatters
+     * @param $minutes
+     * @param $points
      */
-    public function offlineMany($channel, Collection $handles)
+    public function updateModerators(Channel $channel, array $chatters, $minutes = 0, $points = 0)
     {
-        $redis = $this->redis;
-
-        $this->redis->pipeline(function($pipe) use($channel, $handles)
+        $this->redis->pipeline(function($pipe) use($channel, $chatters, $minutes, $points)
         {
-            $this->redis = $pipe;
-            foreach ($handles as $handle)
+            foreach ($chatters as $chatter)
             {
-                $this->offline($channel, $handle['handle']);
+                $this->updateModerator($channel, $chatter, $minutes, $points, $pipe);
             }
         });
+    }
 
-        $this->redis = $redis;
+	/**
+     * Update rankings for chatters.
+     *
+     * @param Channel $channel
+     * @param array $chatters
+     */
+    public function updateRankings(Channel $channel, array $chatters)
+    {
+        $this->redis->pipeline(function($pipe) use($channel, $chatters)
+        {
+            foreach ($chatters as $chatter)
+            {
+                $key = $this->makeKey($channel['id'], $chatter['handle']);
+
+                $pipe->hset($key, 'rank', $chatter['rank']);
+            }
+        });
     }
 
     /**
@@ -203,29 +274,44 @@ class RedisChatterRepository extends AbstractChatterRepository implements Chatte
      */
     private function makeKey($channel, $handle)
     {
-        return str_replace(['{channel}', '{handle}'], [$channel, $handle], $this->keyFormat);
+        return sprintf(self::CHAT_KEY_FORMAT, $channel, $handle);
+    }
+
+    private function makeChatIndexKey($channel)
+    {
+        return sprintf(self::CHAT_INDEX_KEY_FORMAT, $channel);
+    }
+
+    private function makeModIndexKey($channel)
+    {
+        return sprintf(self::MOD_INDEX_KEY_FORMAT, $channel);
     }
 
     /**
      * Map over uses to make an associative array containing
      * the original key, handle, channel and start_time.
      *
-     * @param $users
+     * @param array $chatters
      * @return array
      */
-    private function mapUsers(array $users)
+    private function mapUsers(array $chatters)
     {
         $mappedUsers = [];
 
-        foreach ($users as $user)
+        foreach ($chatters as $chatter)
         {
-            $key = $this->parseKey($user);
+            $key = $this->parseKey($chatter);
+
+            $data = $this->redis->hgetall($chatter);
+            $rank = isset($data['rank']) ? $data['rank'] : 0;
 
             $mappedUsers[$key['handle']] = [
-                'key'        => $user,
-                'handle'     => $key['handle'],
-                'channel'    => $key['channel'],
-                'start_time' => $this->redis->hget($user, 'start_time'),
+                'key'     => $chatter,
+                'handle'  => $key['handle'],
+                'channel' => $key['channel'],
+                'minutes' => $data['minutes'],
+                'points'  => $data['points'],
+                'rank'    => $rank,
             ];
         }
 
@@ -242,7 +328,7 @@ class RedisChatterRepository extends AbstractChatterRepository implements Chatte
      */
     private function mapUser($channel, $handle, array $user)
     {
-        $user['key']    = $this->makeKey($channel, $handle);
+        $user['key']    = $this->makeKey($channel['id'], $handle);
         $user['channel']= $channel;
         $user['handle'] = $handle;
 
@@ -260,11 +346,7 @@ class RedisChatterRepository extends AbstractChatterRepository implements Chatte
         if ($this->channel === null)
         {
             $this->channel = substr($key, 5, strpos($key, ':', 5) - 5);
-            $this->handlePrefix = str_replace(
-                ['{channel}', '{handle}'],
-                [$this->channel, ''],
-                $this->keyFormat
-            );
+            $this->handlePrefix = sprintf(self::CHAT_KEY_FORMAT, $this->channel, '');
         }
 
         return [

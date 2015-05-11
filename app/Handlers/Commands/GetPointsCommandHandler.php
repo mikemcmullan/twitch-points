@@ -1,12 +1,12 @@
 <?php namespace App\Handlers\Commands;
 
-use App\Commands\AddPointsCommand;
+use App\Commands\GetPointsCommand;
 use App\Contracts\ManagePoints\CanManagePoints;
 use App\Contracts\Repositories\ChannelRepository;
 use App\ManagePoints\ManagePointsTrait;
 use App\Contracts\Repositories\ChatterRepository;
 
-class AddPointsCommandHandler implements CanManagePoints {
+class GetPointsCommandHandler implements CanManagePoints {
 
 	use ManagePointsTrait;
 
@@ -45,7 +45,7 @@ class AddPointsCommandHandler implements CanManagePoints {
 	/**
 	 * Get an instance of the user repository.
 	 *
-	 * @return ChatterRepository
+	 * @return ChannelRepository
 	 */
 	public function getChannelRepository()
 	{
@@ -55,12 +55,12 @@ class AddPointsCommandHandler implements CanManagePoints {
 	/**
 	 * Handle the command.
 	 *
-	 * @param  AddPointsCommand  $command
+	 * @param  GetPointsCommand  $command
 	 * @return void
 	 */
-	public function handle(AddPointsCommand $command)
+	public function handle(GetPointsCommand $command)
 	{
-		return $this->addPoints($command->channel, $command->handle, $command->points);
+		return $this->getPoints($command->channel, $command->handle);
 	}
 
 }

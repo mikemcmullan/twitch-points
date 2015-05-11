@@ -3,18 +3,18 @@
 namespace App\Contracts\Repositories;
 
 use App\TrackSession;
-use App\User;
+use App\Channel;
 
 interface TrackSessionRepository {
 
 	/**
 	 * Create a new track session.
 	 *
-	 * @param User $user
+	 * @param Channel $channel
 	 *
 	 * @return static
 	 */
-	public function create(User $user);
+	public function create(Channel $channel);
 
 	/**
 	 * Complete a track session.
@@ -28,11 +28,11 @@ interface TrackSessionRepository {
 	/**
 	 * Find uncompleted track sessions for a user.
 	 *
-	 * @param User $user
+	 * @param Channel $channel
 	 *
 	 * @return \Illuminate\Database\Eloquent\Collection|static[]
 	 */
-	public function findUncompletedSession(User $user);
+	public function findUncompletedSession(Channel $channel);
 
 	/**
 	 * Find all uncompleted track sessions.

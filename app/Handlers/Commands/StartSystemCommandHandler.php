@@ -33,18 +33,16 @@ class StartSystemCommandHandler {
 	 * Handle the command.
 	 *
 	 * @param  StartSystemCommand $command
-	 * @return \App\User
+	 * @return \App\Channel
 	 */
 	public function handle(StartSystemCommand $command)
 	{
-		$session = $this->trackSessionRepository->findUncompletedSession($command->user);
+		$session = $this->trackSessionRepository->findUncompletedSession($command->channel);
 
 		if ( ! $session)
 		{
-			return $this->trackSessionRepository->create($command->user);
+			return $this->trackSessionRepository->create($command->channel);
 		}
-
-		$this->chatterRepository->offlineAllForChannel($command->user);
 
 		return $this->trackSessionRepository->end($session);
 	}
