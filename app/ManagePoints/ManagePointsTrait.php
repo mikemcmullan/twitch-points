@@ -91,7 +91,7 @@ trait ManagePointsTrait {
 
 		$chatter = $this->getChatter($channel, $handle);
 
-		$this->getChatterRepository()->update($channel, $chatter['handle'], 0, $sign . $points);
+		$this->getChatterRepository()->updateChatter($channel, $chatter['handle'], 0, $sign . $points);
 
 		return $this->calculateTotalPoints($chatter['points'], $points, $sign);
 	}
