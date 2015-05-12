@@ -30,30 +30,7 @@ return [
         |
         */
         'default_channel' => 'angrypug_',
-
-        /*
-        |--------------------------------------------------------------------------
-        | Channel Moderators
-        |--------------------------------------------------------------------------
-        |
-        | A list of channel moderator handles.
-        |
-        */
-        'channel_mods' => [
-            'angrypug_',
-            'nightbot',
-            'angrypugbot',
-            'mcsmike',
-            'aodphreak',
-            'sqweezy_jibbs',
-            'anonymouslender',
-            'cottoncandybutt',
-            'fearliz',
-            'ninjachris77',
-            'ellie_rose14',
-            'ben_ess'
-        ],
-
+        
         /*
         |--------------------------------------------------------------------------
         | Points Awarded / Interval
