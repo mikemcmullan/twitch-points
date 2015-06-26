@@ -35,10 +35,7 @@ Route::get('/logout', [
     'as'    => 'logout_path'
 ]);
 
-Route::group(['prefix' => 'api', 'namespace' => 'API'], function()
-{
-    Route::get('/points', [
-        'as'    => 'points_path',
-        'uses'  => 'PointsController@index'
-    ]);
-});
+Route::get('/api/points', [
+    'uses'  => 'ApiController@points',
+    'as'    => 'api_points_path'
+]);
