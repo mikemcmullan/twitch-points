@@ -41,6 +41,11 @@ class ApiController extends Controller {
 
 		$chatter = $this->chatterRepository->findByHandle($channel, $handle);
 
+		if ( ! $handle)
+		{
+			return response('No handle provided.');
+		}
+
 		if ( ! $chatter)
 		{
 			return response(sprintf('%s does not have any points yet. Please try again later.', $handle));
