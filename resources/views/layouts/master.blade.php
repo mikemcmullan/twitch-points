@@ -46,10 +46,6 @@
                 <li{!! in_array(Route::currentRouteName(), ['check_points_path', 'home_path']) ? ' class="active"' : '' !!}><a href="{!! route('check_points_path') !!}">Check Points</a></li>
                 <li{!! Route::currentRouteName() === 'scoreboard_path' ? ' class="active"' : '' !!}><a href="{!! route('scoreboard_path') !!}">Scoreboard</a></li>
             </div>
-
-            <ul class="nav navbar-nav navbar-right">
-                <li><a href="{!! route('login_path') !!}"><i class="fa fa-twitch"></i> Steamer Login</a></li>
-            </ul>
         @endif
         </div><!-- .navbar-collapse -->
     </div><!-- .container-fluid -->
