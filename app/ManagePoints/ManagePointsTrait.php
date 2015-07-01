@@ -2,9 +2,11 @@
 
 namespace App\ManagePoints;
 
+use App\Exceptions\AccessDeniedException;
 use App\Exceptions\UnknownUserException;
 use App\Exceptions\UnknownHandleException;
 use App\Channel;
+use InvalidArgumentException;
 
 trait ManagePointsTrait {
 
@@ -21,10 +23,19 @@ trait ManagePointsTrait {
 	{
 		if ($sign === '-')
 		{
-			return (int) $currentPoints - $points;
+			$total = (int) $currentPoints - $points;
+		}
+		else
+		{
+			$total = (int) $currentPoints + $points;
 		}
 
-		return (int) $currentPoints + $points;
+		if ($total < 0)
+		{
+			return 0;
+		}
+
+		return $total;
 	}
 
 	/**
@@ -34,21 +45,36 @@ trait ManagePointsTrait {
 	 * @param $handle
 	 *
 	 * @return mixed
+	 *
 	 * @throws UnknownHandleException
 	 * @throws UnknownUserException
 	 */
 	private function getChatter(Channel $channel, $handle)
 	{
+		if ( ! $handle)
+		{
+			throw new UnknownHandleException(sprintf('%s is not a valid handle.', $handle));
+		}
+
 		$chatter = $this->getChatterRepository()->findByHandle($channel, $handle);
 
 		if ( ! $chatter)
 		{
-			throw new UnknownHandleException;
+			throw new UnknownHandleException(sprintf('%s is not a valid handle.', $handle));
 		}
 
 		return $chatter;
 	}
 
+	/**
+	 * Get instance of channel object if channel name is provided.
+	 *
+	 * @param $channel
+	 *
+	 * @return mixed
+	 *
+	 * @throws UnknownUserException
+	 */
 	private function resolveChannel($channel)
 	{
 		if ( ! $channel instanceof Channel)
@@ -58,42 +84,99 @@ trait ManagePointsTrait {
 
 		if ( ! $channel)
 		{
-			throw new UnknownUserException;
+			throw new UnknownUserException(sprintf('%s is not a valid channel.', $channel));
 		}
 
 		return $channel;
 	}
 
+	private function validate($command)
+	{
+		if ($command->handle === null || $command->points === null || $command->target === null)
+		{
+			throw new InvalidArgumentException('handle, points and target are required parameters.');
+		}
+
+		if (is_numeric($command->points) === false || $command->points < 0)
+		{
+			throw new InvalidArgumentException('points value must be greater than zero.');
+		}
+
+		if ($command->points > 1000)
+		{
+			throw new InvalidArgumentException('You cannot award or take away more than 1000 points at a time.');
+		}
+	}
+
 	/**
-	 * @param $channel      The channel the handle belongs to.
-	 * @param $handle       The chat handle of the user.
-	 * @param $points       How many points are being added or removing.
-	 * @param string $sign Indicate whether you are adding or removing points.
-	 *                      Must be either + or -.
+	 * Validate if the symbol value fits the criteria.
+	 *
+	 * @param $symbol
+	 *
+	 * @throws InvalidArgumentException
+	 */
+	private function validateSymbol($symbol)
+	{
+		if ( ! in_array($symbol, ['-', '+']))
+		{
+			throw new InvalidArgumentException('Symbol must be either + or -.');
+		}
+	}
+
+	/**
+	 * Validate if a chatter is a mod.
+	 *
+	 * @param $chatter
+	 *
+	 * @throws AccessDeniedException
+	 */
+	private function validateIfMod($chatter)
+	{
+		if ( ! (bool) array_get($chatter, 'mod'))
+		{
+			throw new AccessDeniedException(sprintf('%s is not a mod.', $chatter['handle']));
+		}
+	}
+
+	/**
+	 * @param $channel          The channel the handle belongs to.
+	 * @param $handle           The chat handle of the user.
+	 * @param $target           The chat handle of the user receiving or losing points.
+	 * @param $points           How many points are being added or removing.
+	 * @param string $symbol    Indicate whether you are adding or removing points.
+	 *                          Must be either + or -.
 	 *
 	 * @return mixed
+	 * @throws AccessDeniedException
 	 * @throws UnknownHandleException
 	 * @throws UnknownUserException
 	 */
-	private function updatePoints($channel, $handle, $points, $sign = '+')
+	private function updatePoints($channel, $handle, $target, $points, $symbol = '+')
 	{
-		if ( ! is_numeric($points))
-		{
-			throw new \InvalidArgumentException('Points must be an numeric.');
-		}
-
-		if ( ! in_array($sign, ['-', '+']))
-		{
-			throw new \InvalidArgumentException('Sign must be either + or -.');
-		}
+		$this->validateSymbol($symbol);
 
 		$channel = $this->resolveChannel($channel);
-
 		$chatter = $this->getChatter($channel, $handle);
 
-		$this->getChatterRepository()->updateChatter($channel, $chatter['handle'], 0, $sign . $points);
+		$this->validateIfMod($chatter);
 
-		return $this->calculateTotalPoints($chatter['points'], $points, $sign);
+		$target     = $this->getChatter($channel, $target);
+		$pointTotal = $this->calculateTotalPoints($target['points'], $points, $symbol);
+
+		// Make sure chatter does not get negative points.
+		if ($pointTotal === 0)
+		{
+			$points = $target['points'];
+		}
+
+		$this->getChatterRepository()->updateChatter($channel, $target['handle'], 0, $symbol . $points);
+
+		return [
+			'channel'=> $channel['name'],
+			'handle' => $target['handle'],
+			'points' => floor($pointTotal),
+			'minutes'=> (int) $target['minutes']
+		];
 	}
 
 	/**
@@ -107,33 +190,33 @@ trait ManagePointsTrait {
 	public function getPoints($channel, $handle)
 	{
 		$channel = $this->resolveChannel($channel);
-		$chatter = $this->getChatter($channel, $handle);
 
-		return floor($chatter['points']);
+		return $this->getChatter($channel, $handle);
 	}
 
 	/**
 	 * @param $channel      The channel the handle belongs to.
 	 * @param $handle       The chat handle of the user.
+	 * @param $target       The chat handle of the user receiving the points.
 	 * @param $points       How many points are being added or removing.
 	 *
 	 * @return mixed
 	 */
-	public function addPoints($channel, $handle, $points)
+	public function addPoints($channel, $handle, $target, $points)
 	{
-		return $this->updatePoints($channel, $handle, $points);
+		return $this->updatePoints($channel, $handle, $target, $points);
 	}
 
 	/**
 	 * @param $channel      The channel the handle belongs to.
 	 * @param $handle       The chat handle of the user.
+	 * @param $target       The chat handle of the user losing the points.
 	 * @param $points       How many points are being added or removing.
 	 *
 	 * @return mixed
 	 */
-	public function removePoints($channel, $handle, $points)
+	public function removePoints($channel, $handle, $target, $points)
 	{
-		return $this->updatePoints($channel, $handle, $points, '-');
+		return $this->updatePoints($channel, $handle, $target, $points, '-');
 	}
-
 }
