@@ -60,7 +60,9 @@ class RemovePointsCommandHandler implements CanManagePoints {
 	 */
 	public function handle(RemovePointsCommand $command)
 	{
-		return $this->removePoints($command->channel, $command->handle, $command->points);
+		$this->validate($command);
+
+		return $this->removePoints($command->channel, $command->handle, $command->target, $command->points);
 	}
 
 }

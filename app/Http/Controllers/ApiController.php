@@ -1,11 +1,19 @@
 <?php namespace App\Http\Controllers;
 
+use App\Commands\AddPointsCommand;
+use App\Commands\RemovePointsCommand;
+use App\Commands\GetViewerCommand;
 use App\Contracts\Repositories\ChannelRepository;
 use App\Contracts\Repositories\ChatterRepository;
+use App\Exceptions\AccessDeniedException;
+use App\Exceptions\UnknownHandleException;
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
 
+use Bus;
+use Exception;
 use Illuminate\Http\Request;
+use InvalidArgumentException;
 
 class ApiController extends Controller {
 
@@ -20,6 +28,13 @@ class ApiController extends Controller {
 	private $channelRepository;
 
 	/**
+	 * Default channel.
+	 *
+	 * @var
+	 */
+	private $channel;
+
+	/**
 	 * @param ChatterRepository $chatterRepository
 	 * @param ChannelRepository $channelRepository
 	 */
@@ -27,6 +42,10 @@ class ApiController extends Controller {
 	{
 		$this->chatterRepository = $chatterRepository;
 		$this->channelRepository = $channelRepository;
+
+		$this->channel = \Config::get('twitch.points.default_channel');
+
+		$this->middleware('protect.api', ['only' => ['addPoints', 'removePoints']]);
 	}
 
 	/**
@@ -34,33 +53,105 @@ class ApiController extends Controller {
 	 *
 	 * @return \Symfony\Component\HttpFoundation\Response
 	 */
-	public function points(Request $request)
+	public function getViewer(Request $request)
 	{
-		$handle = strtolower($request->get('handle'));
-		$channel = $this->channelRepository->findByName(\Config::get('twitch.points.default_channel'));
+		$handle = $request->get('handle');
 
-		$chatter = $this->chatterRepository->findByHandle($channel, $handle);
-
-		if ( ! $handle)
+		try
 		{
-			return response('No handle provided.');
+			$response = Bus::dispatch(new GetViewerCommand($this->channel, $handle));
 		}
-
-		if ( ! $chatter)
+		catch(UnknownHandleException $e)
 		{
-			return response(sprintf('%s does not have any points yet. Please try again later.', $handle));
+			$response = ['error' => $e->getMessage()];
 		}
-
-		$time = $chatter['minutes'] / 60;
-		$timeUnit = 'hours';
-
-		if ($time < 1)
+		catch(InvalidArgumentException $e)
 		{
-			$time = $chatter['minutes'];
-			$timeUnit = 'minutes';
+			$response = ['error' => $e->getMessage()];
 		}
+		catch(Exception $e)
+		{}
 
-		return response(sprintf('%s has %d points and has been here for %d %s', $chatter['handle'], $chatter['points'], $time, $timeUnit));
+		return response()->json($response);
 	}
 
+	/**
+	 * @param Request $request
+	 *
+	 * @return \Symfony\Component\HttpFoundation\Response
+	 */
+	public function addPoints(Request $request)
+	{
+		$data = $request->only(['handle', 'target', 'points']);
+
+		try
+		{
+			$response = Bus::dispatch(new AddPointsCommand($this->channel, $data['handle'], $data['target'], $data['points']));
+		}
+		catch(UnknownHandleException $e)
+		{
+			$response = [
+				'error' => $e->getMessage(),
+				'level' => 'regular'
+			];
+		}
+		catch(AccessDeniedException $e)
+		{
+			$response = [
+				'error' => $e->getMessage(),
+				'level' => 'regular'
+			];
+		}
+		catch(InvalidArgumentException $e)
+		{
+			$response = [
+				'error' => $e->getMessage(),
+				'level' => 'regular'
+			];
+		}
+		catch(Exception $e)
+		{}
+
+		return response()->json($response);
+	}
+
+	/**
+	 * @param Request $request
+	 *
+	 * @return \Symfony\Component\HttpFoundation\Response
+	 */
+	public function removePoints(Request $request)
+	{
+		$data = $request->only(['handle', 'target', 'points']);
+
+		try
+		{
+			$response = Bus::dispatch(new RemovePointsCommand($this->channel, $data['handle'], $data['target'], $data['points']));
+		}
+		catch(UnknownHandleException $e)
+		{
+			$response = [
+				'error' => $e->getMessage(),
+				'level' => 'regular'
+			];
+		}
+		catch(AccessDeniedException $e)
+		{
+			$response = [
+				'error' => $e->getMessage(),
+				'level' => 'regular'
+			];
+		}
+		catch(InvalidArgumentException $e)
+		{
+			$response = [
+				'error' => $e->getMessage(),
+				'level' => 'regular'
+			];
+		}
+		catch(Exception $e)
+		{}
+
+		return response()->json($response);
+	}
 }

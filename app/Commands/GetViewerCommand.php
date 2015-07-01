@@ -3,7 +3,7 @@
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 
-class GetPointsCommand extends Command {
+class GetViewerCommand extends Command {
 
 	use InteractsWithQueue, SerializesModels;
 

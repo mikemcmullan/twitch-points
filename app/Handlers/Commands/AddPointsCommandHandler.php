@@ -60,7 +60,9 @@ class AddPointsCommandHandler implements CanManagePoints {
 	 */
 	public function handle(AddPointsCommand $command)
 	{
-		return $this->addPoints($command->channel, $command->handle, $command->points);
+		$this->validate($command);
+
+		return $this->addPoints($command->channel, $command->handle, $command->target, $command->points);
 	}
 
 }

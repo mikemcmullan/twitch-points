@@ -1,12 +1,13 @@
 <?php namespace App\Handlers\Commands;
 
-use App\Commands\GetPointsCommand;
+use App\Commands\GetViewerCommand;
 use App\Contracts\ManagePoints\CanManagePoints;
 use App\Contracts\Repositories\ChannelRepository;
 use App\ManagePoints\ManagePointsTrait;
 use App\Contracts\Repositories\ChatterRepository;
+use InvalidArgumentException;
 
-class GetPointsCommandHandler implements CanManagePoints {
+class GetViewerCommandHandler implements CanManagePoints {
 
 	use ManagePointsTrait;
 
@@ -55,12 +56,27 @@ class GetPointsCommandHandler implements CanManagePoints {
 	/**
 	 * Handle the command.
 	 *
-	 * @param  GetPointsCommand  $command
-	 * @return void
+	 * @param  GetViewerCommand $command
+	 *
+	 * @return array
+	 * @throws InvalidArgumentException
 	 */
-	public function handle(GetPointsCommand $command)
+	public function handle(GetViewerCommand $command)
 	{
-		return $this->getPoints($command->channel, $command->handle);
+		if ($command->handle === null)
+		{
+			throw new InvalidArgumentException('handle is a required parameter.');
+		}
+
+		$viewer = $this->getPoints($command->channel, $command->handle);
+
+		return [
+			'channel'   => $viewer['channel']['name'],
+			'handle'    => $viewer['handle'],
+			'points'    => floor($viewer['points']),
+			'minutes'   => (int) $viewer['minutes'],
+			'mod'       => (bool) array_get($viewer, 'mod')
+		];
 	}
 
 }

@@ -35,7 +35,17 @@ Route::get('/logout', [
     'as'    => 'logout_path'
 ]);
 
-Route::get('/api/points', [
-    'uses'  => 'ApiController@points',
+Route::get('/api/viewer', [
+    'uses'  => 'ApiController@getViewer',
     'as'    => 'api_points_path'
+]);
+
+Route::post('/api/points', [
+    'uses'  => 'ApiController@addPoints',
+    'as'    => 'api_points_add_path'
+]);
+
+Route::delete('/api/points', [
+    'uses'  => 'ApiController@removePoints',
+    'as'    => 'api_points_remove_path'
 ]);

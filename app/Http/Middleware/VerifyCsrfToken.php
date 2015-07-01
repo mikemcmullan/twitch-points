@@ -14,6 +14,19 @@ class VerifyCsrfToken extends BaseVerifier {
 	 */
 	public function handle($request, Closure $next)
 	{
+		$skip = [
+			'api/points',
+			'api/viewer'
+		];
+
+		foreach($skip as $route)
+		{
+			if ($request->is($route))
+			{
+				return $next($request);
+			}
+		}
+
 		return parent::handle($request, $next);
 	}
 

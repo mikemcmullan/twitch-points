@@ -27,7 +27,8 @@ class Kernel extends HttpKernel {
 		'auth' => 'App\Http\Middleware\Authenticate',
 		'auth.twitch' => 'App\Http\Middleware\TwitchAuthenticate',
 		'auth.basic' => 'Illuminate\Auth\Middleware\AuthenticateWithBasicAuth',
-		'guest' => 'App\Http\Middleware\RedirectIfAuthenticated'
+		'guest' => 'App\Http\Middleware\RedirectIfAuthenticated',
+		'protect.api' => 'App\Http\Middleware\ProtectApi'
 	];
 
 }
