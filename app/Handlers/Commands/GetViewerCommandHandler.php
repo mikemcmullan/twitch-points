@@ -75,6 +75,7 @@ class GetViewerCommandHandler implements CanManagePoints {
 			'handle'    => $viewer['handle'],
 			'points'    => floor($viewer['points']),
 			'minutes'   => (int) $viewer['minutes'],
+			'rank'      => (int) $viewer['rank'],
 			'mod'       => (bool) array_get($viewer, 'mod')
 		];
 	}
