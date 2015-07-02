@@ -70,7 +70,9 @@ class ApiController extends Controller {
 			$response = ['error' => $e->getMessage()];
 		}
 		catch(Exception $e)
-		{}
+		{
+			$response = ['error' => 'Unknown error occurred.'];
+		}
 
 		return response()->json($response);
 	}
