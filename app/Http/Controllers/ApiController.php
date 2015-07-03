@@ -60,6 +60,8 @@ class ApiController extends Controller {
 		try
 		{
 			$response = Bus::dispatch(new GetViewerCommand($this->channel, $handle));
+
+			$response['time_online'] = presentTimeOnline($response['minutes']);
 		}
 		catch(UnknownHandleException $e)
 		{
