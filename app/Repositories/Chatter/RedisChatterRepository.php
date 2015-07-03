@@ -312,6 +312,7 @@ class RedisChatterRepository implements ChatterRepository {
                 'minutes' => $data['minutes'],
                 'points'  => $data['points'],
                 'rank'    => $rank,
+                'updated' => $data['updated']
             ];
         }
 
