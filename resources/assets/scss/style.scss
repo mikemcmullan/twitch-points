@@ -9,6 +9,10 @@ body {
     background-image: url(../img/footer_lodyas/footer_lodyas.png);
 }
 
+p {
+    margin-bottom: 15px;
+}
+
 #top-nav {
     box-shadow: 0px 1px 4px #000;
 }
@@ -24,5 +28,58 @@ body {
 
     td {
         vertical-align: inherit !important;
+    }
+}
+
+@keyframes rotating {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.bot-log-refresh {
+    animation: rotating 2s linear infinite;
+}
+
+.bot-log {
+    border: 1px darken($gray-dark, 5%) solid;
+    background: darken($gray-dark, 3%);
+    padding: 0;
+    color: $gray-light;
+    height: 400px;
+    overflow: scroll;
+
+    .bot-log-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+
+        & > li {
+            padding: 5px 10px;
+            border: 1px darken($gray-dark, 5%) solid;
+
+            .bot-log-entry-event {
+                color: #56CB36;
+            }
+
+            .bot-log-entry-info,
+            .bot-log-entry-chat,
+            .bot-log-entry-action {
+                color: #BABC37;
+            }
+
+            .bot-log-entry-raw {
+                color: #57C8D4;
+            }
+
+            .bot-log-entry-error,
+            .bot-log-entry-crash{
+                color: #57C8D4;
+            }
+        }
     }
 }

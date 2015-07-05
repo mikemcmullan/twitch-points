@@ -2716,10 +2716,14 @@ body {
   background-image: url(../img/footer_lodyas/footer_lodyas.png); }
 
 /* line 12, ../../../resources/assets/scss/style.scss */
+p {
+  margin-bottom: 15px; }
+
+/* line 16, ../../../resources/assets/scss/style.scss */
 #top-nav {
   box-shadow: 0px 1px 4px #000; }
 
-/* line 16, ../../../resources/assets/scss/style.scss */
+/* line 20, ../../../resources/assets/scss/style.scss */
 .btn-twitch {
   background-color: #6441a5;
   color: #fff;
@@ -2742,10 +2746,63 @@ body {
     color: #6441a5;
     background-color: #fff; }
 
-/* line 18, ../../../resources/assets/scss/style.scss */
+/* line 22, ../../../resources/assets/scss/style.scss */
 .points-results-form {
   margin-bottom: 20px; }
 
-/* line 25, ../../../resources/assets/scss/style.scss */
+/* line 29, ../../../resources/assets/scss/style.scss */
 .points-results-table td {
   vertical-align: inherit !important; }
+
+@-webkit-keyframes rotating {
+  from {
+    -webkit-transform: rotate(0deg);
+            transform: rotate(0deg); }
+  to {
+    -webkit-transform: rotate(360deg);
+            transform: rotate(360deg); } }
+
+@keyframes rotating {
+  from {
+    -webkit-transform: rotate(0deg);
+            transform: rotate(0deg); }
+  to {
+    -webkit-transform: rotate(360deg);
+            transform: rotate(360deg); } }
+/* line 44, ../../../resources/assets/scss/style.scss */
+.bot-log-refresh {
+  -webkit-animation: rotating 2s linear infinite;
+          animation: rotating 2s linear infinite; }
+
+/* line 48, ../../../resources/assets/scss/style.scss */
+.bot-log {
+  border: 1px #262626 solid;
+  background: #2b2b2b;
+  padding: 0;
+  color: #777777;
+  height: 400px;
+  overflow: scroll; }
+  /* line 56, ../../../resources/assets/scss/style.scss */
+  .bot-log .bot-log-list {
+    list-style: none;
+    padding: 0;
+    margin: 0; }
+    /* line 61, ../../../resources/assets/scss/style.scss */
+    .bot-log .bot-log-list > li {
+      padding: 5px 10px;
+      border: 1px #262626 solid; }
+      /* line 65, ../../../resources/assets/scss/style.scss */
+      .bot-log .bot-log-list > li .bot-log-entry-event {
+        color: #56CB36; }
+      /* line 69, ../../../resources/assets/scss/style.scss */
+      .bot-log .bot-log-list > li .bot-log-entry-info,
+      .bot-log .bot-log-list > li .bot-log-entry-chat,
+      .bot-log .bot-log-list > li .bot-log-entry-action {
+        color: #BABC37; }
+      /* line 75, ../../../resources/assets/scss/style.scss */
+      .bot-log .bot-log-list > li .bot-log-entry-raw {
+        color: #57C8D4; }
+      /* line 79, ../../../resources/assets/scss/style.scss */
+      .bot-log .bot-log-list > li .bot-log-entry-error,
+      .bot-log .bot-log-list > li .bot-log-entry-crash {
+        color: #57C8D4; }
