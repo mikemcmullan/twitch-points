@@ -22,7 +22,7 @@ class Channel extends Model implements AuthenticatableContract, CanResetPassword
 	 *
 	 * @var array
 	 */
-	protected $fillable = ['name', 'email', 'logo', 'access_token', 'allowed_to_track_points', 'track_points'];
+	protected $fillable = ['name', 'email', 'logo', 'access_token', 'permissions', 'track_points'];
 
 	/**
 	 * The attributes excluded from the model's JSON form.
@@ -34,6 +34,18 @@ class Channel extends Model implements AuthenticatableContract, CanResetPassword
 	public function trackPoints()
 	{
 		return $this->hasMany('App\TrackPointsSession');
+	}
+
+	public function hasPermission($permission)
+	{
+		$permissions = explode(',', $this->permissions);
+
+		if (array_search($permission, $permissions) !== false)
+		{
+			return true;
+		}
+
+		return false;
 	}
 
 }

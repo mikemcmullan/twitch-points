@@ -44,9 +44,18 @@ class Authenticate {
 			}
 		}
 
-		if ($request->segment(1) === 'system-control' && ! (bool) $this->auth->user()['allowed_to_track_points'])
+		// permission name => url
+		$paths = [
+			'system-control'=> 'system-control',
+			'bot-control'   => 'bot-control'
+		];
+
+		foreach ($paths as $permission => $path)
 		{
-			return redirect()->back()->with('message', 'You\'re not allowed to use this feature.');
+			if ( ! $request->is($path) && ! $this->auth->user()->hasPermission($permission))
+			{
+				return redirect()->route('home_path')->with('message', 'You\'re not allowed to use this feature.');
+			}
 		}
 
 		return $next($request);
