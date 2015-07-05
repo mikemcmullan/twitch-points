@@ -12,7 +12,7 @@ class RemoveChattersTable extends Migration {
 	 */
 	public function up()
 	{
-		Schema::drop('chatters');
+		Schema::dropIfExists('chatters');
 	}
 
 	/**
