@@ -3,6 +3,12 @@ new Vue({
     el: '#bot-log',
 
     data: {
+        buttons: {
+            start: false,
+            stop: false,
+            join: false,
+            leave: false
+        },
         refreshing_log: false,
         starting_bot: false,
         stopping_bot: false,
@@ -34,10 +40,10 @@ new Vue({
     },
 
     methods: {
-        toggleProperty: function(property, delay) {
+        toggleButton: function(button, delay) {
             var self = this,
                 doToggle = function() {
-                    self[property] = ! self[property];
+                    self[buttons][property] = ! self[buttons][property];
                 };
 
             if (delay) {
@@ -48,28 +54,15 @@ new Vue({
             doToggle();
         },
 
-        makeBotControlRequest: function(apiEndPoints, property) {
+        makeBotControlRequest: function(apiEndPoints, callback) {
             var self = this,
                 request = $.ajax({
                     url: apiEndPoints,
                     method: 'GET',
-                    dataType: 'json',
-                    beforeSend: function() {
-                        self.toggleProperty(property);
-                    }
+                    dataType: 'json'
                 });
 
-            request.done(function(response) {
-                if (response.error) {
-                    self.alerts.push({ level: 'danger', msg: response.error });
-
-                    setTimeout(function() {
-                        self.alerts.pop();
-                    }, 2000);
-                }
-
-                self.toggleProperty(property, 4000);
-            });
+            request.done(callback);
         },
 
         fetchEntries: function() {
@@ -78,10 +71,7 @@ new Vue({
                     url: '/api/bot/log',
                     method: 'GET',
                     data: { offset: this.offset },
-                    dataType: 'json',
-                    beforeSend: function() {
-                        self.toggleProperty('refreshing_log')
-                    }
+                    dataType: 'json'
                 });
 
             request.done(function(response) {
@@ -95,28 +85,92 @@ new Vue({
                 self.offset = response.new_offset;
                 self.bot_status = response.status;
 
+                if (self.bot_status !== 'RUNNING') {
+                    self.buttons.join = false;
+                    self.buttons.leave = false;
+                    self.buttons.stop = false;
+                    self.buttons.start = true;
+                } else if(self.bot_status === "RUNNING") {
+                    self.buttons.start = false;
+                    self.buttons.join = true;
+                    self.buttons.leave = true;
+                    self.buttons.stop = true;
+                } else {
+                    self.buttons.join = true;
+                    self.buttons.leave = true;
+                    self.buttons.stop = true;
+                }
+
                 for (var entry in response.entries) {
                     self.entries.unshift(response.entries[entry]);
                 }
-
-                self.toggleProperty('refreshing_log')
             });
         },
 
         startBot: function() {
-            this.makeBotControlRequest('/api/bot/start', 'starting_bot')
+            var self = this;
+
+            self.buttons.join = false;
+            self.buttons.leave = false;
+            self.buttons.stop = false;
+            self.buttons.start = false;
+
+            this.makeBotControlRequest('/api/bot/start', function(response) {
+                if (response.error) {
+                    self.alerts.push({ level: 'danger', msg: response.error });
+
+                    setTimeout(function() {
+                        self.alerts.pop();
+                    }, 2000);
+                }
+            });
         },
 
         stopBot: function() {
-            this.makeBotControlRequest('/api/bot/stop', 'stopping_bot')
+            var self = this;
+
+            self.buttons.join = false;
+            self.buttons.leave = false;
+            self.buttons.stop = false;
+            self.buttons.start = false;
+
+            this.makeBotControlRequest('/api/bot/stop', function(response) {
+                if (response.error) {
+                    self.alerts.push({ level: 'danger', msg: response.error });
+
+                    setTimeout(function() {
+                        self.alerts.pop();
+                    }, 2000);
+                }
+            });
         },
 
         joinChannel: function() {
-            this.makeBotControlRequest('/api/bot/join', 'joining_channel')
+            var self = this;
+
+            this.makeBotControlRequest('/api/bot/join', function(response) {
+                if (response.error) {
+                    self.alerts.push({ level: 'danger', msg: response.error });
+
+                    setTimeout(function() {
+                        self.alerts.pop();
+                    }, 2000);
+                }
+            });
         },
 
         leaveChannel: function() {
-            this.makeBotControlRequest('/api/bot/leave', 'leaving_channel')
+            var self = this;
+
+            this.makeBotControlRequest('/api/bot/leave', function(response) {
+                if (response.error) {
+                    self.alerts.push({ level: 'danger', msg: response.error });
+
+                    setTimeout(function() {
+                        self.alerts.pop();
+                    }, 2000);
+                }
+            });
         }
     }
 
