@@ -149,6 +149,7 @@ return [
 
 		'App\Providers\RepositoryServiceProvider',
 		'App\Providers\TwitchServiceProvider',
+		'App\Providers\SupervisorServiceProvider'
 	],
 
 	/*

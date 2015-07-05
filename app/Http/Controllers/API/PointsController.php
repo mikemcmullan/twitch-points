@@ -1,8 +1,7 @@
-<?php namespace App\Http\Controllers;
+<?php namespace App\Http\Controllers\API;
 
 use App\Commands\AddPointsCommand;
 use App\Commands\RemovePointsCommand;
-use App\Commands\GetViewerCommand;
 use App\Contracts\Repositories\ChannelRepository;
 use App\Contracts\Repositories\ChatterRepository;
 use App\Exceptions\AccessDeniedException;
@@ -15,7 +14,7 @@ use Exception;
 use Illuminate\Http\Request;
 use InvalidArgumentException;
 
-class ApiController extends Controller {
+class PointsController extends Controller {
 
 	/**
 	 * @var ChatterRepository
@@ -53,37 +52,6 @@ class ApiController extends Controller {
 	 *
 	 * @return \Symfony\Component\HttpFoundation\Response
 	 */
-	public function getViewer(Request $request)
-	{
-		$handle = $request->get('handle');
-
-		try
-		{
-			$response = Bus::dispatch(new GetViewerCommand($this->channel, $handle));
-
-			$response['time_online'] = presentTimeOnline($response['minutes']);
-		}
-		catch(UnknownHandleException $e)
-		{
-			$response = ['error' => $e->getMessage()];
-		}
-		catch(InvalidArgumentException $e)
-		{
-			$response = ['error' => $e->getMessage()];
-		}
-		catch(Exception $e)
-		{
-			$response = ['error' => 'Unknown error occurred.'];
-		}
-
-		return response()->json($response);
-	}
-
-	/**
-	 * @param Request $request
-	 *
-	 * @return \Symfony\Component\HttpFoundation\Response
-	 */
 	public function addPoints(Request $request)
 	{
 		$data = $request->only(['handle', 'target', 'points']);
@@ -114,7 +82,12 @@ class ApiController extends Controller {
 			];
 		}
 		catch(Exception $e)
-		{}
+		{
+			$response = [
+				'error' => 'Unknown error occurred.',
+				'level' => 'regular'
+			];
+		}
 
 		return response()->json($response);
 	}
@@ -154,7 +127,12 @@ class ApiController extends Controller {
 			];
 		}
 		catch(Exception $e)
-		{}
+		{
+			$response = [
+				'error' => 'Unknown error occurred.',
+				'level' => 'regular'
+			];
+		}
 
 		return response()->json($response);
 	}

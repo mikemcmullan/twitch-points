@@ -20,6 +20,16 @@ Route::patch('/system-control', [
     'as'    => 'start_system_path'
 ]);
 
+Route::get('/bot-control', [
+    'uses'  => 'BotController@botControl',
+    'as'    => 'bot_control_path'
+]);
+
+Route::get('/bot-control/log', [
+    'uses'  => 'BotController@viewLog',
+    'as'    => 'bot_view_log_path'
+]);
+
 Route::get('/scoreboard', [
     'uses'  => 'PointsController@scoreboard',
     'as'    => 'scoreboard_path'
@@ -35,17 +45,45 @@ Route::get('/logout', [
     'as'    => 'logout_path'
 ]);
 
-Route::get('/api/viewer', [
-    'uses'  => 'ApiController@getViewer',
-    'as'    => 'api_points_path'
-]);
+Route::group(['prefix' => 'api', 'namespace' => 'API'], function()
+{
+    get('/viewer', [
+        'uses'  => 'ViewerController@getViewer',
+        'as'    => 'api_points_path'
+    ]);
 
-Route::post('/api/points', [
-    'uses'  => 'ApiController@addPoints',
-    'as'    => 'api_points_add_path'
-]);
+    post('/points', [
+        'uses'  => 'PointsController@addPoints',
+        'as'    => 'api_points_add_path'
+    ]);
 
-Route::delete('/api/points', [
-    'uses'  => 'ApiController@removePoints',
-    'as'    => 'api_points_remove_path'
-]);
+    delete('/points', [
+        'uses'  => 'PointsController@removePoints',
+        'as'    => 'api_points_remove_path'
+    ]);
+
+    get('/bot/log', [
+        'uses'  => 'BotController@getLog',
+        'as'    => 'api_bot_log_path'
+    ]);
+
+    get('/bot/join', [
+        'uses'  => 'BotController@joinChannel',
+        'as'    => 'api_bot_join_channel_path'
+    ]);
+
+    get('/bot/leave', [
+        'uses'  => 'BotController@leaveChannel',
+        'as'    => 'api_bot_leave_channel_path'
+    ]);
+
+    get('/bot/start', [
+        'uses'  => 'BotController@startBot',
+        'as'    => 'api_bot_start_path'
+    ]);
+
+    get('/bot/stop', [
+        'uses'  => 'BotController@stopBot',
+        'as'    => 'api_bot_stop_path'
+    ]);
+});

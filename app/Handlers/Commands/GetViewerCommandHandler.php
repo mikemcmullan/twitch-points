@@ -65,7 +65,7 @@ class GetViewerCommandHandler implements CanManagePoints {
 	{
 		if ($command->handle === null)
 		{
-			throw new InvalidArgumentException('handle is a required parameter.');
+			throw new InvalidArgumentException('Handle is a required parameter.');
 		}
 
 		$viewer = $this->getPoints($command->channel, $command->handle);

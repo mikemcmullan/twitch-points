@@ -13,7 +13,10 @@
 		"ritero/twitch-sdk": "dev-master",
 		"illuminate/html": "~5.0",
 		"doctrine/dbal": "~2.5",
-		"jasongrimes/paginator": "~1.0"
+		"jasongrimes/paginator": "~1.0",
+		"supervisorphp/supervisor": "^3.0",
+		"lstrojny/fxmlrpc": "^0.10.0",
+	  	"egeloen/http-adapter": "~0.6"
 	},
 	"require-dev": {
 		"phpunit/phpunit": "~4.0",

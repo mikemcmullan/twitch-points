@@ -13,7 +13,7 @@ class ProtectApi {
 	 */
 	public function handle($request, Closure $next)
 	{
-		if ($request->server('REMOTE_ADDR') !== $request->server('SERVER_ADDR'))
+		if ($request->server('REMOTE_ADDR') !== $request->server('SERVER_ADDR') && env('APP_ENV') === 'production')
 		{
 			return response()->json(['error' => 'Unauthorized.'], 401);
 		}

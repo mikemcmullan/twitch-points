@@ -7,8 +7,8 @@
     <title>AngryPug's Pug Points Tracker</title>
 
     <!-- Bootstrap -->
-    {!! Html::style('assets/css/bootstrap.css') !!}
-    {!! Html::style('assets/css/style.css') !!}
+    {!! Html::style('/assets/css/bootstrap.css') !!}
+    {!! Html::style('/assets/css/style.css') !!}
 
     <!--[if lt IE 9]>
         <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
@@ -34,7 +34,12 @@
             <ul class="nav navbar-nav">
                 <li{!! in_array(Route::currentRouteName(), ['check_points_path', 'home_path']) ? ' class="active"' : '' !!}><a href="{!! route('check_points_path') !!}">Check Points</a></li>
                 <li{!! Route::currentRouteName() === 'scoreboard_path' ? ' class="active"' : '' !!}><a href="{!! route('scoreboard_path') !!}">Scoreboard</a></li>
+                @if (Auth::user()->hasPermission('system-control'))
                 <li{!! Route::currentRouteName() === 'system_control_path' ? ' class="active"' : '' !!}><a href="{!! route('system_control_path') !!}">System Control</a></li>
+                @endif
+                @if (Auth::user()->hasPermission('bot-control'))
+                    <li{!! Route::currentRouteName() === 'bot_control_path' ? ' class="active"' : '' !!}><a href="{!! route('bot_control_path') !!}">Bot Control</a></li>
+                @endif
             </ul>
 
             <ul class="nav navbar-nav navbar-right">
@@ -67,5 +72,10 @@
 
 <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
 <script src="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.2/js/bootstrap.min.js"></script>
+
+@if (Request::is('bot-control'))
+    <script src="//cdnjs.cloudflare.com/ajax/libs/vue/0.12.5/vue.min.js"></script>
+    <script src="/assets/js/bot-control-min.js"></script>
+@endif
 </body>
 </html>
