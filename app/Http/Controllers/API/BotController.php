@@ -25,7 +25,7 @@ class BotController extends Controller {
 		$this->bot = $bot;
 		$this->channel = \Config::get('twitch.points.default_channel');
 
-		$this->middleware('protect.api');
+		$this->middleware('auth');
 	}
 
 	public function getLog()
