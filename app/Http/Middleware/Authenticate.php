@@ -47,18 +47,19 @@ class Authenticate {
 		// permission name => url
 		$paths = [
 			'system-control'=> 'system-control',
-			'bot-control'   => 'bot-control'
+			'bot-control'   => 'bot-control',
+			'api/bot*'      => 'bot-control'
 		];
 
 		foreach ($paths as $permission => $path)
 		{
-			if ( ! $request->is($path) && ! $this->auth->user()->hasPermission($permission))
+			if ($request->is($path) && ! $this->auth->user()->hasPermission($permission))
 			{
 				return redirect()->route('home_path')->with('message', 'You\'re not allowed to use this feature.');
 			}
-		}
 
-		return $next($request);
+			return $next($request);
+		}
 	}
 
 }
