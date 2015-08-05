@@ -38,6 +38,10 @@ class RankChatters {
 		{
 			foreach ($group as $chatter)
 			{
+				if (array_get($chatter, 'mod') === true) {
+					break;
+				}
+
 				$chatter['rank'] = $rank;
 
 				$rankings->push($chatter);
