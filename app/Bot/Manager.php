@@ -44,15 +44,11 @@ class Manager {
 	 */
 	public function getLog($offset = 0)
 	{
-		$process = $this->getProcess();
-
-		$parser = new LogParser();
-
-		return $parser->getLog($process['logfile'], $offset);
+		return $this->redis->lrange('twitch-bot-log', 0, -1);
 	}
 
 	/**
-	 * @return mixed|null
+	 * @return string
 	 */
 	public function getStatus()
 	{

@@ -22,8 +22,8 @@
                             <p>
                                 <a v-attr="disabled: ! buttons.start" v-on="click: startBot" class="btn btn-primary btn-sm">Start Bot</a>
                                 <a v-attr="disabled: ! buttons.stop" v-on="click: stopBot" class="btn btn-danger btn-sm">Stop Bot</a>
-                                <a v-attr="disabled: ! buttons.join" v-on="click: joinChannel" class="btn btn-primary btn-sm">Join Channel</a>
-                                <a v-attr="disabled: ! buttons.leave" v-on="click: leaveChannel" class="btn btn-danger btn-sm">Leave Channel</a>
+                                {{--<a v-attr="disabled: ! buttons.join" v-on="click: joinChannel" class="btn btn-primary btn-sm">Join Channel</a>--}}
+                                {{--<a v-attr="disabled: ! buttons.leave" v-on="click: leaveChannel" class="btn btn-danger btn-sm">Leave Channel</a>--}}
                                 <a class="btn btn-link btn-sm pull-right">
                                     <span class="glyphicon glyphicon-refresh bot-log-refresh"></span>
                                 </a>

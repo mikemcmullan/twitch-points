@@ -14,7 +14,7 @@ new Vue({
         stopping_bot: false,
         joining_channel: false,
         leaving_channel: false,
-        bot_status: 'Unknown',
+        bot_status: 'UNKNOWN',
         offset: 0,
         entries: [],
         alerts: []
@@ -27,16 +27,40 @@ new Vue({
     ready: function() {
         var self = this;
 
+        var socket = io(bot_ws_server);
+
+        socket.on('connect', function() {
+            socket.emit('authenticate', { token: bot_token });
+        });
+
+        socket.on('twitch-bot-log', function(data) {
+            self.entries.unshift(data);
+        });
+
+        socket.on('twitch-bot-status', function(data) {
+            if (data !== self.bot_status) {
+                self.bot_status = data;
+
+                if (self.bot_status === 'RUNNING') {
+                    self.buttons.stop = true;
+                    self.buttons.start = false;
+                } else {
+                    self.buttons.stop = false;
+                    self.buttons.start = true;
+                }
+            }
+        });
+
         self.fetchEntries();
 
-        var refreshLogTimer = function() {
-            setTimeout(function() {
-                self.fetchEntries();
-                refreshLogTimer();
-            }, 2000);
-        }
-
-        refreshLogTimer();
+        //var refreshLogTimer = function() {
+        //    setTimeout(function() {
+        //        self.fetchEntries();
+        //        refreshLogTimer();
+        //    }, 2000);
+        //}
+        //
+        //refreshLogTimer();
     },
 
     methods: {
@@ -70,35 +94,14 @@ new Vue({
                 request = $.ajax({
                     url: '/api/bot/log',
                     method: 'GET',
-                    data: { offset: this.offset },
                     dataType: 'json'
                 });
 
             request.done(function(response) {
                 if (response.error) {
                     self.entries = [response.error];
-                    self.bot_status = 'Error';
+                    self.bot_status = 'ERROR';
                     return;
-                }
-
-
-                self.offset = response.new_offset;
-                self.bot_status = response.status;
-
-                if (self.bot_status !== 'RUNNING') {
-                    self.buttons.join = false;
-                    self.buttons.leave = false;
-                    self.buttons.stop = false;
-                    self.buttons.start = true;
-                } else if(self.bot_status === "RUNNING") {
-                    self.buttons.start = false;
-                    self.buttons.join = true;
-                    self.buttons.leave = true;
-                    self.buttons.stop = true;
-                } else {
-                    self.buttons.join = true;
-                    self.buttons.leave = true;
-                    self.buttons.stop = true;
                 }
 
                 for (var entry in response.entries) {

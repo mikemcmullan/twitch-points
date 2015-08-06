@@ -25,7 +25,8 @@ class BotController extends Controller {
 		$this->bot = $bot;
 		$this->channel = \Config::get('twitch.points.default_channel');
 
-		$this->middleware('auth');
+		$this->middleware('auth', ['except' => ['getStatus']]);
+		$this->middleware('protect.api', ['only' => ['getStatus']]);
 	}
 
 	public function getLog()
@@ -34,12 +35,21 @@ class BotController extends Controller {
 		$log = $this->bot->getLog($offset);
 
 		$response = [
-			'status'    => $this->bot->getStatus(),
-			'new_offset'=> count($log) + $offset,
+//			'status'    => $this->bot->getStatus(),
+//			'new_offset'=> count($log) + $offset,
 			'entries'   => $log
 		];
 
 		return response()->json($response);
+	}
+
+	public function getStatus()
+	{
+		$status = $this->bot->getStatus();
+
+		return response()->json([
+			'status' => $status
+		]);
 	}
 
 	public function joinChannel(ChannelRepository $channelRepo)
@@ -88,6 +98,20 @@ class BotController extends Controller {
 	public function stopBot()
 	{
 		return response()->json($this->bot->stopBot());
+	}
+
+	public function getToken()
+	{
+		$response = ['token' => bcrypt('woot')];
+
+		return response()->json($response);
+	}
+
+	public function validateToken()
+	{
+		$response = ['token' => 'ok'];
+
+		return response()->json($response);
 	}
 
 }

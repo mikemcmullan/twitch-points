@@ -74,7 +74,13 @@
 <script src="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.2/js/bootstrap.min.js"></script>
 
 @if (Request::is('bot-control'))
+    <script>
+        var bot_token = '{{ env('BOT_SOCKET_TOKEN') }}',
+            bot_ws_server = '{{ env('BOT_WS_SERVER')  }}'
+    </script>
+
     <script src="//cdnjs.cloudflare.com/ajax/libs/vue/0.12.5/vue.min.js"></script>
+    <script src="//cdn.socket.io/socket.io-1.3.5.js"></script>
     <script src="/assets/js/bot-control-min.js"></script>
 @endif
 </body>
