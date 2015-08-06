@@ -11,7 +11,8 @@ class Kernel extends ConsoleKernel {
 	 * @var array
 	 */
 	protected $commands = [
-		'App\Console\Commands\UpdatePoints'
+		'App\Console\Commands\UpdatePoints',
+		'App\Console\Commands\RemoveOldViewers'
 	];
 
 	/**

@@ -30,6 +30,20 @@ return [
         |
         */
         'default_channel' => 'angrypug_',
+
+        /*
+        |--------------------------------------------------------------------------
+        | Expire
+        |--------------------------------------------------------------------------
+        |
+        | How many days must the viewer be inactive before we delete them. They
+        | must also have less than [x] amount of points.
+        |
+        */
+        'expire' => [
+            'days'  => 30,
+            'points'=> 2
+        ],
         
         /*
         |--------------------------------------------------------------------------
