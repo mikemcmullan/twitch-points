@@ -86,4 +86,19 @@ Route::group(['prefix' => 'api', 'namespace' => 'API'], function()
         'uses'  => 'BotController@stopBot',
         'as'    => 'api_bot_stop_path'
     ]);
+
+    get('/bot/status', [
+        'uses'  => 'BotController@getStatus',
+        'as'    => 'api_bot_status_path'
+    ]);
+
+    get('/bot/token', [
+        'uses'  => 'BotController@getToken',
+        'as'    => 'api_bot_token_path'
+    ]);
+
+    get('/bot/validate-token', [
+        'uses'  => 'BotController@validateToken',
+        'as'    => 'api_bot_validate_token_path'
+    ]);
 });
