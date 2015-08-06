@@ -13,10 +13,19 @@ use Predis\Pipeline\Pipeline;
 
 class RedisChatterRepository implements ChatterRepository {
 
+	/**
+     * Chat Key Format
+     */
     const CHAT_KEY_FORMAT = 'chat:%s:%s';
 
+	/**
+     * Chat Index Key Format
+     */
     const CHAT_INDEX_KEY_FORMAT = 'chattersIndex:%s';
 
+	/**
+     * Mod Index Key Format
+     */
     const MOD_INDEX_KEY_FORMAT = 'modsIndex:%s';
 
     /**
@@ -159,6 +168,27 @@ class RedisChatterRepository implements ChatterRepository {
         return $this->mapUser($channel, $handle, $result);
     }
 
+	/**
+     * Delete a chatter, will only delete moderators.
+     *
+     * @param Channel $channel
+     * @param $handle
+     *
+     * @return bool
+     */
+    public function deleteChatter(Channel $channel, $handle)
+    {
+        $viewer = $this->findByHandle($channel, $handle);
+
+        if ($viewer) {
+            $this->redis->del($viewer['key']);
+            $this->redis->zrem($this->makeChatIndexKey($channel['id']), $viewer['key']);
+            $this->redis->zrem($this->makeModIndexKey($channel['id']), $viewer['key']);
+
+            return true;
+        }
+    }
+
     /**
      * Update/Create a chatter.
      *
@@ -266,7 +296,7 @@ class RedisChatterRepository implements ChatterRepository {
     }
 
     /**
-     * Make redis key.
+     * Make redis key for getting a chatter.
      *
      * @param $channel
      * @param $handle
@@ -277,11 +307,24 @@ class RedisChatterRepository implements ChatterRepository {
         return sprintf(self::CHAT_KEY_FORMAT, $channel, $handle);
     }
 
+	/**
+     * Make a redis key for the chatter index.
+     *
+     * @param $channel
+     *
+     * @return string
+     */
     private function makeChatIndexKey($channel)
     {
         return sprintf(self::CHAT_INDEX_KEY_FORMAT, $channel);
     }
 
+	/**
+     * Make a redis key for the mod index.
+     * @param $channel
+     *
+     * @return string
+     */
     private function makeModIndexKey($channel)
     {
         return sprintf(self::MOD_INDEX_KEY_FORMAT, $channel);

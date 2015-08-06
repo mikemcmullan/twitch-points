@@ -28,7 +28,7 @@ interface ChatterRepository {
      * Get all chatters belonging to a channel.
      *
      * @param Channel $channel
-     * @return mixed
+     * @return Collection
      */
     public function allForChannel(Channel $channel);
 
@@ -48,6 +48,16 @@ interface ChatterRepository {
      * @return array
      */
     public function findByHandle(Channel $channel, $handle);
+
+    /**
+     * Delete a chatter, will only delete moderators.
+     *
+     * @param Channel $channel
+     * @param $handle
+     *
+     * @return bool
+     */
+    public function deleteChatter(Channel $channel, $handle);
 
     /**
      * Setup pagination for results.
