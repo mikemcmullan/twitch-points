@@ -65,6 +65,8 @@ class Manager {
 
 		$name = $this->getProcess()->getName();
 
+		$this->redis->publish('twitch-bot-log', 'Starting bot.');
+
 		return $this->supervisor->startProcess($name);
 	}
 
@@ -77,6 +79,8 @@ class Manager {
 		$this->guardProcessNotRunning();
 
 		$name = $this->getProcess()->getName();
+
+		$this->redis->publish('twitch-bot-log', 'Stopping bot.');
 
 		return $this->supervisor->stopProcess($name);
 	}
