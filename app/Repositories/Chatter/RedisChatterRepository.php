@@ -94,7 +94,7 @@ class RedisChatterRepository implements ChatterRepository {
     {
         $key = 'last_update:' . $channel['id'];
 
-        return $this->redis->set($key, $time->toDateTimeString());
+        return $this->redis->set($key, $time->second(0)->toDateTimeString());
     }
 
 	/**
