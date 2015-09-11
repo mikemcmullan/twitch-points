@@ -4,6 +4,7 @@ use App\Commands\StartSystemCommand;
 
 use App\Contracts\Repositories\ChatterRepository;
 use App\Contracts\Repositories\TrackSessionRepository;
+use Carbon\Carbon;
 
 class StartSystemCommandHandler {
 
@@ -41,6 +42,8 @@ class StartSystemCommandHandler {
 
 		if ( ! $session)
 		{
+			$this->chatterRepository->setLastUpdate($command->channel, Carbon::now());
+
 			return $this->trackSessionRepository->create($command->channel);
 		}
 
