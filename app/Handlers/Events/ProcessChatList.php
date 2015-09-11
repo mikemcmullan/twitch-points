@@ -4,8 +4,10 @@ use App\Contracts\Repositories\ChatterRepository;
 use App\Events\ChatListWasDownloaded;
 use Illuminate\Contracts\Config\Repository as ConfigRepository;
 use Carbon\Carbon;
+use App\Channel;
 
 class ProcessChatList {
+	
 	/**
 	 * @var ChatterRepository
 	 */
@@ -34,10 +36,10 @@ class ProcessChatList {
 	 *
 	 * @return int
 	 */
-	private function calculateMinutes()
+	private function calculateMinutes(Channel $channel)
 	{
-		$lastUpdate = $this->chatterRepository->lastUpdate();
-		$this->chatterRepository->setLastUpdate(Carbon::now());
+		$lastUpdate = $this->chatterRepository->lastUpdate($channel);
+		$this->chatterRepository->setLastUpdate($channel, Carbon::now());
 
 		if ($lastUpdate instanceof Carbon)
 		{
@@ -56,7 +58,7 @@ class ProcessChatList {
 	 *
 	 * @return float
 	 */
-	private function calculatePoints($channel, $minutes, $status)
+	private function calculatePoints(Channel $channel, $minutes, $status)
 	{
 		$status = $status === true ? 'online' : 'offline';
 
@@ -81,7 +83,7 @@ class ProcessChatList {
 	 */
 	public function handle(ChatListWasDownloaded $event)
 	{
-		$minutes = $this->calculateMinutes();
+		$minutes = $this->calculateMinutes($event->channel);
 		$points = $this->calculatePoints($event->channel, $minutes, $event->status);
 
 		$chattersList = $event->chatList['chatters'];

@@ -10,19 +10,21 @@ interface ChatterRepository {
 
     /**
      * Get the time the points system was last updated for a channel.
-
+     *
+     * Channel $channel
      * @return string
      */
-    public function lastUpdate();
+    public function lastUpdate(Channel $channel);
 
     /**
      * Set the time the points system for a channel was last updated.
      *
+     * @param Channel $channel
      * @param Carbon $time
      *
      * @return mixed
      */
-    public function setLastUpdate(Carbon $time);
+    public function setLastUpdate(Channel $channel, Carbon $time);
 
 	/**
      * Get all chatters belonging to a channel.

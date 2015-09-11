@@ -72,9 +72,9 @@ class RedisChatterRepository implements ChatterRepository {
      *
      * @return string
      */
-    public function lastUpdate()
+    public function lastUpdate(Channel $channel)
     {
-        $key    = "last_update";
+        $key    = 'last_update:' . $channel['id'];
         $value  = $this->redis->get($key);
 
         if ($value)
@@ -90,9 +90,9 @@ class RedisChatterRepository implements ChatterRepository {
      *
      * @return mixed
      */
-    public function setLastUpdate(Carbon $time)
+    public function setLastUpdate(Channel $channel, Carbon $time)
     {
-        $key = "last_update";
+        $key = 'last_update:' . $channel['id'];
 
         return $this->redis->set($key, $time->toDateTimeString());
     }
