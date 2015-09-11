@@ -22,6 +22,14 @@ interface ChannelRepository {
 	 * @return mixed
 	 */
 	public function findByName($name);
+	
+	/**
+	 * Find a user by their slug.
+	 *
+	 * @param $slug
+	 * @return mixed
+	 */
+	public function findBySlug($slug);
 
 	/**
 	 * Update a user.

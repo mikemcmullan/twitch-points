@@ -32,18 +32,14 @@ class RankChatters {
 		$chatters = $this->chatterRepository->allForChannel($event->channel);
 		$rankings = new Collection();
 		$rank = 1;
-		$groups = $chatters->groupBy('points');
 
-		foreach ($groups as $group)
-		{
-			foreach ($group as $chatter)
-			{
-				if (array_get($chatter, 'mod') === true) {
-					break;
-				}
+		$groups = $chatters->filter(function ($chatter) {
+			return ! (array_get($chatter, 'mod') === true || array_get($chatter, 'hide') === true);
+		})->groupBy('points');
 
+		foreach ($groups as $group) {
+			foreach ($group as $chatter) {
 				$chatter['rank'] = $rank;
-
 				$rankings->push($chatter);
 			}
 

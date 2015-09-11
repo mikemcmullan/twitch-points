@@ -36,6 +36,11 @@ class RepositoryServiceProvider extends ServiceProvider {
 			'App\Contracts\Repositories\TrackSessionRepository',
 			'App\Repositories\TrackPointsSession\EloquentTrackSessionRepository'
 		);
+
+		$this->app->bind(
+			'App\Contracts\Repositories\UserRepository',
+			'App\Repositories\User\EloquentUserRepository'
+		);
 	}
 
 }

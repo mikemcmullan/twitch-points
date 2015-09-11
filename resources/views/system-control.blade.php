@@ -1,4 +1,4 @@
-@extends('layouts.master')
+@extends('layouts.master', ['channel' => $channel])
 
 @section('content')
 
@@ -16,7 +16,7 @@
                 <div class="panel panel-default">
                     <div class="panel-heading">System Status</div>
                     <div class="panel-body text-center">
-                        {!! Form::open(['route' => 'start_system_path', 'method' => 'patch']) !!}
+                        {!! Form::open(['route' => ['start_system_path', $channel->slug], 'method' => 'patch']) !!}
                             @if ($systemStarted)
                             <h3><span class="label label-success">Running</span></h3>
                             <p><button class="btn btn-danger btn-lg">Stop</button></p>
@@ -25,7 +25,7 @@
                             <p><button class="btn btn-primary btn-lg">Start</button></p>
                             @endif
 
-                            <p>Note: this page can be closed after the system has been started, but remember to stop the system after the stream is over.</p>
+                            <p>Note: this page can be closed after the system has been started.</p>
                         {!! Form::close() !!}
                     </div><!-- .panel-body -->
                 </div><!-- .panel -->

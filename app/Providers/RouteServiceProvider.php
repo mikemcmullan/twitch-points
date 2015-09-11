@@ -1,5 +1,7 @@
 <?php namespace App\Providers;
 
+use App\Contracts\Repositories\ChannelRepository;
+use App\Exceptions\InvalidChannelException;
 use Illuminate\Routing\Router;
 use Illuminate\Foundation\Support\Providers\RouteServiceProvider as ServiceProvider;
 
@@ -24,7 +26,15 @@ class RouteServiceProvider extends ServiceProvider {
 	{
 		parent::boot($router);
 
-		//
+		$router->bind('channel', function ($value) {
+			$channel = app(ChannelRepository::class)->findBySlug($value);
+
+			if ( ! $channel) {
+				throw new InvalidChannelException;
+			}
+
+			return $channel;
+		});
 	}
 
 	/**

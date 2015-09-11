@@ -1,5 +1,6 @@
 <?php namespace App\Http\Controllers\API;
 
+use App\Channel;
 use App\Commands\AddPointsCommand;
 use App\Commands\RemovePointsCommand;
 use App\Contracts\Repositories\ChannelRepository;
@@ -42,23 +43,22 @@ class PointsController extends Controller {
 		$this->chatterRepository = $chatterRepository;
 		$this->channelRepository = $channelRepository;
 
-		$this->channel = \Config::get('twitch.points.default_channel');
-
 		$this->middleware('protect.api', ['only' => ['addPoints', 'removePoints']]);
 	}
 
 	/**
 	 * @param Request $request
+	 * @param Channel $channel
 	 *
 	 * @return \Symfony\Component\HttpFoundation\Response
 	 */
-	public function addPoints(Request $request)
+	public function addPoints(Request $request, Channel $channel)
 	{
 		$data = $request->only(['handle', 'target', 'points']);
 
 		try
 		{
-			$response = Bus::dispatch(new AddPointsCommand($this->channel, $data['handle'], $data['target'], $data['points']));
+			$response = Bus::dispatch(new AddPointsCommand($channel, $data['handle'], $data['target'], $data['points']));
 		}
 		catch(UnknownHandleException $e)
 		{
@@ -94,16 +94,17 @@ class PointsController extends Controller {
 
 	/**
 	 * @param Request $request
+	 * @param Channel $channel
 	 *
 	 * @return \Symfony\Component\HttpFoundation\Response
 	 */
-	public function removePoints(Request $request)
+	public function removePoints(Request $request, Channel $channel)
 	{
 		$data = $request->only(['handle', 'target', 'points']);
 
 		try
 		{
-			$response = Bus::dispatch(new RemovePointsCommand($this->channel, $data['handle'], $data['target'], $data['points']));
+			$response = Bus::dispatch(new RemovePointsCommand($channel, $data['handle'], $data['target'], $data['points']));
 		}
 		catch(UnknownHandleException $e)
 		{

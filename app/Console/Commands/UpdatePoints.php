@@ -59,9 +59,12 @@ class UpdatePoints extends Command {
 		$startTime = microtime(true);
 		$sessions = $this->pointsSession->allUncompletedSessions();
 
-		foreach ($sessions as $session)
-		{
-			$this->dispatch(new DownloadChatList($session->channel));
+		try {
+			foreach ($sessions as $session) {
+				$this->dispatch(new DownloadChatList($session->channel));
+			}
+		} catch (\Exception $e) {
+			dd($e->getFile(), $e->getLine());
 		}
 
 		$end = microtime(true) - $startTime;

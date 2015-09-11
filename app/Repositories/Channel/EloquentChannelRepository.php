@@ -60,6 +60,17 @@ class EloquentChannelRepository implements ChannelRepository
     {
         return $this->channel->where('name', '=', $name)->first();
     }
+    
+    /**
+	 * Find a user by their slug.
+	 *
+	 * @param $slug
+	 * @return mixed
+	 */
+	public function findBySlug($slug)
+	{
+		return $this->channel->where('slug', '=', $slug)->first();
+	}
 
     /**
      * Update a user.

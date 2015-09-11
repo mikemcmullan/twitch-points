@@ -40,7 +40,7 @@ class Authenticate {
 			}
 			else
 			{
-				return redirect()->guest(route('login_path'));
+				return redirect()->guest(route('login_path', $request->route()->getParameter('channel')->slug));
 			}
 		}
 

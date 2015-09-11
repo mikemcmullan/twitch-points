@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\API;
 
+use App\Channel;
 use Illuminate\Http\Request;
 use App\Commands\GetViewerCommand;
 use App\Exceptions\UnknownHandleException;
@@ -17,21 +18,22 @@ class ViewerController extends Controller {
 	 */
 	public function __construct()
 	{
-		$this->channel = \Config::get('twitch.points.default_channel');
+
 	}
 
 	/**
 	 * @param Request $request
+	 * @param Channel $channel
 	 *
 	 * @return \Symfony\Component\HttpFoundation\Response
 	 */
-	public function getViewer(Request $request)
+	public function getViewer(Request $request, Channel $channel)
 	{
 		$handle = $request->get('handle');
 
 		try
 		{
-			$response = Bus::dispatch(new GetViewerCommand($this->channel, $handle));
+			$response = Bus::dispatch(new GetViewerCommand($channel, $handle));
 
 			$response['time_online'] = presentTimeOnline($response['minutes']);
 		}

@@ -1,4 +1,4 @@
-@extends('layouts.master')
+@extends('layouts.master', ['channel' => $channel])
 
 @section('content')
 
@@ -8,7 +8,7 @@
             <div class="col-md-12">
 
                 <div class="page-header">
-                    <h1>Pug Points Checker</h1>
+                    <h1>{{ $channel->currency_name  }} Checker</h1>
                 </div><!-- .page-header -->
 
                 @include('partials.flash')
@@ -21,10 +21,10 @@
                         <div class="form-group">
                             {!! Form::label('handle', 'Chat Handle:'); !!}
                             {!! Form::text('handle', $handle, ['class' => 'form-control']) !!}
-                            <p class="help-block">Enter your twitch username into the box above and click 'Check Points'.</p>
+                            <p class="help-block">Enter your twitch username into the box above and click 'Check {{ $channel->currency_name }}'.</p>
                         </div>
 
-                        {!! Form::submit('Check Points', ['class' => 'btn btn-primary', 'id' => 'check-points']) !!}
+                        {!! Form::submit('Check ' . $channel->currency_name, ['class' => 'btn btn-primary', 'id' => 'check-points']) !!}
                         {!! Form::close(); !!}
 
                         @if ( ! $chatter && $handle !== '')
@@ -65,7 +65,7 @@
                             </tbody>
                         </table>
 
-                        {!! link_to_route('scoreboard_path', 'Entire Scoreboard', [], ['class' => 'btn btn-primary']) !!}
+                        {!! link_to_route('scoreboard_path', 'Entire Scoreboard', [$channel->slug], ['class' => 'btn btn-primary']) !!}
                     </div><!-- .panel-body -->
                 </div><!-- .panel -->
             </div><!-- .col-*-* -->

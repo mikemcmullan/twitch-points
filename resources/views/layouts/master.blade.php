@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>AngryPug's Pug Points Tracker</title>
+    <title>{{ $channel->title }}</title>
 
     <!-- Bootstrap -->
     {!! Html::style('/assets/css/bootstrap.css') !!}
@@ -26,30 +26,27 @@
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
-            {!! link_to_route('home_path', 'AngryPug\'s Pug Points Tracker', [], ['class' => 'navbar-brand']) !!}
+            {!! link_to_route('home_path', $channel->title, [$channel->slug], ['class' => 'navbar-brand']) !!}
         </div>
 
         <div class="collapse navbar-collapse" id="top-navbar-collapse">
         @if (Auth::check())
             <ul class="nav navbar-nav">
-                <li{!! in_array(Route::currentRouteName(), ['check_points_path', 'home_path']) ? ' class="active"' : '' !!}><a href="{!! route('check_points_path') !!}">Check Points</a></li>
-                <li{!! Route::currentRouteName() === 'scoreboard_path' ? ' class="active"' : '' !!}><a href="{!! route('scoreboard_path') !!}">Scoreboard</a></li>
+                <li{!! in_array(Route::currentRouteName(), ['check_points_path', 'home_path']) ? ' class="active"' : '' !!}><a href="{!! route('check_points_path', [$channel->slug]) !!}">Check Points</a></li>
+                <li{!! Route::currentRouteName() === 'scoreboard_path' ? ' class="active"' : '' !!}><a href="{!! route('scoreboard_path', [$channel->slug]) !!}">Scoreboard</a></li>
                 @if (Auth::user()->hasPermission('system-control'))
-                <li{!! Route::currentRouteName() === 'system_control_path' ? ' class="active"' : '' !!}><a href="{!! route('system_control_path') !!}">System Control</a></li>
-                @endif
-                @if (Auth::user()->hasPermission('bot-control'))
-                    <li{!! Route::currentRouteName() === 'bot_control_path' ? ' class="active"' : '' !!}><a href="{!! route('bot_control_path') !!}">Bot Control</a></li>
+                <li{!! Route::currentRouteName() === 'system_control_path' ? ' class="active"' : '' !!}><a href="{!! route('system_control_path', [$channel->slug]) !!}">System Control</a></li>
                 @endif
             </ul>
 
             <ul class="nav navbar-nav navbar-right">
                 <li><a href="#0">Welcome, {{ Auth::user()['name'] }}</a></li>
-                <li><a href="{!! route('logout_path') !!}"><i class="fa fa-sign-out"></i> Logout</a></li>
+                <li><a href="{!! route('logout_path', [$channel->slug]) !!}"><i class="fa fa-sign-out"></i> Logout</a></li>
             </ul>
         @else
             <div class="nav navbar-nav">
-                <li{!! in_array(Route::currentRouteName(), ['check_points_path', 'home_path']) ? ' class="active"' : '' !!}><a href="{!! route('check_points_path') !!}">Check Points</a></li>
-                <li{!! Route::currentRouteName() === 'scoreboard_path' ? ' class="active"' : '' !!}><a href="{!! route('scoreboard_path') !!}">Scoreboard</a></li>
+                <li{!! in_array(Route::currentRouteName(), ['check_points_path', 'home_path']) ? ' class="active"' : '' !!}><a href="{!! route('check_points_path', [$channel->slug]) !!}">Check Points</a></li>
+                <li{!! Route::currentRouteName() === 'scoreboard_path' ? ' class="active"' : '' !!}><a href="{!! route('scoreboard_path', [$channel->slug]) !!}">Scoreboard</a></li>
             </div>
         @endif
         </div><!-- .navbar-collapse -->
@@ -63,7 +60,7 @@
         <div class="row">
             <div class="col-md-12">
                 <div class="text-center">
-                    AngryPug's Pug Points Tracker was created by {!! link_to('https://twitter.com/mikemcmullan', 'Mike McMullan') !!} a.k.a {!! link_to('http://twitch.tv/mcsmike', 'MCSMike') !!}
+                    {{ $channel->title  }} was created by {!! link_to('https://twitter.com/mikemcmullan', 'Mike McMullan') !!} a.k.a {!! link_to('http://twitch.tv/mcsmike', 'MCSMike') !!}
                 </div>
             </div><!-- .col-*-* -->
         </div><!-- .row -->

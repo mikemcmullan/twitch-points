@@ -32,7 +32,7 @@ class EloquentTrackSessionRepository implements TrackSessionRepositoryInterface 
     public function create(Channel $channel)
     {
         return $this->pointsSession->create([
-            'user_id' => $channel['id']
+            'channel_id' => $channel['id']
         ]);
     }
 
@@ -65,7 +65,7 @@ class EloquentTrackSessionRepository implements TrackSessionRepositoryInterface 
         return $this->pointsSession
             ->with('channel')
             ->where('complete', false)
-            ->where('user_id', $channel['id'])
+            ->where('channel_id', $channel['id'])
             ->first();
     }
 

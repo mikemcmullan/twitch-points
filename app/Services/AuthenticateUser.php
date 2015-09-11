@@ -2,7 +2,9 @@
 
 namespace App\Services;
 
+use App\Channel;
 use App\Contracts\Repositories\ChannelRepository;
+use App\Contracts\Repositories\UserRepository;
 use Illuminate\Contracts\Auth\Guard;
 use Illuminate\Cookie\CookieJar;
 
@@ -19,42 +21,41 @@ class AuthenticateUser {
     private $channelRepository;
 
     /**
-     * @var CookieJar
-     */
-    private $cookieJar;
-
-    /**
      * @var Authenticator
      */
     private $auth;
 
     /**
+     * @var UserRepository
+     */
+    private $userRepo;
+
+    /**
      * @param TwitchSDKAdapter $twitchSDK
-     * @param ChannelRepository $channelRepository
-     * @param CookieJar $cookieJar
+     * @param ChannelRepository $channelRepo
+     * @param UserRepository $userRepo
      * @param Guard $auth
      */
-    public function __construct(TwitchSDKAdapter $twitchSDK, ChannelRepository $channelRepository, CookieJar $cookieJar, Guard $auth)
+    public function __construct(TwitchSDKAdapter $twitchSDK, ChannelRepository $channelRepo, UserRepository $userRepo, Guard $auth)
     {
         $this->twitchSDK = $twitchSDK;
-        $this->channelRepository = $channelRepository;
-        $this->cookieJar = $cookieJar;
+        $this->channelRepo = $channelRepo;
         $this->auth = $auth;
+        $this->userRepo = $userRepo;
     }
 
     /**
+     * @param $channel
      * @param $code
      * @param $error
      * @param $listener
+     *
      * @return \Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
      */
-    public function execute($code, $error, $listener)
+    public function execute(Channel $channel, $code, $error, $listener)
     {
         // If error login failed.
-        if ($error) return $listener->loginHasFailed();
-
-        // If no code redirect to twitch login.
-        if ( ! $code) return $this->getAuthorizationFirst();
+        if ($error) return $listener->loginHasFailed($error);
 
         $token = $this->twitchSDK->authAccessTokenGet($code);
 
@@ -63,31 +64,19 @@ class AuthenticateUser {
 
         $authUser = $this->twitchSDK->authUserGet($token['access_token']);
 
-        $user = $this->channelRepository->findByNameOrCreate($authUser['name'], [
-            'email'         => $authUser['email'],
-            'logo'          => $authUser['logo'],
-            'access_token'  => $token['access_token']
-        ]);
+        $user = $this->userRepo->findByName($channel, $authUser['name']);
 
-        if ($user['access_token'] !== $token['access_token'])
-        {
+        if ( ! $user) {
+            return $listener->loginHasFailed();
+        }
+
+        if ($user['access_token'] !== $token['access_token']) {
             $user['access_token'] = $token['access_token'];
-
-            $this->channelRepository->update($user);
+            $this->userRepo->update($user);
         }
 
         $this->auth->login($user, true);
 
         return $listener->userHasLoggedIn($user);
-    }
-
-    /**
-     * Redirect user to twitch login page.
-     *
-     * @return \Illuminate\Routing\Redirector
-     */
-    private function getAuthorizationFirst()
-    {
-        return redirect($this->twitchSDK->authLoginURL('user_read'));
     }
 }

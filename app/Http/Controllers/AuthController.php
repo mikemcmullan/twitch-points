@@ -3,9 +3,48 @@
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
 use App\Services\AuthenticateUser;
+use App\Services\TwitchSDKAdapter;
+use Illuminate\Contracts\Encryption\Encrypter;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 
 class AuthController extends Controller {
+
+    private $channel;
+
+    public function __construct(Request $request)
+    {
+        $this->channel = $request->route()->getParameter('channel');
+    }
+
+    /**
+     * @param Request $request
+     * @param TwitchSDKAdapter $twitchSDK
+     * @param Encrypter $encrypter
+     *
+     * @return \Illuminate\Http\RedirectResponse|Response|\Illuminate\Routing\Redirector
+     */
+    public function loginProxy(Request $request, TwitchSDKAdapter $twitchSDK, Encrypter $encrypter)
+    {
+        if ( ! $request->get('code') && ! $request->get('error')) {
+            $referer    = $request->get('referer');
+            $url 		= $twitchSDK->authLoginURL('user_read');
+
+            $response 	= new Response(view('login-proxy', compact('url')));
+            $response->header('Location', $url);
+            $response->withCookie(cookie('referer', $referer, 60*60));
+
+            return $response;
+        }
+
+        $referer = $request->cookie('referer');
+
+        if ( ! $referer) {
+            return response('Error redirecting, please use your browsers back button to return the site.');
+        }
+
+        return redirect($referer  . '?' . $request->getQueryString());
+    }
 
     /**
      * Login a user.
@@ -16,7 +55,10 @@ class AuthController extends Controller {
      */
     public function login(Request $request, AuthenticateUser $authUser)
     {
-        return $authUser->execute($request->get('code'), $request->get('error'), $this);
+        if ( ! $request->get('code') && ! $request->get('error'))
+            return redirect('http://' . env('AUTH_DOMAIN', 'auth.twitch.dev') . '/login?referer=' . $request->fullUrl());
+        else
+            return $authUser->execute($this->channel, $request->get('code'), $request->get('error'), $this);
     }
 
     /**
@@ -28,7 +70,7 @@ class AuthController extends Controller {
     {
         \Auth::logout();
 
-        return redirect()->route('home_path');
+        return redirect()->route('home_path', $this->channel->slug);
     }
 
     /**
@@ -37,9 +79,8 @@ class AuthController extends Controller {
     public function loginHasFailed()
     {
         return redirect()
-            ->route('home_path')
-            ->with('message', 'Login failed.');
-
+            ->route('home_path', $this->channel->slug)
+            ->with('message', 'Sorry, you\'re not allowed to administrate this site.');
     }
 
     /**
@@ -49,8 +90,8 @@ class AuthController extends Controller {
     public function userHasLoggedIn($user)
     {
         return redirect()
-            ->route('home_path')
-            ->with('message', 'Login successful');
+            ->route('home_path', $this->channel->slug)
+            ->with('message', 'Login successful.');
     }
 
 }

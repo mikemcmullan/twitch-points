@@ -12,7 +12,7 @@
 		"jsanc623/phpbenchtime": "~2.0",
 		"ritero/twitch-sdk": "dev-master",
 		"illuminate/html": "~5.0",
-		"doctrine/dbal": "~2.5",
+		"doctrine/dbal": "^2.5",
 		"jasongrimes/paginator": "~1.0",
 		"supervisorphp/supervisor": "^3.0",
 		"lstrojny/fxmlrpc": "^0.10.0",

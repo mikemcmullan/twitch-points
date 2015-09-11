@@ -69,7 +69,7 @@ class RedisChatterRepository implements ChatterRepository {
 
 	/**
      * Get the time the points system was last updated for a channel.
-
+     *
      * @return string
      */
     public function lastUpdate()
@@ -117,9 +117,11 @@ class RedisChatterRepository implements ChatterRepository {
      * Get all chatters belonging to a channel.
      *
      * @param Channel $channel
+     * @param boolean $showHidden
+     * @param boolean $showMod
      * @return Collection
      */
-    public function allForChannel(Channel $channel)
+    public function allForChannel(Channel $channel, $showHidden = false, $showMod = false)
     {
         $start = 0;
         $end = -1;
@@ -131,7 +133,7 @@ class RedisChatterRepository implements ChatterRepository {
         }
 
         $chatters = $this->redis->zrevrange($this->makeChatIndexKey($channel['id']), $start, $end);
-        $collection  = new Collection($this->mapUsers($chatters));
+        $collection  = new Collection($this->mapUsers($chatters, $showHidden, $showMod));
 
         return $collection;
     }
@@ -251,6 +253,7 @@ class RedisChatterRepository implements ChatterRepository {
         }
 
         $pipe->zincrby($this->makeModIndexKey($channel['id']), $points, $key);
+        $pipe->zincrby($this->makeChatIndexKey($channel['id']), $points, $key);
         $pipe->hincrbyfloat($key, 'points', $points);
         $pipe->hincrby($key, 'minutes', $minutes);
         $pipe->hset($key, 'mod', true);
@@ -335,9 +338,11 @@ class RedisChatterRepository implements ChatterRepository {
      * the original key, handle, channel and start_time.
      *
      * @param array $chatters
+     * @param boolean $showHidden
+     * @param boolean $showMod
      * @return array
      */
-    private function mapUsers(array $chatters)
+    private function mapUsers(array $chatters, $showHidden = false, $showMod = false)
     {
         $mappedUsers = [];
 
@@ -347,6 +352,12 @@ class RedisChatterRepository implements ChatterRepository {
 
             $data = $this->redis->hgetall($chatter);
             $rank = isset($data['rank']) ? $data['rank'] : 0;
+            $mod  = (bool) array_get($data, 'mod');
+            $hide = (bool) array_get($data, 'hide');
+
+            if (($showHidden === false && $hide) || ($showMod === false && $mod)) {
+                continue;
+            }
 
             $mappedUsers[$key['handle']] = [
                 'key'     => $chatter,
@@ -356,7 +367,8 @@ class RedisChatterRepository implements ChatterRepository {
                 'points'  => $data['points'],
                 'rank'    => $rank,
                 'updated' => $data['updated'],
-                'mod'     => (bool) array_get($data, 'mod')
+                'mod'     => $mod,
+                'hide'    => $hide
             ];
         }
 

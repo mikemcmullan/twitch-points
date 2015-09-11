@@ -58,15 +58,30 @@ return [
         |     offline.
         |
         */
-        'online' => [
-            'interval' => 15,
-            'awarded' => 1,
+        'angrypug' => [
+            'online' => [
+                'interval' => 15,
+                'awarded' => 1,
+            ],
+
+
+            'offline' => [
+                'interval' => 60,
+                'awarded' => 1
+            ]
         ],
 
+        'jonzzzzz' => [
+            'online' => [
+                'interval' => 60,
+                'awarded' => 10,
+            ],
 
-        'offline' => [
-            'interval' => 60,
-            'awarded' => 1
+
+            'offline' => [
+                'interval' => 60,
+                'awarded' => 10
+            ]
         ]
     ]
 

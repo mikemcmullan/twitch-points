@@ -10,42 +10,39 @@ class Channel extends Model implements AuthenticatableContract, CanResetPassword
 
 	use Authenticatable, CanResetPassword;
 
+	public $timestamps = false;
+
 	/**
 	 * The database table used by the model.
 	 *
 	 * @var string
 	 */
-	protected $table = 'users';
+	protected $table = 'channels';
 
 	/**
 	 * The attributes that are mass assignable.
 	 *
 	 * @var array
 	 */
-	protected $fillable = ['name', 'email', 'logo', 'access_token', 'permissions', 'track_points'];
-
-	/**
-	 * The attributes excluded from the model's JSON form.
-	 *
-	 * @var array
-	 */
-	protected $hidden = ['password', 'remember_token'];
+	protected $fillable = ['name', 'slug', 'display_name', 'currency_name', 'title', 'currency_interval', 'currency_awarded'];
 
 	public function trackPoints()
 	{
 		return $this->hasMany('App\TrackPointsSession');
 	}
 
-	public function hasPermission($permission)
+	public function users()
 	{
-		$permissions = explode(',', $this->permissions);
-
-		if (array_search($permission, $permissions) !== false)
-		{
-			return true;
-		}
-
-		return false;
+		return $this->belongsToMany(User::class);
 	}
 
+	public function getCurrencyIntervalAttribute($value)
+	{
+		return json_decode($value);
+	}
+
+	public function getCurrencyAwardedAttribute($value)
+	{
+		return json_decode($value);
+	}
 }

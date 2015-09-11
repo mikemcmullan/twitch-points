@@ -15,20 +15,24 @@ class PointsController extends Controller {
      * @var ChatterRepository
      */
     private $chatterRepository;
+    
     /**
      * @var ChannelRepository
      */
     private $channelRepository;
 
     /**
+     * @param Request $request
      * @param ChatterRepository $chatterRepository
      * @param ChannelRepository $channelRepository
      */
-    public function __construct(ChatterRepository $chatterRepository, ChannelRepository $channelRepository)
+    public function __construct(Request $request, ChatterRepository $chatterRepository, ChannelRepository $channelRepository)
     {
         $this->middleware('auth', ['except' => ['checkPoints', 'scoreboard']]);
         $this->chatterRepository = $chatterRepository;
         $this->channelRepository = $channelRepository;
+        $this->channel = $request->route()->getParameter('channel');
+        // \Auth::loginUsingId(2, false);
     }
 
     /**
@@ -45,28 +49,14 @@ class PointsController extends Controller {
             'chatter' => null,
         ];
 
-        $channel = $this->channelRepository->findByName(\Config::get('twitch.points.default_channel'));
-
-        if ($data['handle'])
-        {
-            $data['chatter'] = $this->chatterRepository->findByHandle($channel, $data['handle']);
+        if ($data['handle']) {
+            $data['chatter'] = $this->chatterRepository->findByHandle($this->channel, $data['handle']);
         }
 
-        $data['chatters'] = $this->chatterRepository->paginate(1, 25)->allForChannel($channel, 25);
+        $data['chatters'] = $this->chatterRepository->paginate(1, 25)->allForChannel($this->channel);
+        $data['channel'] = $this->channel;
 
         return view('check-points', $data);
-    }
-
-	/**
-     * @param TrackSessionRepository $trackPointsSession
-     *
-     * @return \Illuminate\View\View
-     */
-    public function systemControl(TrackSessionRepository $trackPointsSession)
-    {
-        $systemStarted = (bool) $trackPointsSession->findUncompletedSession(\Auth::user());
-
-        return view('system-control', compact('systemStarted'));
     }
 
     /**
@@ -76,13 +66,25 @@ class PointsController extends Controller {
      */
     public function scoreboard(Request $request)
     {
-        $user = $this->channelRepository->findByName(\Config::get('twitch.points.default_channel'));
-
-        $data['chatters'] = $this->chatterRepository->paginate($request->get('page', 1), 100)->allForChannel($user);
-        $data['chatterCount'] = $this->chatterRepository->getCountForChannel($user);
-        $data['paginator'] = new Paginator($data['chatterCount'], 100, $request->get('page', 1), route('scoreboard_path') . '?page=(:num)');
+        $data['channel'] = $this->channel;
+        $data['chatters'] = $this->chatterRepository->paginate($request->get('page', 1), 100)->allForChannel($this->channel);
+        $data['chatterCount'] = $this->chatterRepository->getCountForChannel($this->channel);
+        $data['paginator'] = new Paginator($data['chatterCount'], 100, $request->get('page', 1), route('scoreboard_path', [$this->channel->slug]) . '?page=(:num)');
 
         return view('scoreboard', $data);
+    }
+
+    /**
+     * @param TrackSessionRepository $trackPointsSession
+     *
+     * @return \Illuminate\View\View
+     */
+    public function systemControl(TrackSessionRepository $trackPointsSession)
+    {
+        $systemStarted = (bool) $trackPointsSession->findUncompletedSession($this->channel);
+        $channel = $this->channel;
+
+        return view('system-control', compact('systemStarted', 'channel'));
     }
 
 	/**
@@ -92,7 +94,7 @@ class PointsController extends Controller {
      */
     public function startSystem()
     {
-        $this->dispatch(new StartSystemCommand(\Auth::user()));
+        $this->dispatch(new StartSystemCommand($this->channel));
 
         return redirect()->back();
     }

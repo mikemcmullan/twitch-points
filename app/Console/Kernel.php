@@ -12,7 +12,7 @@ class Kernel extends ConsoleKernel {
 	 */
 	protected $commands = [
 		'App\Console\Commands\UpdatePoints',
-		'App\Console\Commands\RemoveOldViewers'
+		// 'App\Console\Commands\RemoveOldViewers'
 	];
 
 	/**
@@ -23,7 +23,7 @@ class Kernel extends ConsoleKernel {
 	 */
 	protected function schedule(Schedule $schedule)
 	{
-		$schedule->command('points:update')->everyFiveMinutes();
+//		$schedule->command('points:update')->everyFiveMinutes();
 	}
 
 }
