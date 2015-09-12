@@ -45,4 +45,9 @@ class Channel extends Model implements AuthenticatableContract, CanResetPassword
 	{
 		return json_decode($value);
 	}
+
+	public function getRankModsAttribute($value)
+	{
+		return (bool) $value;
+	}
 }

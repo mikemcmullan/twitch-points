@@ -29,13 +29,11 @@ class RankChatters {
 	 */
 	public function handle(ChatListWasDownloaded $event)
 	{
-		$chatters = $this->chatterRepository->allForChannel($event->channel);
+		$chatters = $this->chatterRepository->allForChannel($event->channel, false, $event->channel->rank_mods);
 		$rankings = new Collection();
 		$rank = 1;
 
-		$groups = $chatters->filter(function ($chatter) {
-			return ! (array_get($chatter, 'mod') === true || array_get($chatter, 'hide') === true);
-		})->groupBy('points');
+		$groups = $chatters->groupBy('points');
 
 		foreach ($groups as $group) {
 			foreach ($group as $chatter) {
