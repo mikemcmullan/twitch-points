@@ -16,8 +16,7 @@ class EventServiceProvider extends ServiceProvider {
 		],
 
 		'App\Events\ChatListWasDownloaded' => [
-			'App\Handlers\Events\ProcessChatList',
-			'App\Handlers\Events\RankChatters'
+			'App\Handlers\Events\ProcessChatList'
 		]
 	];
 

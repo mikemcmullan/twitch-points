@@ -7,6 +7,11 @@ use App\Channel;
 interface ChannelRepository {
 
 	/**
+	 * Get all channels.
+	 */
+	public function all();
+
+	/**
 	 * Find a user by their name or create a new user.
 	 *
 	 * @param $name

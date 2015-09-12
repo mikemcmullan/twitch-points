@@ -1,13 +1,13 @@
 <?php namespace App\Console\Commands;
 
-use App\Commands\DownloadChatList;
-use App\Contracts\Repositories\TrackSessionRepository;
 use Illuminate\Console\Command;
-use Illuminate\Foundation\Bus\DispatchesCommands;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Input\InputArgument;
+use App\Contracts\Repositories\TrackSessionRepository;
+use Illuminate\Foundation\Bus\DispatchesCommands;
+use App\Commands\RankChattersCommand;
 
-class UpdatePoints extends Command {
+class RankChatters extends Command {
 
 	use DispatchesCommands;
 
@@ -16,24 +16,24 @@ class UpdatePoints extends Command {
 	 *
 	 * @var string
 	 */
-	protected $name = 'points:update';
+	protected $name = 'points:rank';
 
 	/**
 	 * The console command description.
 	 *
 	 * @var string
 	 */
-	protected $description = 'Update chat list for a channel.';
+	protected $description = 'Rank Chatters.';
 
 	/**
-	 * @var TrackPointsSession
+	 * @var TrackSessionRepository
 	 */
-	private $pointsSession;
+	protected $pointsSession;
 
 	/**
 	 * Create a new command instance.
 	 *
-	 * @param TrackSessionRepository $pointsSession
+	 * @return void
 	 */
 	public function __construct(TrackSessionRepository $pointsSession)
 	{
@@ -51,16 +51,12 @@ class UpdatePoints extends Command {
 		$startTime = microtime(true);
 		$sessions = $this->pointsSession->allUncompletedSessions();
 
-		try {
-			foreach ($sessions as $session) {
-				$this->dispatch(new DownloadChatList($session->channel));
-			}
-		} catch (\Exception $e) {
-			dd($e->getFile(), $e->getLine());
+		foreach ($sessions as $session) {
+			$this->dispatch(new RankChattersCommand($session->channel));
 		}
 
 		$end = microtime(true) - $startTime;
-		\Log::info(sprintf('Updated Points in %s seconds', $end));
-		$this->info(sprintf('Updated Points in %s seconds', $end));
+		\Log::info(sprintf('Ranked Chatters in %s seconds', $end));
+		$this->info(sprintf('Ranked Chatters in %s seconds', $end));
 	}
 }

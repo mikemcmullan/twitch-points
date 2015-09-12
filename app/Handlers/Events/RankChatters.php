@@ -2,9 +2,12 @@
 
 use App\Contracts\Repositories\ChatterRepository;
 use App\Events\ChatListWasDownloaded;
-use Illuminate\Database\Eloquent\Collection;
+use App\Commands\RankChattersCommand;
+use Illuminate\Foundation\Bus\DispatchesCommands;
 
 class RankChatters {
+
+	use DispatchesCommands;
 
 	/**
 	 * @var ChatterRepository
@@ -29,22 +32,7 @@ class RankChatters {
 	 */
 	public function handle(ChatListWasDownloaded $event)
 	{
-		$chatters = $this->chatterRepository->allForChannel($event->channel, false, $event->channel->rank_mods);
-		$rankings = new Collection();
-		$rank = 1;
-
-		$groups = $chatters->groupBy('points');
-
-		foreach ($groups as $group) {
-			foreach ($group as $chatter) {
-				$chatter['rank'] = $rank;
-				$rankings->push($chatter);
-			}
-
-			$rank++;
-		}
-
-		$this->chatterRepository->updateRankings($event->channel, $rankings->toArray());
+		$this->dispatch(new RankChattersCommand($channel));
 	}
 
 }

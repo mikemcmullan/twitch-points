@@ -13,19 +13,21 @@ class EloquentChannelRepository implements ChannelRepository
      * @var User
      */
     private $channel;
-    /**
-     * @var TrackPointsSession
-     */
-    private $pointsSession;
 
     /**
      * @param Channel $channel
-     * @param TrackSessionRepository $pointsSession
      */
-    public function __construct(Channel $channel, TrackSessionRepository $pointsSession)
+    public function __construct(Channel $channel)
     {
-        $this->pointsSession = $pointsSession;
         $this->channel = $channel;
+    }
+
+    /**
+     * Get all channels.
+     */
+    public function all()
+    {
+        return $this->channel->all();
     }
 
     /**

@@ -12,7 +12,7 @@ class Kernel extends ConsoleKernel {
 	 */
 	protected $commands = [
 		'App\Console\Commands\UpdatePoints',
-		// 'App\Console\Commands\RemoveOldViewers'
+		'App\Console\Commands\RankChatters'
 	];
 
 	/**
