@@ -8,21 +8,6 @@ Route::group(['domain' => env('AUTH_DOMAIN', 'auth.twitch.dev')], function() {
 });
 
 Route::group(['domain' => '{channel}.' . env('CHANNEL_DOMAIN', 'twitch.dev')], function () {
-	// get('/test', function(
-	// 	\App\Contracts\Repositories\ChatterRepository $chatterRepo,
-	// 	\App\Contracts\Repositories\ChannelRepository $channelRepo
-	// ) {
-	// 	$viewers = \DB::table('jonzzzzz')->get();
-	// 	$channel = $channelRepo->findBySlug('mcsmike');
-
-	// 	foreach ($viewers as $viewer) {
-	// 		if (in_array($viewer->user, ['nightbot', 'jonzzzzz', 'lalllllbot', 'ninjachris77'])) {
-	// 			$chatterRepo->updateModerator($channel, $viewer->user, $viewer->time_watched, $viewer->currency);
-	// 		} else {
-	// 			$chatterRepo->updateChatter($channel, $viewer->user, $viewer->time_watched, $viewer->currency);
-	// 		}
-	// 	}
-	// });
 
 	get('/', [
 	    'uses'  => 'PointsController@checkPoints',
