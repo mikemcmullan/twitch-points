@@ -81,7 +81,7 @@ class PointsController extends Controller {
      */
     public function systemControl(TrackSessionRepository $trackPointsSession)
     {
-        $systemStarted = (bool) $trackPointsSession->findUncompletedSession($this->channel);
+        $systemStarted = (bool) $trackPointsSession->findIncompletedSession($this->channel);
         $channel = $this->channel;
 
         return view('system-control', compact('systemStarted', 'channel'));

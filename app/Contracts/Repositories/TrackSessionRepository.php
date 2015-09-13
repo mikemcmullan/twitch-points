@@ -32,13 +32,13 @@ interface TrackSessionRepository {
 	 *
 	 * @return \Illuminate\Database\Eloquent\Collection|static[]
 	 */
-	public function findUncompletedSession(Channel $channel);
+	public function findIncompletedSession(Channel $channel);
 
 	/**
 	 * Find all uncompleted track sessions.
 	 *
 	 * @return \Illuminate\Database\Eloquent\Collection|static[]
 	 */
-	public function allUncompletedSessions();
+	public function allIncompletedSessions();
 
 }

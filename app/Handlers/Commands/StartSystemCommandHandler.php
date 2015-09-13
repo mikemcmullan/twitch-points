@@ -38,7 +38,7 @@ class StartSystemCommandHandler {
 	 */
 	public function handle(StartSystemCommand $command)
 	{
-		$session = $this->trackSessionRepository->findUncompletedSession($command->channel);
+		$session = $this->trackSessionRepository->findIncompletedSession($command->channel);
 
 		if ( ! $session)
 		{

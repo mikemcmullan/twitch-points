@@ -20,7 +20,7 @@
     <tr>
         <td>{{ $chatter['rank'] or '--' }}</td>
         <td>{{ $chatter['handle'] }}</td>
-        <td>{{ presentTimeOnline($chatter['minutes']) }}</td>
+        <td>{{ presentTimeOnline($chatter['minutes']) }} {!! $chatter['mod'] ? '<span class="label label-primary">MOD</span>' : '' !!}</td>
         <td>{{ floor($chatter['points']) }}</td>
     </tr>
     @endif

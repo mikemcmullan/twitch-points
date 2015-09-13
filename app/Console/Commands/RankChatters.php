@@ -49,7 +49,7 @@ class RankChatters extends Command {
 	public function fire()
 	{
 		$startTime = microtime(true);
-		$sessions = $this->pointsSession->allUncompletedSessions();
+		$sessions = $this->pointsSession->allIncompletedSessions();
 
 		foreach ($sessions as $session) {
 			$this->dispatch(new RankChattersCommand($session->channel));

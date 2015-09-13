@@ -60,7 +60,7 @@ class EloquentTrackSessionRepository implements TrackSessionRepositoryInterface 
      *
      * @return \Illuminate\Database\Eloquent\Collection|static[]
      */
-    public function findUncompletedSession(Channel $channel)
+    public function findIncompletedSession(Channel $channel)
     {
         return $this->pointsSession
             ->with('channel')
@@ -74,7 +74,7 @@ class EloquentTrackSessionRepository implements TrackSessionRepositoryInterface 
      *
      * @return \Illuminate\Database\Eloquent\Collection|static[]
      */
-    public function allUncompletedSessions()
+    public function allIncompletedSessions()
     {
         return $this->pointsSession
             ->with('channel')

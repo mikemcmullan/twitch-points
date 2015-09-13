@@ -49,7 +49,7 @@ class UpdatePoints extends Command {
 	public function fire()
 	{
 		$startTime = microtime(true);
-		$sessions = $this->pointsSession->allUncompletedSessions();
+		$sessions = $this->pointsSession->allIncompletedSessions();
 
 		try {
 			foreach ($sessions as $session) {
