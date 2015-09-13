@@ -388,6 +388,8 @@ class RedisChatterRepository implements ChatterRepository {
         $user['key']    = $this->makeKey($channel['id'], $handle);
         $user['channel']= $channel;
         $user['handle'] = $handle;
+        $user['mod']    = (bool) array_get($user, 'mod');
+        $user['hide']   = (bool) array_get($user, 'hide');
 
         return $user;
     }
