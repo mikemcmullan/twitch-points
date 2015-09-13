@@ -24,7 +24,9 @@ class Kernel extends ConsoleKernel {
 	 */
 	protected function schedule(Schedule $schedule)
 	{
-//		$schedule->command('points:update')->everyFiveMinutes();
+		// $schedule->command('points:sync-status jonzzzzz')->everyFiveMinutes();
+        // $schedule->command('points:update')->everyFiveMinutes();
+        // $schedule->command('points:rank')->everyTenMinutes();
 	}
 
 }
