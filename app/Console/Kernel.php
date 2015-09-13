@@ -12,7 +12,8 @@ class Kernel extends ConsoleKernel {
 	 */
 	protected $commands = [
 		'App\Console\Commands\UpdatePoints',
-		'App\Console\Commands\RankChatters'
+		'App\Console\Commands\RankChatters',
+		'App\Console\Commands\SyncSystemStatus'
 	];
 
 	/**
