@@ -4,6 +4,6 @@ namespace App\Exceptions;
 
 use Exception;
 
-class UnknownHandleException extends Exception {
-
+class UnknownHandleException extends Exception
+{
 }

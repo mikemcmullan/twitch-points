@@ -8,8 +8,8 @@ use App\Contracts\Repositories\UserRepository;
 use Illuminate\Contracts\Auth\Guard;
 use Illuminate\Cookie\CookieJar;
 
-class AuthenticateUser {
-
+class AuthenticateUser
+{
     /**
      * @var TwitchSDKAdapter
      */
@@ -55,18 +55,22 @@ class AuthenticateUser {
     public function execute(Channel $channel, $code, $error, $listener)
     {
         // If error login failed.
-        if ($error) return $listener->loginHasFailed($error);
+        if ($error) {
+            return $listener->loginHasFailed($error);
+        }
 
         $token = $this->twitchSDK->authAccessTokenGet($code);
 
         // If error is returned from twitch the access token will be missing.
-        if ( ! isset($token['access_token'])) return $listener->loginHasFailed();
+        if (! isset($token['access_token'])) {
+            return $listener->loginHasFailed();
+        }
 
         $authUser = $this->twitchSDK->authUserGet($token['access_token']);
 
         $user = $this->userRepo->findByName($channel, $authUser['name']);
 
-        if ( ! $user) {
+        if (! $user) {
             return $listener->loginHasFailed();
         }
 

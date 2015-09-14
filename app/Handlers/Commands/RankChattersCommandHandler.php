@@ -1,11 +1,13 @@
-<?php namespace App\Handlers\Commands;
+<?php
+
+namespace App\Handlers\Commands;
 
 use App\Commands\RankChattersCommand;
 use App\Contracts\Repositories\ChatterRepository;
 use Illuminate\Database\Eloquent\Collection;
 
-class RankChattersCommandHandler {
-
+class RankChattersCommandHandler
+{
     /**
      * @var ChatterRepository
      */
@@ -46,5 +48,4 @@ class RankChattersCommandHandler {
 
         $this->chatterRepository->updateRankings($command->channel, $rankings->toArray());
     }
-
 }

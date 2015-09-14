@@ -4,6 +4,6 @@ namespace App\Exceptions;
 
 use Exception;
 
-class BotStateException extends Exception {
-
+class BotStateException extends Exception
+{
 }

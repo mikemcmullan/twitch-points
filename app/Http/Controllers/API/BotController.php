@@ -7,111 +7,104 @@ use App\Http\Controllers\Controller;
 use App\Bot\Manager;
 use Illuminate\Http\Request;
 
-class BotController extends Controller {
+class BotController extends Controller
+{
+    /**
+     * @var Request
+     */
+    private $request;
 
-	/**
-	 * @var Request
-	 */
-	private $request;
+    /**
+     * @var BotManager
+     */
+    private $bot;
 
-	/**
-	 * @var BotManager
-	 */
-	private $bot;
+    public function __construct(Request $request, Manager $bot)
+    {
+        $this->request = $request;
+        $this->bot = $bot;
+        $this->channel = \Config::get('twitch.points.default_channel');
 
-	public function __construct(Request $request, Manager $bot)
-	{
-		$this->request = $request;
-		$this->bot = $bot;
-		$this->channel = \Config::get('twitch.points.default_channel');
+        $this->middleware('auth', ['except' => ['getStatus']]);
+        $this->middleware('protect.api', ['only' => ['getStatus']]);
+    }
 
-		$this->middleware('auth', ['except' => ['getStatus']]);
-		$this->middleware('protect.api', ['only' => ['getStatus']]);
-	}
+    public function getLog()
+    {
+        $offset = (int) $this->request->get('offset', 0);
+        $log = $this->bot->getLog($offset);
 
-	public function getLog()
-	{
-		$offset = (int) $this->request->get('offset', 0);
-		$log = $this->bot->getLog($offset);
-
-		$response = [
+        $response = [
 //			'status'    => $this->bot->getStatus(),
 //			'new_offset'=> count($log) + $offset,
-			'entries'   => $log
-		];
+            'entries'   => $log
+        ];
 
-		return response()->json($response);
-	}
+        return response()->json($response);
+    }
 
-	public function getStatus()
-	{
-		$status = $this->bot->getStatus();
+    public function getStatus()
+    {
+        $status = $this->bot->getStatus();
 
-		return response()->json([
-			'status' => $status
-		]);
-	}
+        return response()->json([
+            'status' => $status
+        ]);
+    }
 
-	public function joinChannel(ChannelRepository $channelRepo)
-	{
-		$channel = $channelRepo->findByName($this->channel);
+    public function joinChannel(ChannelRepository $channelRepo)
+    {
+        $channel = $channelRepo->findByName($this->channel);
 
-		if ($channel)
-		{
-			$response = $this->bot->joinChannel($channel);
-		}
-		else
-		{
-			$response = [
-				'error' => 'Invalid channel.',
-				'level' => 'regular'
-			];
-		}
+        if ($channel) {
+            $response = $this->bot->joinChannel($channel);
+        } else {
+            $response = [
+                'error' => 'Invalid channel.',
+                'level' => 'regular'
+            ];
+        }
 
-		return response()->json($response);
-	}
+        return response()->json($response);
+    }
 
-	public function leaveChannel(ChannelRepository $channelRepo)
-	{
-		$channel = $channelRepo->findByName($this->channel);
+    public function leaveChannel(ChannelRepository $channelRepo)
+    {
+        $channel = $channelRepo->findByName($this->channel);
 
-		if ($channel)
-		{
-			$response = $this->bot->leaveChannel($channel);
-		}
-		else
-		{
-			$response = [
-				'error' => 'Invalid channel.',
-				'level' => 'regular'
-			];
-		}
+        if ($channel) {
+            $response = $this->bot->leaveChannel($channel);
+        } else {
+            $response = [
+                'error' => 'Invalid channel.',
+                'level' => 'regular'
+            ];
+        }
 
-		return response()->json($response);
-	}
+        return response()->json($response);
+    }
 
-	public function startBot()
-	{
-		return response()->json($this->bot->startBot());
-	}
+    public function startBot()
+    {
+        return response()->json($this->bot->startBot());
+    }
 
-	public function stopBot()
-	{
-		return response()->json($this->bot->stopBot());
-	}
+    public function stopBot()
+    {
+        return response()->json($this->bot->stopBot());
+    }
 
-	public function getToken()
-	{
-		$response = ['token' => bcrypt('woot')];
+    public function getToken()
+    {
+        $response = ['token' => bcrypt('woot')];
 
-		return response()->json($response);
-	}
+        return response()->json($response);
+    }
 
-	public function validateToken()
-	{
-		$response = ['token' => 'ok'];
+    public function validateToken()
+    {
+        $response = ['token' => 'ok'];
 
-		return response()->json($response);
-	}
-
+        return response()->json($response);
+    }
 }

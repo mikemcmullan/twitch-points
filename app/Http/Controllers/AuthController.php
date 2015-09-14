@@ -1,4 +1,6 @@
-<?php namespace App\Http\Controllers;
+<?php
+
+namespace App\Http\Controllers;
 
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
@@ -8,8 +10,8 @@ use Illuminate\Contracts\Encryption\Encrypter;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 
-class AuthController extends Controller {
-
+class AuthController extends Controller
+{
     private $channel;
 
     public function __construct(Request $request)
@@ -26,11 +28,11 @@ class AuthController extends Controller {
      */
     public function loginProxy(Request $request, TwitchSDKAdapter $twitchSDK, Encrypter $encrypter)
     {
-        if ( ! $request->get('code') && ! $request->get('error')) {
+        if (! $request->get('code') && ! $request->get('error')) {
             $referer    = $request->get('referer');
-            $url 		= $twitchSDK->authLoginURL('user_read');
+            $url        = $twitchSDK->authLoginURL('user_read');
 
-            $response 	= new Response(view('login-proxy', compact('url')));
+            $response    = new Response(view('login-proxy', compact('url')));
             $response->header('Location', $url);
             $response->withCookie(cookie('referer', $referer, 60*60));
 
@@ -39,7 +41,7 @@ class AuthController extends Controller {
 
         $referer = $request->cookie('referer');
 
-        if ( ! $referer) {
+        if (! $referer) {
             return response('Error redirecting, please use your browsers back button to return the site.');
         }
 
@@ -55,10 +57,11 @@ class AuthController extends Controller {
      */
     public function login(Request $request, AuthenticateUser $authUser)
     {
-        if ( ! $request->get('code') && ! $request->get('error'))
+        if (! $request->get('code') && ! $request->get('error')) {
             return redirect('http://' . env('AUTH_DOMAIN', 'auth.twitch.dev') . '/login?referer=' . $request->fullUrl());
-        else
+        } else {
             return $authUser->execute($this->channel, $request->get('code'), $request->get('error'), $this);
+        }
     }
 
     /**
@@ -93,5 +96,4 @@ class AuthController extends Controller {
             ->route('home_path', $this->channel->slug)
             ->with('message', 'Login successful.');
     }
-
 }

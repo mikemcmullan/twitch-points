@@ -2,13 +2,12 @@
 
 namespace App\Services;
 
-
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;
 use Illuminate\Contracts\Cache\Repository as CacheRepository;
 
-class TwitchApi {
-
+class TwitchApi
+{
     /**
      * @var Client
      */
@@ -100,8 +99,7 @@ class TwitchApi {
     {
         $stream = $this->getStream($channelName);
 
-        if ($stream && $stream['stream'] != null)
-        {
+        if ($stream && $stream['stream'] != null) {
             return true;
         }
 
@@ -116,15 +114,11 @@ class TwitchApi {
      */
     public function getStream($channel)
     {
-        return $this->cache->remember('valid:' . $channel, 1, function() use($channel)
-        {
-            try
-            {
+        return $this->cache->remember('valid:' . $channel, 1, function () use ($channel) {
+            try {
                 $response = $this->httpClient->get('https://api.twitch.tv/kraken/streams/' . $channel);
                 return json_decode((string) $response->getBody(), true);
-            }
-            catch(ClientException $e)
-            {
+            } catch (ClientException $e) {
                 return false;
             }
         });

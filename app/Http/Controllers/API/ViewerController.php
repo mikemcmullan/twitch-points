@@ -11,55 +11,46 @@ use Exception;
 use InvalidArgumentException;
 use Bus;
 
-class ViewerController extends Controller {
+class ViewerController extends Controller
+{
+    /**
+     *
+     */
+    public function __construct()
+    {
+    }
 
-	/**
-	 *
-	 */
-	public function __construct()
-	{
+    /**
+     * @param Request $request
+     * @param Channel $channel
+     *
+     * @return \Symfony\Component\HttpFoundation\Response
+     */
+    public function getViewer(Request $request, Channel $channel)
+    {
+        $handle = $request->get('handle');
 
-	}
+        try {
+            $response = Bus::dispatch(new GetViewerCommand($channel, $handle));
 
-	/**
-	 * @param Request $request
-	 * @param Channel $channel
-	 *
-	 * @return \Symfony\Component\HttpFoundation\Response
-	 */
-	public function getViewer(Request $request, Channel $channel)
-	{
-		$handle = $request->get('handle');
+            $response['time_online'] = presentTimeOnline($response['minutes']);
+        } catch (UnknownHandleException $e) {
+            $response = [
+                'level' => 'notice',
+                'error' => $e->getMessage()
+            ];
+        } catch (InvalidArgumentException $e) {
+            $response = [
+                'level' => 'notice',
+                'error' => $e->getMessage()
+            ];
+        } catch (Exception $e) {
+            $response = [
+                'level' => 'notice',
+                'error' => 'Unknown error occurred.'
+            ];
+        }
 
-		try
-		{
-			$response = Bus::dispatch(new GetViewerCommand($channel, $handle));
-
-			$response['time_online'] = presentTimeOnline($response['minutes']);
-		}
-		catch(UnknownHandleException $e)
-		{
-			$response = [
-				'level' => 'notice',
-				'error' => $e->getMessage()
-			];
-		}
-		catch(InvalidArgumentException $e)
-		{
-			$response = [
-				'level' => 'notice',
-				'error' => $e->getMessage()
-			];
-		}
-		catch(Exception $e)
-		{
-			$response = [
-				'level' => 'notice',
-				'error' => 'Unknown error occurred.'
-			];
-		}
-
-		return response()->json($response);
-	}
-
+        return response()->json($response);
+    }
 }

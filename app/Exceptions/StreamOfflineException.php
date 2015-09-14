@@ -4,6 +4,6 @@ namespace App\Exceptions;
 
 use Exception;
 
-class StreamOfflineException extends Exception {
-
+class StreamOfflineException extends Exception
+{
 }

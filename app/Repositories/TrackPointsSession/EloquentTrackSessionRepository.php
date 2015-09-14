@@ -7,17 +7,17 @@ use App\Contracts\Repositories\TrackSessionRepository as TrackSessionRepositoryI
 use App\Channel;
 use Carbon\Carbon;
 
-class EloquentTrackSessionRepository implements TrackSessionRepositoryInterface {
-
+class EloquentTrackSessionRepository implements TrackSessionRepositoryInterface
+{
     /**
      * @var TrackPointsSession
      */
     private $pointsSession;
 
-	/**
+    /**
      * @param TrackSession $pointsSession
      */
-    public function  __construct(TrackSession $pointsSession)
+    public function __construct(TrackSession $pointsSession)
     {
         $this->pointsSession = $pointsSession;
     }
@@ -36,7 +36,7 @@ class EloquentTrackSessionRepository implements TrackSessionRepositoryInterface 
         ]);
     }
 
-	/**
+    /**
      * Complete a track session.
      *
      * @param TrackSession $session
@@ -69,7 +69,7 @@ class EloquentTrackSessionRepository implements TrackSessionRepositoryInterface 
             ->first();
     }
 
-	/**
+    /**
      * Find all uncompleted track sessions.
      *
      * @return \Illuminate\Database\Eloquent\Collection|static[]

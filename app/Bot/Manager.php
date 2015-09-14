@@ -7,129 +7,127 @@ use App\Exceptions\BotStateException;
 use Illuminate\Redis\Database;
 use Supervisor\Supervisor;
 
-class Manager {
+class Manager
+{
+    /**
+     * @var Supervisor
+     */
+    private $supervisor;
 
-	/**
-	 * @var Supervisor
-	 */
-	private $supervisor;
+    /**
+     * @var
+     */
+    private $redis;
 
-	/**
-	 * @var
-	 */
-	private $redis;
+    /**
+     * @param Supervisor $supervisor
+     * @param Database $redis
+     */
+    public function __construct(Supervisor $supervisor, Database $redis)
+    {
+        $this->supervisor = $supervisor;
+        $this->redis = $redis;
+    }
 
-	/**
-	 * @param Supervisor $supervisor
-	 * @param Database $redis
-	 */
-	public function __construct(Supervisor $supervisor, Database $redis)
-	{
-		$this->supervisor = $supervisor;
-		$this->redis = $redis;
-	}
+    /**
+     * @return \Supervisor\Process
+     */
+    public function getProcess()
+    {
+        return $this->supervisor->getProcess('twitch_bot');
+    }
 
-	/**
-	 * @return \Supervisor\Process
-	 */
-	public function getProcess()
-	{
-		return $this->supervisor->getProcess('twitch_bot');
-	}
+    /**
+     * @param int $offset
+     *
+     * @return array
+     */
+    public function getLog($offset = 0)
+    {
+        return $this->redis->lrange('twitch-bot-log', 0, -1);
+    }
 
-	/**
-	 * @param int $offset
-	 *
-	 * @return array
-	 */
-	public function getLog($offset = 0)
-	{
-		return $this->redis->lrange('twitch-bot-log', 0, -1);
-	}
+    /**
+     * @return string
+     */
+    public function getStatus()
+    {
+        return $this->getProcess()['statename'];
+    }
 
-	/**
-	 * @return string
-	 */
-	public function getStatus()
-	{
-		return $this->getProcess()['statename'];
-	}
+    /**
+     * @return bool
+     * @throws BotStateException
+     */
+    public function startBot()
+    {
+        $this->guardProcessRunning();
 
-	/**
-	 * @return bool
-	 * @throws BotStateException
-	 */
-	public function startBot()
-	{
-		$this->guardProcessRunning();
+        $name = $this->getProcess()->getName();
 
-		$name = $this->getProcess()->getName();
+        $this->redis->publish('twitch-bot-log', 'Starting bot.');
 
-		$this->redis->publish('twitch-bot-log', 'Starting bot.');
+        return $this->supervisor->startProcess($name);
+    }
 
-		return $this->supervisor->startProcess($name);
-	}
+    /**
+     * @return bool
+     * @throws BotStateException
+     */
+    public function stopBot()
+    {
+        $this->guardProcessNotRunning();
 
-	/**
-	 * @return bool
-	 * @throws BotStateException
-	 */
-	public function stopBot()
-	{
-		$this->guardProcessNotRunning();
+        $name = $this->getProcess()->getName();
 
-		$name = $this->getProcess()->getName();
+        $this->redis->publish('twitch-bot-log', 'Stopping bot.');
 
-		$this->redis->publish('twitch-bot-log', 'Stopping bot.');
+        return $this->supervisor->stopProcess($name);
+    }
 
-		return $this->supervisor->stopProcess($name);
-	}
+    /**
+     * @param Channel $channel
+     *
+     * @return mixed
+     * @throws BotStateException
+     */
+    public function joinChannel(Channel $channel)
+    {
+        $this->guardProcessNotRunning();
 
-	/**
-	 * @param Channel $channel
-	 *
-	 * @return mixed
-	 * @throws BotStateException
-	 */
-	public function joinChannel(Channel $channel)
-	{
-		$this->guardProcessNotRunning();
+        return $this->redis->publish("irc:{$channel['id']}:commander", 'join-chat');
+    }
 
-		return $this->redis->publish("irc:{$channel['id']}:commander", 'join-chat');
-	}
+    /**
+     * @param Channel $channel
+     *
+     * @return mixed
+     * @throws BotStateException
+     */
+    public function leaveChannel(Channel $channel)
+    {
+        $this->guardProcessNotRunning();
 
-	/**
-	 * @param Channel $channel
-	 *
-	 * @return mixed
-	 * @throws BotStateException
-	 */
-	public function leaveChannel(Channel $channel)
-	{
-		$this->guardProcessNotRunning();
+        return $this->redis->publish("irc:{$channel['id']}:commander", 'leave-chat');
+    }
 
-		return $this->redis->publish("irc:{$channel['id']}:commander", 'leave-chat');
-	}
+    /**
+     * @throws BotStateException
+     */
+    private function guardProcessNotRunning()
+    {
+        if (! $this->getProcess()->isRunning()) {
+            throw new BotStateException('Bot is not running.');
+        }
+    }
 
-	/**
-	 * @throws BotStateException
-	 */
-	private function guardProcessNotRunning()
-	{
-		if ( ! $this->getProcess()->isRunning())
-		{
-			throw new BotStateException('Bot is not running.');
-		}
-	}
-
-	/**
-	 * @throws BotStateException
-	 */
-	private function guardProcessRunning()
-	{
-		if ($this->getProcess()->isRunning())
-		{
-			throw new BotStateException('Bot is already running.');
-		}
-	}
+    /**
+     * @throws BotStateException
+     */
+    private function guardProcessRunning()
+    {
+        if ($this->getProcess()->isRunning()) {
+            throw new BotStateException('Bot is already running.');
+        }
+    }
 }

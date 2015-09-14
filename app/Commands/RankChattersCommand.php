@@ -1,11 +1,13 @@
-<?php namespace App\Commands;
+<?php
+
+namespace App\Commands;
 
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use App\Channel;
 
-class RankChattersCommand extends Command {
-
+class RankChattersCommand extends Command
+{
     use InteractsWithQueue, SerializesModels;
 
     /**
@@ -22,5 +24,4 @@ class RankChattersCommand extends Command {
     {
         $this->channel = $channel;
     }
-
 }

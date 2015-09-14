@@ -1,46 +1,47 @@
-<?php namespace App\Commands;
+<?php
+
+namespace App\Commands;
 
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 
-class AddPointsCommand extends Command {
+class AddPointsCommand extends Command
+{
+    use InteractsWithQueue, SerializesModels;
 
-	use InteractsWithQueue, SerializesModels;
+    /**
+     * @var
+     */
+    public $channel;
 
-	/**
-	 * @var
-	 */
-	public $channel;
+    /**
+     * @var
+     */
+    public $handle;
 
-	/**
-	 * @var
-	 */
-	public $handle;
+    /**
+     * @var
+     */
+    public $points;
 
-	/**
-	 * @var
-	 */
-	public $points;
+    /**
+     * @var
+     */
+    public $target;
 
-	/**
-	 * @var
-	 */
-	public $target;
-
-	/**
-	 * Create a new command instance.
-	 *
-	 * @param $channel  The channel the chatter belongs to.
-	 * @param $handle   The chat handle of the user making the request.
-	 * @param $target   The chat handle of the user who will receive the points.
-	 * @param $points   Amount of points to award.
-	 */
-	public function __construct($channel, $handle, $target, $points)
-	{
-		$this->channel = $channel;
-		$this->handle = $handle;
-		$this->points = $points;
-		$this->target = $target;
-	}
-
+    /**
+     * Create a new command instance.
+     *
+     * @param $channel  The channel the chatter belongs to.
+     * @param $handle   The chat handle of the user making the request.
+     * @param $target   The chat handle of the user who will receive the points.
+     * @param $points   Amount of points to award.
+     */
+    public function __construct($channel, $handle, $target, $points)
+    {
+        $this->channel = $channel;
+        $this->handle = $handle;
+        $this->points = $points;
+        $this->target = $target;
+    }
 }

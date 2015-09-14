@@ -42,8 +42,8 @@ use ritero\SDK\TwitchTV\TwitchSDK;
  * @method authStreamsFollowed($token)
  * @method getStreams($game = null, $limit = null, $offset = null, $channels = null, $embeddable = null, $hls = null)
  */
-class TwitchSDKAdapter {
-
+class TwitchSDKAdapter
+{
     /**
      * @var TwitchSDK
      */
@@ -74,12 +74,10 @@ class TwitchSDKAdapter {
      */
     public function __call($name, $args)
     {
-        if (method_exists($this->sdk, $name))
-        {
+        if (method_exists($this->sdk, $name)) {
             $response = call_user_func_array([$this->sdk, $name], $args);
 
-            if ($response instanceof \stdClass)
-            {
+            if ($response instanceof \stdClass) {
                 return $this->convertToCollection($response);
             }
 
@@ -88,5 +86,4 @@ class TwitchSDKAdapter {
 
         throw new \BadMethodCallException;
     }
-
 }

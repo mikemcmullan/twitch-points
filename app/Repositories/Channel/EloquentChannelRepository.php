@@ -8,7 +8,6 @@ use App\Channel;
 
 class EloquentChannelRepository implements ChannelRepository
 {
-
     /**
      * @var User
      */
@@ -39,8 +38,7 @@ class EloquentChannelRepository implements ChannelRepository
      */
     public function findByNameOrCreate($name, array $data = [])
     {
-        if ($user = $this->findByName($name))
-        {
+        if ($user = $this->findByName($name)) {
             return $user;
         }
 
@@ -64,15 +62,15 @@ class EloquentChannelRepository implements ChannelRepository
     }
     
     /**
-	 * Find a user by their slug.
-	 *
-	 * @param $slug
-	 * @return mixed
-	 */
-	public function findBySlug($slug)
-	{
-		return $this->channel->where('slug', '=', $slug)->first();
-	}
+     * Find a user by their slug.
+     *
+     * @param $slug
+     * @return mixed
+     */
+    public function findBySlug($slug)
+    {
+        return $this->channel->where('slug', '=', $slug)->first();
+    }
 
     /**
      * Update a user.

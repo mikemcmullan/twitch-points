@@ -1,9 +1,11 @@
-<?php namespace App;
+<?php
+
+namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 
-class TrackSession extends Model {
-
+class TrackSession extends Model
+{
     protected $table = 'track_points_sessions';
 
     protected $fillable = ['channel_id', 'complete', 'stream_length'];
@@ -12,5 +14,4 @@ class TrackSession extends Model {
     {
         return $this->belongsTo('App\Channel');
     }
-
 }

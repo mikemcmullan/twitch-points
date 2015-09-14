@@ -11,19 +11,19 @@ use Illuminate\Support\Collection;
 use App\Contracts\Repositories\ChatterRepository;
 use Predis\Pipeline\Pipeline;
 
-class RedisChatterRepository implements ChatterRepository {
-
-	/**
+class RedisChatterRepository implements ChatterRepository
+{
+    /**
      * Chat Key Format
      */
     const CHAT_KEY_FORMAT = 'chat:%s:%s';
 
-	/**
+    /**
      * Chat Index Key Format
      */
     const CHAT_INDEX_KEY_FORMAT = 'chattersIndex:%s';
 
-	/**
+    /**
      * Mod Index Key Format
      */
     const MOD_INDEX_KEY_FORMAT = 'modsIndex:%s';
@@ -43,14 +43,14 @@ class RedisChatterRepository implements ChatterRepository {
      */
     private $config;
 
-	/**
+    /**
      * The current page for paginator.
      *
      * @var int
      */
     private $page = 1;
 
-	/**
+    /**
      * How many records per page for the paginator.
      *
      * @var int
@@ -67,7 +67,7 @@ class RedisChatterRepository implements ChatterRepository {
         $this->config = $config;
     }
 
-	/**
+    /**
      * Get the time the points system was last updated for a channel.
      *
      * @return string
@@ -77,13 +77,12 @@ class RedisChatterRepository implements ChatterRepository {
         $key    = 'last_update:' . $channel['id'];
         $value  = $this->redis->get($key);
 
-        if ($value)
-        {
+        if ($value) {
             return Carbon::parse($value);
         }
     }
 
-	/**
+    /**
      * Set the time the points system for a channel was last updated.
      *
      * @param Carbon $time
@@ -97,7 +96,7 @@ class RedisChatterRepository implements ChatterRepository {
         return $this->redis->set($key, $time->second(0)->toDateTimeString());
     }
 
-	/**
+    /**
      * Setup pagination for results.
      *
      * @param int $page
@@ -126,8 +125,7 @@ class RedisChatterRepository implements ChatterRepository {
         $start = 0;
         $end = -1;
 
-        if ($this->perPage > 0)
-        {
+        if ($this->perPage > 0) {
             $start = $this->perPage * ($this->page - 1);
             $end = $start + $this->perPage - 1;
         }
@@ -138,7 +136,7 @@ class RedisChatterRepository implements ChatterRepository {
         return $collection;
     }
 
-	/**
+    /**
      * Get the number of chatters a channel has.
      *
      * @param Channel $channel
@@ -162,15 +160,14 @@ class RedisChatterRepository implements ChatterRepository {
 
         $result = $this->redis->hgetall($key);
 
-        if (empty($result))
-        {
+        if (empty($result)) {
             return;
         }
 
         return $this->mapUser($channel, $handle, $result);
     }
 
-	/**
+    /**
      * Delete a chatter, will only delete moderators.
      *
      * @param Channel $channel
@@ -204,8 +201,7 @@ class RedisChatterRepository implements ChatterRepository {
     {
         $key = $this->makeKey($channel['id'], $handle);
 
-        if ($pipe === null)
-        {
+        if ($pipe === null) {
             $pipe = $this->redis;
         }
 
@@ -215,7 +211,7 @@ class RedisChatterRepository implements ChatterRepository {
         $pipe->hset($key, 'updated', Carbon::now());
     }
 
-	/**
+    /**
      * Update/Create a group of chatters.
      *
      * @param Channel $channel
@@ -225,16 +221,14 @@ class RedisChatterRepository implements ChatterRepository {
      */
     public function updateChatters(Channel $channel, array $chatters, $minutes = 0, $points = 0)
     {
-        $this->redis->pipeline(function($pipe) use($channel, $chatters, $minutes, $points)
-        {
-            foreach ($chatters as $chatter)
-            {
+        $this->redis->pipeline(function ($pipe) use ($channel, $chatters, $minutes,$points) {
+            foreach ($chatters as $chatter) {
                 $this->updateChatter($channel, $chatter, $minutes, $points, $pipe);
             }
         });
     }
 
-	/**
+    /**
      * Update/Create a moderator.
      *
      * @param Channel $channel
@@ -247,8 +241,7 @@ class RedisChatterRepository implements ChatterRepository {
     {
         $key = $this->makeKey($channel['id'], $handle);
 
-        if ($pipe === null)
-        {
+        if ($pipe === null) {
             $pipe = $this->redis;
         }
 
@@ -270,16 +263,14 @@ class RedisChatterRepository implements ChatterRepository {
      */
     public function updateModerators(Channel $channel, array $chatters, $minutes = 0, $points = 0)
     {
-        $this->redis->pipeline(function($pipe) use($channel, $chatters, $minutes, $points)
-        {
-            foreach ($chatters as $chatter)
-            {
+        $this->redis->pipeline(function ($pipe) use ($channel, $chatters, $minutes,$points) {
+            foreach ($chatters as $chatter) {
                 $this->updateModerator($channel, $chatter, $minutes, $points, $pipe);
             }
         });
     }
 
-	/**
+    /**
      * Update rankings for chatters.
      *
      * @param Channel $channel
@@ -287,10 +278,8 @@ class RedisChatterRepository implements ChatterRepository {
      */
     public function updateRankings(Channel $channel, array $chatters)
     {
-        $this->redis->pipeline(function($pipe) use($channel, $chatters)
-        {
-            foreach ($chatters as $chatter)
-            {
+        $this->redis->pipeline(function ($pipe) use ($channel,$chatters) {
+            foreach ($chatters as $chatter) {
                 $key = $this->makeKey($channel['id'], $chatter['handle']);
 
                 $pipe->hset($key, 'rank', $chatter['rank']);
@@ -310,7 +299,7 @@ class RedisChatterRepository implements ChatterRepository {
         return sprintf(self::CHAT_KEY_FORMAT, $channel, $handle);
     }
 
-	/**
+    /**
      * Make a redis key for the chatter index.
      *
      * @param $channel
@@ -322,7 +311,7 @@ class RedisChatterRepository implements ChatterRepository {
         return sprintf(self::CHAT_INDEX_KEY_FORMAT, $channel);
     }
 
-	/**
+    /**
      * Make a redis key for the mod index.
      * @param $channel
      *
@@ -346,8 +335,7 @@ class RedisChatterRepository implements ChatterRepository {
     {
         $mappedUsers = [];
 
-        foreach ($chatters as $chatter)
-        {
+        foreach ($chatters as $chatter) {
             $key = $this->parseKey($chatter);
 
             $data = $this->redis->hgetall($chatter);
@@ -405,8 +393,7 @@ class RedisChatterRepository implements ChatterRepository {
      */
     private function parseKey($key)
     {
-        if ($this->channel === null)
-        {
+        if ($this->channel === null) {
             $this->channel = substr($key, 5, strpos($key, ':', 5) - 5);
             $this->handlePrefix = sprintf(self::CHAT_KEY_FORMAT, $this->channel, '');
         }
@@ -416,5 +403,4 @@ class RedisChatterRepository implements ChatterRepository {
             'handle'  => substr($key, strlen($this->handlePrefix))
         ];
     }
-
 }

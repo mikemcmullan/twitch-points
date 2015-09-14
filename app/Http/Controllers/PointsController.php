@@ -1,4 +1,6 @@
-<?php namespace App\Http\Controllers;
+<?php
+
+namespace App\Http\Controllers;
 
 use App\Commands\StartSystemCommand;
 use App\Contracts\Repositories\ChatterRepository;
@@ -9,8 +11,8 @@ use App\Contracts\Repositories\ChannelRepository;
 use Illuminate\Http\Request;
 use JasonGrimes\Paginator;
 
-class PointsController extends Controller {
-
+class PointsController extends Controller
+{
     /**
      * @var ChatterRepository
      */
@@ -87,7 +89,7 @@ class PointsController extends Controller {
         return view('system-control', compact('systemStarted', 'channel'));
     }
 
-	/**
+    /**
      * Responds to PATCH request to start the system.
      *
      * @return \Illuminate\Http\RedirectResponse

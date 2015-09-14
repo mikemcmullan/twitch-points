@@ -4,6 +4,6 @@ namespace App\Exceptions;
 
 use Exception;
 
-class FileInaccessibleException extends Exception {
-
+class FileInaccessibleException extends Exception
+{
 }

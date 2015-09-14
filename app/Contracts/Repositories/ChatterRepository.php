@@ -7,8 +7,8 @@ use Carbon\Carbon;
 use Illuminate\Support\Collection;
 use Predis\Pipeline\Pipeline;
 
-interface ChatterRepository {
-
+interface ChatterRepository
+{
     /**
      * Get the time the points system was last updated for a channel.
      *
@@ -27,7 +27,7 @@ interface ChatterRepository {
      */
     public function setLastUpdate(Channel $channel, Carbon $time);
 
-	/**
+    /**
      * Get all chatters belonging to a channel.
      *
      * @param Channel $channel
@@ -123,5 +123,4 @@ interface ChatterRepository {
      * @param array $chatters
      */
     public function updateRankings(Channel $channel, array $chatters);
-
 }
