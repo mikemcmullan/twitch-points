@@ -354,6 +354,7 @@ class RedisChatterRepository implements ChatterRepository {
             $rank = isset($data['rank']) ? $data['rank'] : 0;
             $mod  = (bool) array_get($data, 'mod');
             $hide = (bool) array_get($data, 'hide');
+            $admin= (bool) array_get($data, 'admin');
 
             if (($showHidden === false && $hide) || ($showMod === false && $mod)) {
                 continue;
@@ -368,7 +369,8 @@ class RedisChatterRepository implements ChatterRepository {
                 'rank'    => $rank,
                 'updated' => $data['updated'],
                 'mod'     => $mod,
-                'hide'    => $hide
+                'hide'    => $hide,
+                'admin'   => $admin
             ];
         }
 
@@ -390,6 +392,7 @@ class RedisChatterRepository implements ChatterRepository {
         $user['handle'] = $handle;
         $user['mod']    = (bool) array_get($user, 'mod');
         $user['hide']   = (bool) array_get($user, 'hide');
+        $user['admin']  = (bool) array_get($user, 'admin');
 
         return $user;
     }
