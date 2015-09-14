@@ -4,6 +4,7 @@ namespace App\Contracts\Repositories;
 
 use App\Channel;
 use Carbon\Carbon;
+use Illuminate\Support\Collection;
 use Predis\Pipeline\Pipeline;
 
 interface ChatterRepository {
@@ -30,9 +31,11 @@ interface ChatterRepository {
      * Get all chatters belonging to a channel.
      *
      * @param Channel $channel
+     * @param boolean $showHidden
+     * @param boolean $showMod
      * @return Collection
      */
-    public function allForChannel(Channel $channel);
+    public function allForChannel(Channel $channel, $showHidden = false, $showMod = false);
 
     /**
      * Get the number of chatters a channel has.
