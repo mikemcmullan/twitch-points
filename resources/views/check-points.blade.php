@@ -14,7 +14,7 @@
                 @include('partials.flash')
 
                 <div class="panel panel-default" id="points-panel">
-                    <div class="panel-heading">How many pug points have you earned?</div>
+                    <div class="panel-heading">How many {{ $channel->currency_name  }} have you earned?</div>
                     <div class="panel-body">
                         {!! Form::open(['method' => 'get', 'class' => 'points-results-form']); !!}
 
