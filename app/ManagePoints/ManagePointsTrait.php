@@ -90,6 +90,11 @@ trait ManagePointsTrait {
 		return $channel;
 	}
 
+	/**
+	 * Validate if the command parameters are valid.
+	 *
+	 * @param $command
+     */
 	private function validate($command)
 	{
 		if ($command->handle === null || $command->points === null || $command->target === null)
@@ -130,11 +135,11 @@ trait ManagePointsTrait {
 	 *
 	 * @throws AccessDeniedException
 	 */
-	private function validateIfMod($chatter)
+	private function validateIfAdmin($chatter)
 	{
-		if ( ! (bool) array_get($chatter, 'mod'))
+		if ( ! (bool) array_get($chatter, 'admin'))
 		{
-			throw new AccessDeniedException(sprintf('%s is not a mod.', $chatter['handle']));
+			throw new AccessDeniedException(sprintf('%s is not an admin.', $chatter['handle']));
 		}
 	}
 
@@ -158,7 +163,7 @@ trait ManagePointsTrait {
 		$channel = $this->resolveChannel($channel);
 		$chatter = $this->getChatter($channel, $handle);
 
-		$this->validateIfMod($chatter);
+		$this->validateIfAdmin($chatter);
 
 		$target     = $this->getChatter($channel, $target);
 		$pointTotal = $this->calculateTotalPoints($target['points'], $points, $symbol);
