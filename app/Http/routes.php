@@ -60,8 +60,8 @@ Route::group(['domain' => '{channel}.' . env('CHANNEL_DOMAIN', 'twitch.dev')], f
             'as'    => 'api_points_remove_path'
         ]);
 
-        get('/giveways/enter', [
-            'uses'  => 'GiveAwayController@enter'
-        ]);
+//        get('/giveways/enter', [
+//            'uses'  => 'GiveAwayController@enter'
+//        ]);
     });
 });

@@ -1,18 +1,16 @@
 <?php
 
-namespace App\CurrencyManager;
+namespace App\Currency;
 
-use App\Contracts\ManagePoints\CanManagePoints;
 use App\Contracts\Repositories\ChannelRepository;
 use App\Contracts\Repositories\ChatterRepository;
-
 use App\Exceptions\AccessDeniedException;
 use App\Exceptions\UnknownUserException;
 use App\Exceptions\UnknownHandleException;
 use App\Channel;
 use InvalidArgumentException;
 
-class Manager implements CanManagePoints
+class Manager
 {
     /**
      * @var ChatterRepository

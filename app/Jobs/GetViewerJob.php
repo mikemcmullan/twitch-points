@@ -2,7 +2,7 @@
 
 namespace App\Jobs;
 
-use App\CurrencyManager\Manager;
+use App\Currency\Manager;
 use App\Jobs\Job;
 use Illuminate\Contracts\Bus\SelfHandling;
 use InvalidArgumentException;
