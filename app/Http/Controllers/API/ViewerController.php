@@ -2,17 +2,19 @@
 
 namespace App\Http\Controllers\API;
 
-use App\Channel;
+use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Http\Request;
-use App\Commands\GetViewerCommand;
-use App\Exceptions\UnknownHandleException;
+use App\Channel;
+use App\Jobs\GetViewerJob;
 use App\Http\Controllers\Controller;
+use App\Exceptions\UnknownHandleException;
 use Exception;
 use InvalidArgumentException;
-use Bus;
 
 class ViewerController extends Controller
 {
+    use DispatchesJobs;
+
     /**
      *
      */
@@ -31,7 +33,7 @@ class ViewerController extends Controller
         $handle = $request->get('handle');
 
         try {
-            $response = Bus::dispatch(new GetViewerCommand($channel, $handle));
+            $response = $this->dispatch(new GetViewerJob($channel, $handle));
 
             $response['time_online'] = presentTimeOnline($response['minutes']);
         } catch (UnknownHandleException $e) {

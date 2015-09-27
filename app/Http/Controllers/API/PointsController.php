@@ -2,48 +2,27 @@
 
 namespace App\Http\Controllers\API;
 
+use Illuminate\Foundation\Bus\DispatchesJobs;
+use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
 use App\Channel;
-use App\Commands\AddPointsCommand;
-use App\Commands\RemovePointsCommand;
-use App\Contracts\Repositories\ChannelRepository;
-use App\Contracts\Repositories\ChatterRepository;
+use App\Http\Requests;
+use App\Jobs\AddCurrencyJob;
+use App\Jobs\RemoveCurrencyJob;
+use Exception;
+use InvalidArgumentException;
 use App\Exceptions\AccessDeniedException;
 use App\Exceptions\UnknownHandleException;
-use App\Http\Requests;
-use App\Http\Controllers\Controller;
-use Bus;
-use Exception;
-use Illuminate\Http\Request;
-use InvalidArgumentException;
 
 class PointsController extends Controller
 {
-    /**
-     * @var ChatterRepository
-     */
-    private $chatterRepository;
+    use DispatchesJobs;
 
     /**
-     * @var ChannelRepository
-     */
-    private $channelRepository;
-
-    /**
-     * Default channel.
      *
-     * @var
      */
-    private $channel;
-
-    /**
-     * @param ChatterRepository $chatterRepository
-     * @param ChannelRepository $channelRepository
-     */
-    public function __construct(ChatterRepository $chatterRepository, ChannelRepository $channelRepository)
+    public function __construct()
     {
-        $this->chatterRepository = $chatterRepository;
-        $this->channelRepository = $channelRepository;
-
         $this->middleware('protect.api', ['only' => ['addPoints', 'removePoints']]);
     }
 
@@ -58,7 +37,7 @@ class PointsController extends Controller
         $data = $request->only(['handle', 'target', 'points']);
 
         try {
-            $response = Bus::dispatch(new AddPointsCommand($channel, $data['handle'], $data['target'], $data['points']));
+            $response = $this->dispatch(new AddCurrencyJob($channel, $data['handle'], $data['target'], $data['points']));
         } catch (UnknownHandleException $e) {
             $response = [
                 'error' => $e->getMessage(),
@@ -95,7 +74,7 @@ class PointsController extends Controller
         $data = $request->only(['handle', 'target', 'points']);
 
         try {
-            $response = Bus::dispatch(new RemovePointsCommand($channel, $data['handle'], $data['target'], $data['points']));
+            $response = $this->dispatch(new RemoveCurrencyJob($channel, $data['handle'], $data['target'], $data['points']));
         } catch (UnknownHandleException $e) {
             $response = [
                 'error' => $e->getMessage(),

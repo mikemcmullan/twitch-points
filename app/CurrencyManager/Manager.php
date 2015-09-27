@@ -1,6 +1,10 @@
 <?php
 
-namespace App\ManagePoints;
+namespace App\CurrencyManager;
+
+use App\Contracts\ManagePoints\CanManagePoints;
+use App\Contracts\Repositories\ChannelRepository;
+use App\Contracts\Repositories\ChatterRepository;
 
 use App\Exceptions\AccessDeniedException;
 use App\Exceptions\UnknownUserException;
@@ -8,8 +12,28 @@ use App\Exceptions\UnknownHandleException;
 use App\Channel;
 use InvalidArgumentException;
 
-trait ManagePointsTrait
+class Manager implements CanManagePoints
 {
+    /**
+     * @var ChatterRepository
+     */
+    private $chatterRepo;
+
+    /**
+     * @var ChannelRepository
+     */
+    private $channelRepo;
+
+    /**
+     * @param ChatterRepository $chatterRepo
+     * @param ChannelRepository $channelRepo
+     */
+    public function __construct(ChatterRepository $chatterRepo, ChannelRepository $channelRepo)
+    {
+        $this->chatterRepo = $chatterRepo;
+        $this->channelRepo = $channelRepo;
+    }
+
     /**
      * Calculate the new points total.
      *
@@ -51,7 +75,7 @@ trait ManagePointsTrait
             throw new UnknownHandleException(sprintf('%s is not a valid handle.', $handle));
         }
 
-        $chatter = $this->getChatterRepository()->findByHandle($channel, $handle);
+        $chatter = $this->chatterRepo->findByHandle($channel, $handle);
 
         if (! $chatter) {
             throw new UnknownHandleException(sprintf('%s is not a valid handle.', $handle));
@@ -72,7 +96,7 @@ trait ManagePointsTrait
     private function resolveChannel($channel)
     {
         if (! $channel instanceof Channel) {
-            $channel = $this->getChannelRepository()->findByName($channel);
+            $channel = $this->channelRepo->findByName($channel);
         }
 
         if (! $channel) {
@@ -87,7 +111,7 @@ trait ManagePointsTrait
      *
      * @param $command
      */
-    private function validate($command)
+    public function validate($command)
     {
         if ($command->handle === null || $command->points === null || $command->target === null) {
             throw new InvalidArgumentException('handle, points and target are required parameters.');
@@ -131,12 +155,12 @@ trait ManagePointsTrait
     }
 
     /**
-     * @param $channel          The channel the handle belongs to.
-     * @param $handle           The chat handle of the user.
-     * @param $target           The chat handle of the user receiving or losing points.
-     * @param $points           How many points are being added or removing.
-     * @param string $symbol    Indicate whether you are adding or removing points.
-     *                          Must be either + or -.
+     * @param string $channel The channel the handle belongs to.
+     * @param string $handle  The chat handle of the user.
+     * @param string $target  The chat handle of the user receiving or losing points.
+     * @param int $points     How many points are being added or removing.
+     * @param string $symbol  Indicate whether you are adding or removing points.
+     *                        Must be either + or -.
      *
      * @return mixed
      * @throws AccessDeniedException
@@ -160,7 +184,7 @@ trait ManagePointsTrait
             $points = $target['points'];
         }
 
-        $this->getChatterRepository()->updateChatter($channel, $target['handle'], 0, $symbol . $points);
+        $this->chatterRepo->updateChatter($channel, $target['handle'], 0, $symbol . $points);
 
         return [
             'channel'=> $channel['name'],
@@ -186,11 +210,10 @@ trait ManagePointsTrait
     }
 
     /**
-     * @param $channel      The channel the handle belongs to.
-     * @param $handle       The chat handle of the user.
-     * @param $target       The chat handle of the user receiving the points.
-     * @param $points       How many points are being added or removing.
-     *
+     * @param string $channel The channel the handle belongs to.
+     * @param string $handle  The chat handle of the user.
+     * @param string $target  The chat handle of the user receiving the points.
+     * @param int $points     How many points are being added or removing.
      * @return mixed
      */
     public function addPoints($channel, $handle, $target, $points)
@@ -199,10 +222,10 @@ trait ManagePointsTrait
     }
 
     /**
-     * @param $channel      The channel the handle belongs to.
-     * @param $handle       The chat handle of the user.
-     * @param $target       The chat handle of the user losing the points.
-     * @param $points       How many points are being added or removing.
+     * @param string $channel      The channel the handle belongs to.
+     * @param string $handle       The chat handle of the user.
+     * @param string $target       The chat handle of the user losing the points.
+     * @param string $points       How many points are being added or removing.
      *
      * @return mixed
      */

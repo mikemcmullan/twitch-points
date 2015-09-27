@@ -5,20 +5,6 @@ namespace App\Contracts\ManagePoints;
 interface CanManagePoints
 {
     /**
-     * Get an instance of the chatter repository.
-     *
-     * @return ChatterRepository
-     */
-    public function getChatterRepository();
-
-    /**
-     * Get an instance of the user repository.
-     *
-     * @return UserRepository
-     */
-    public function getChannelRepository();
-
-    /**
      * Add points to a chatter.
      *
      * @param $user
