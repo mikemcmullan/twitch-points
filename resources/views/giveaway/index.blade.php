@@ -229,6 +229,7 @@
                 channel.bind('App\\Events\\GiveAwayWasReset', function(data) {
                     entries.entries = [];
                     entries.entriesCount = 0;
+                    self.winner = '';
                     self.disableButtons = false;
                     console.log('Reset');
                 });
