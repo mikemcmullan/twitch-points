@@ -96,4 +96,22 @@ class AuthController extends Controller
             ->route('home_path', $this->channel->slug)
             ->with('message', 'Login successful.');
     }
+
+    /**
+     * @param Request $request
+     * @param \Pusher $pusher
+     * @return Response
+     */
+    public function pusher(Request $request, \Pusher $pusher)
+    {
+        $data = $request->only(['socket_id', 'channel_name']);
+
+        $user = \Auth::user();
+
+        if ($user && $user->hasPermission('giveaway')) {
+            return response($pusher->socket_auth($data['channel_name'], $data['socket_id']));
+        }
+
+        abort(403, 'Forbidden');
+    }
 }

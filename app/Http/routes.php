@@ -43,6 +43,36 @@ Route::group(['domain' => '{channel}.' . env('CHANNEL_DOMAIN', 'twitch.dev')], f
         'uses'  => 'AuthController@logout',
         'as'    => 'logout_path'
     ]);
+
+    get('/giveaway', [
+        'uses'  => 'GiveAwayController@index',
+        'as'    => 'giveaway_path'
+    ]);
+
+    post('/giveaway/reset', [
+        'uses'  => 'GiveAwayController@reset',
+        'as'    => 'giveaway_reset_path'
+    ]);
+
+    post('/giveaway/start', [
+        'uses'  => 'GiveAwayController@start',
+        'as'    => 'giveaway_start_path'
+    ]);
+
+    post('/giveaway/stop', [
+        'uses'  => 'GiveAwayController@stop',
+        'as'    => 'giveaway_stop_path'
+    ]);
+
+    post('/pusher/auth', [
+        'uses'  => 'AuthController@pusher',
+        'as'    => 'pusher_auth_path'
+    ]);
+
+    post('/giveaway/winner', [
+        'uses'  => 'GiveAwayController@winner',
+        'as'    => 'giveaway_winner_path'
+    ]);
         
     Route::group(['prefix' => 'api', 'namespace' => 'API'], function () {
         get('/viewer', [
@@ -60,8 +90,9 @@ Route::group(['domain' => '{channel}.' . env('CHANNEL_DOMAIN', 'twitch.dev')], f
             'as'    => 'api_points_remove_path'
         ]);
 
-//        get('/giveways/enter', [
-//            'uses'  => 'GiveAwayController@enter'
-//        ]);
+        get('/giveaway/enter', [
+            'uses'  => 'GiveAwayController@enter',
+            'as'    => 'api_giveaway_enter_path'
+        ]);
     });
 });

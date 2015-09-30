@@ -11,6 +11,8 @@ var elixir = require('laravel-elixir');
  |
  */
 
+elixir.config.css.sass.folder = 'scss';
+
 elixir(function(mix) {
-    mix.less('app.less');
+    mix.sass('style.scss', 'public/assets/css');
 });

@@ -24,7 +24,6 @@ p {
 }
 
 .points-results-table {
-//    margin-bottom: 0;
 
     td {
         vertical-align: inherit !important;
@@ -81,5 +80,30 @@ p {
                 color: #57C8D4;
             }
         }
+    }
+}
+
+#giveaway-control-panel {
+    .giveaway-controls {
+        .btn-group:first-child .btn {
+            border-bottom-left-radius: 0;
+        }
+
+        .btn-group:last-child .btn {
+            border-bottom-right-radius: 0;
+        }
+    }
+
+    .giveaway-select {
+        .btn-group .btn {
+            border-top-left-radius: 0;
+            border-top-right-radius: 0;
+        }
+    }
+
+    .giveaway-winner {
+        background: darken($gray-dark, 3%);
+        padding: 20px;
+        margin-bottom: 0;
     }
 }

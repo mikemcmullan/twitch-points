@@ -3,15 +3,15 @@
 namespace App\Http\Controllers\API;
 
 use App\Channel;
-use App\Jobs\GiveAways\EnterGiveAwayCommand;
+use App\Exceptions\GiveAwayException;
+use App\GiveAways\Manager;
+use App\Jobs\GiveAways\EnterGiveAwayJob;
+use App\Jobs\GiveAways\StartGiveAwayJob;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Http\Request;
-use App\Commands\GetViewerCommand;
-use App\Exceptions\UnknownHandleException;
 use App\Http\Controllers\Controller;
 use Exception;
 use InvalidArgumentException;
-use Bus;
 
 class GiveAwayController extends Controller
 {
@@ -24,6 +24,7 @@ class GiveAwayController extends Controller
     {
     }
 
+
     /**
      * @param Request $request
      * @param Channel $channel
@@ -33,28 +34,25 @@ class GiveAwayController extends Controller
     public function enter(Request $request, Channel $channel)
     {
         $handle = $request->get('handle');
+        $tickets = $request->get('tickets');
 
-//        try {
-            $response = $this->dispatch(new EnterGiveAwayCommand($channel, $handle));
+        try {
+            $response = $this->dispatch(new EnterGiveAwayJob($channel, $handle, $tickets));
 
-//            $response['time_online'] = presentTimeOnline($response['minutes']);
-//        } catch (UnknownHandleException $e) {
-//            $response = [
-//                'level' => 'notice',
-//                'error' => $e->getMessage()
-//            ];
-//        } catch (InvalidArgumentException $e) {
-//            $response = [
-//                'level' => 'notice',
-//                'error' => $e->getMessage()
-//            ];
-//        } catch (Exception $e) {
-//            $response = [
-//                'level' => 'notice',
-//                'error' => 'Unknown error occurred.'
-//            ];
-//        }
+            $response = [
+                'status' => $response
+            ];
+        } catch (InvalidArgumentException $e) {
+            $response = [
+                'error' => $e->getMessage()
+            ];
+        } catch (GiveAwayException $e) {
+            $response = [
+                'error' => $e->getMessage()
+            ];
+        }
 
-//        return response()->json($response);
+        return response()->json($response);
     }
+
 }

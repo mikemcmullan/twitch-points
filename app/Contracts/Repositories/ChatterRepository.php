@@ -10,6 +10,14 @@ use Predis\Pipeline\Pipeline;
 interface ChatterRepository
 {
     /**
+     * Set the giveaway status for a user.
+     *
+     * @param $status
+     * @return mixed
+     */
+    public function setGiveAwayStatus(Channel $channel, $handle, $status);
+
+    /**
      * Get the time the points system was last updated for a channel.
      *
      * Channel $channel

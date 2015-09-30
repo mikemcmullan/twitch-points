@@ -51,8 +51,6 @@ class AddCurrencyJob extends Job implements SelfHandling
      */
     public function handle(Manager $manager)
     {
-        $manager->validate($this);
-
         return $manager->addPoints($this->channel, $this->handle, $this->target, $this->points);
     }
 }

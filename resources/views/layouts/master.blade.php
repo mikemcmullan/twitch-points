@@ -4,6 +4,7 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="csrf_token" content="{{ csrf_token() }}">
     <title>{{ $channel->title }}</title>
 
     <!-- Bootstrap -->
@@ -36,6 +37,10 @@
                 <li{!! Route::currentRouteName() === 'scoreboard_path' ? ' class="active"' : '' !!}><a href="{!! route('scoreboard_path', [$channel->slug]) !!}">Scoreboard</a></li>
                 @if (Auth::user()->hasPermission('system-control'))
                 <li{!! Route::currentRouteName() === 'system_control_path' ? ' class="active"' : '' !!}><a href="{!! route('system_control_path', [$channel->slug]) !!}">System Control</a></li>
+                @endif
+
+                @if (Auth::user()->hasPermission('giveaway'))
+                    <li{!! Route::currentRouteName() === 'giveaway_path' ? ' class="active"' : '' !!}><a href="{!! route('giveaway_path', [$channel->slug]) !!}">Giveaway</a></li>
                 @endif
             </ul>
 
@@ -80,5 +85,7 @@
     <script src="//cdn.socket.io/socket.io-1.3.5.js"></script>
     <script src="/assets/js/bot-control-min.js"></script>
 @endif
+
+@yield('after-js')
 </body>
 </html>

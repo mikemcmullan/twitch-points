@@ -68,6 +68,19 @@ class RedisChatterRepository implements ChatterRepository
     }
 
     /**
+     * Set the giveaway status for a user.
+     *
+     * @param $status
+     * @return mixed
+     */
+    public function setGiveAwayStatus(Channel $channel, $handle, $status)
+    {
+        $key = $this->makeKey($channel['id'], $handle);
+
+        return $this->redis->hset($key, 'giveaway', (bool) $status);
+    }
+
+    /**
      * Get the time the points system was last updated for a channel.
      *
      * @return string
@@ -338,11 +351,12 @@ class RedisChatterRepository implements ChatterRepository
         foreach ($chatters as $chatter) {
             $key = $this->parseKey($chatter);
 
-            $data = $this->redis->hgetall($chatter);
-            $rank = isset($data['rank']) ? $data['rank'] : 0;
-            $mod  = (bool) array_get($data, 'mod');
-            $hide = (bool) array_get($data, 'hide');
-            $admin= (bool) array_get($data, 'admin');
+            $data     = $this->redis->hgetall($chatter);
+            $rank     = isset($data['rank']) ? $data['rank'] : 0;
+            $mod      = (bool) array_get($data, 'mod');
+            $hide     = (bool) array_get($data, 'hide');
+            $admin    = (bool) array_get($data, 'admin');
+            $giveaway = (bool) array_get($data, 'giveaway');
 
             if (($showHidden === false && $hide) || ($showMod === false && $mod)) {
                 continue;
@@ -353,12 +367,13 @@ class RedisChatterRepository implements ChatterRepository
                 'handle'  => $key['handle'],
                 'channel' => $key['channel'],
                 'minutes' => $data['minutes'],
-                'points'  => $data['points'],
+                'points'  => (float) $data['points'],
                 'rank'    => $rank,
                 'updated' => $data['updated'],
                 'mod'     => $mod,
                 'hide'    => $hide,
-                'admin'   => $admin
+                'admin'   => $admin,
+                'giveaway'=> $giveaway
             ];
         }
 
@@ -375,12 +390,14 @@ class RedisChatterRepository implements ChatterRepository
      */
     private function mapUser($channel, $handle, array $user)
     {
-        $user['key']    = $this->makeKey($channel['id'], $handle);
-        $user['channel']= $channel;
-        $user['handle'] = $handle;
-        $user['mod']    = (bool) array_get($user, 'mod');
-        $user['hide']   = (bool) array_get($user, 'hide');
-        $user['admin']  = (bool) array_get($user, 'admin');
+        $user['points']   = (float) array_get($user, 'points', 0);
+        $user['key']      = $this->makeKey($channel['id'], $handle);
+        $user['channel']  = $channel;
+        $user['handle']   = $handle;
+        $user['mod']      = (bool) array_get($user, 'mod');
+        $user['hide']     = (bool) array_get($user, 'hide');
+        $user['admin']    = (bool) array_get($user, 'admin');
+        $user['giveaway'] = (bool) array_get($user, 'giveaway');
 
         return $user;
     }

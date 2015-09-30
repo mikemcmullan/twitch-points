@@ -42,7 +42,7 @@ class GetViewerJob extends Job implements SelfHandling
             throw new InvalidArgumentException('Handle is a required parameter.');
         }
 
-        $viewer = $manager->getPoints($this->channel, $this->handle);
+        $viewer = $manager->getViewer($this->channel, $this->handle);
 
         return [
             'channel'   => $viewer['channel']['name'],

@@ -67,7 +67,7 @@ class Manager
      * @throws UnknownHandleException
      * @throws UnknownUserException
      */
-    private function getChatter(Channel $channel, $handle)
+    public function getViewer(Channel $channel, $handle)
     {
         if (! $handle) {
             throw new UnknownHandleException(sprintf('%s is not a valid handle.', $handle));
@@ -109,17 +109,17 @@ class Manager
      *
      * @param $command
      */
-    public function validate($command)
+    private function validate($channel, $handle, $target, $points)
     {
-        if ($command->handle === null || $command->points === null || $command->target === null) {
+        if ($handle === null || $points === null || $target === null) {
             throw new InvalidArgumentException('handle, points and target are required parameters.');
         }
 
-        if (is_numeric($command->points) === false || $command->points < 0) {
+        if (is_numeric($points) === false || $points < 0) {
             throw new InvalidArgumentException('points value must be greater than zero.');
         }
 
-        if ($command->points > 1000) {
+        if ($points > 1000) {
             throw new InvalidArgumentException('You cannot award or take away more than 1000 points at a time.');
         }
     }
@@ -170,11 +170,11 @@ class Manager
         $this->validateSymbol($symbol);
 
         $channel = $this->resolveChannel($channel);
-        $chatter = $this->getChatter($channel, $handle);
+        $chatter = $this->getViewer($channel, $handle);
 
         $this->validateIfAdmin($chatter);
 
-        $target     = $this->getChatter($channel, $target);
+        $target     = $this->getViewer($channel, $target);
         $pointTotal = $this->calculateTotalPoints($target['points'], $points, $symbol);
 
         // Make sure chatter does not get negative points.
@@ -204,7 +204,7 @@ class Manager
     {
         $channel = $this->resolveChannel($channel);
 
-        return $this->getChatter($channel, $handle);
+        return $this->getViewer($channel, $handle)['points'];
     }
 
     /**
@@ -216,6 +216,8 @@ class Manager
      */
     public function addPoints($channel, $handle, $target, $points)
     {
+        $this->validate($channel, $handle, $target, $points);
+
         return $this->updatePoints($channel, $handle, $target, $points);
     }
 
@@ -229,6 +231,34 @@ class Manager
      */
     public function removePoints($channel, $handle, $target, $points)
     {
+        $this->validate($channel, $handle, $target, $points);
+
         return $this->updatePoints($channel, $handle, $target, $points, '-');
+    }
+
+    /**
+     * Alias for addPoints.
+     *
+     * @param $channel
+     * @param $handle
+     * @param $target
+     * @param $points
+     */
+    public function add($channel, $handle, $target, $points)
+    {
+        return $this->addPoints($channel, $handle, $target, $points);
+    }
+
+    /**
+     * Alias for RemovePoints.
+     *
+     * @param $channel
+     * @param $handle
+     * @param $target
+     * @param $points
+     */
+    public function remove($channel, $handle, $target, $points)
+    {
+        return $this->removePoints($channel, $handle, $target, $points);
     }
 }

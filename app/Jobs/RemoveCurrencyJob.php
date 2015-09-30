@@ -51,8 +51,6 @@ class RemoveCurrencyJob extends Job implements SelfHandling
      */
     public function handle(Manager $manager)
     {
-        $manager->validate($this);
-
         return $manager->removePoints($this->channel, $this->handle, $this->target, $this->points);
     }
 }

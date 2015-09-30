@@ -27,5 +27,12 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register()
     {
+        $this->app->bind('Pusher', function ($app) {
+            $appKey = env('PUSHER_KEY');
+            $appSecret = env('PUSHER_SECRET');
+            $appId = env('PUSHER_APP_ID');
+
+            return new \Pusher($appKey, $appSecret, $appId, ['encrypted' => true]);
+        });
     }
 }
