@@ -8,23 +8,23 @@
             <div class="col-md-12">
 
                 <div class="page-header">
-                    <h1>{{ $channel->currency_name  }} Checker</h1>
+                    <h1>{{ $channel->getSetting('currency.name')  }} Checker</h1>
                 </div><!-- .page-header -->
 
                 @include('partials.flash')
 
                 <div class="panel panel-default" id="points-panel">
-                    <div class="panel-heading">How many {{ $channel->currency_name  }} have you earned?</div>
+                    <div class="panel-heading">How many {{ $channel->getSetting('currency.name')  }} have you earned?</div>
                     <div class="panel-body">
-                        {!! Form::open(['method' => 'get', 'class' => 'points-results-form']); !!}
+                        {!! Form::open(['method' => 'get', 'class' => 'points-results-form']) !!}
 
                         <div class="form-group">
                             {!! Form::label('handle', 'Chat Handle:'); !!}
                             {!! Form::text('handle', $handle, ['class' => 'form-control']) !!}
-                            <p class="help-block">Enter your twitch username into the box above and click 'Check {{ $channel->currency_name }}'.</p>
+                            <p class="help-block">Enter your twitch username into the box above and click 'Check {{ $channel->getSetting('currency.name') }}'.</p>
                         </div>
 
-                        {!! Form::submit('Check ' . $channel->currency_name, ['class' => 'btn btn-primary', 'id' => 'check-points']) !!}
+                        {!! Form::submit('Check ' . $channel->getSetting('currency.name'), ['class' => 'btn btn-primary', 'id' => 'check-points']) !!}
                         {!! Form::close(); !!}
 
                         @if ( ! $chatter && $handle !== '')

@@ -5,7 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf_token" content="{{ csrf_token() }}">
-    <title>{{ $channel->title }}</title>
+    <title>{{ $channel->getSetting('title') }}</title>
 
     <!-- Bootstrap -->
     {!! Html::style('/assets/css/bootstrap.css') !!}
@@ -27,7 +27,7 @@
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
-            {!! link_to_route('home_path', $channel->title, [$channel->slug], ['class' => 'navbar-brand']) !!}
+            {!! link_to_route('home_path', $channel->getSetting('title'), [$channel->slug], ['class' => 'navbar-brand']) !!}
         </div>
 
         <div class="collapse navbar-collapse" id="top-navbar-collapse">

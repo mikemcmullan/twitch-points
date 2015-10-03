@@ -28,6 +28,7 @@
                                             "
                                     ></span>
                                 </p>
+
                                 <div class="btn-group btn-group-justified giveaway-controls">
                                     <div class="btn-group">
                                         <button type="button" v-attr="disabled: disableButtons" v-on="click: startGiveAway" class="btn btn-primary">Start</button>
@@ -51,6 +52,25 @@
                                 </div>
                             </div><!-- .panel-body -->
                         </div><!-- .panel -->
+
+                        <div class="panel panel-default">
+                            <div class="panel-heading">Settings</div>
+                            <div class="panel-body">
+                                <div class="form-group">
+                                    <label for="ticket-max">Ticket Cost:</label>
+                                    <input type="number" class="form-control" value="{{ $channel->getSetting('giveaway.ticket-cost') }}" name="ticket-cost">
+                                    <p class="help-block">How many {{ $channel->getSetting('currency.name') }} will a ticket cost.</p>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="ticket-max">Ticket Max:</label>
+                                    <input type="number" class="form-control" value="{{ $channel->getSetting('giveaway.ticket-max') }}" name="ticket-max">
+                                    <p class="help-block">The maximum amount of tickets a user may purchase.</p>
+                                </div>
+
+                                <button type="button" class="btn btn-primary">Save</button>
+                            </div>
+                        </div>
                     </div>
                     <div class="col-md-6">
                         <div class="panel panel-default" id="giveaway-entries">

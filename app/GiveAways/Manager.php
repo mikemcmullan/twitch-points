@@ -54,8 +54,6 @@ class Manager
     public function __construct(CurrencyManager $currencyManager, ChatterRepository $chatterRepo, Database $redis, Dispatcher $events)
     {
         $this->currencyManager = $currencyManager;
-        $this->ticketCost = 1;
-        $this->maxTickets = 10;
         $this->redis = $redis;
         $this->chatterRepo = $chatterRepo;
         $this->events = $events;
@@ -187,12 +185,13 @@ class Manager
     }
 
     /**
+     * @param Channel $channel
      * @param $tickets
      * @return int
      */
-    public function calculateCost($tickets)
+    public function calculateCost(Channel $channel, $tickets)
     {
-        return $this->ticketCost * $tickets;
+        return $channel->getSetting('giveaway.ticket-cost', 0) * $tickets;
     }
 
     /**
@@ -206,8 +205,10 @@ class Manager
             throw new GiveAwayException('Giveaway is not running.');
         }
 
-        if ($entry->getTickets() > 10) {
-            throw new InvalidArgumentException(sprintf('%s: %d ticket max.', $entry->getHandle(), $this->maxTickets));
+        $ticketMax = $entry->getChannel()->getSetting('giveaway.ticket-max');
+
+        if ($entry->getTickets() > $ticketMax) {
+            throw new InvalidArgumentException(sprintf('%s: %d ticket max.', $entry->getHandle(), $ticketMax));
         }
 
         if ($entry->getTickets() < 1) {
@@ -227,14 +228,14 @@ class Manager
             throw new GiveAwayException(sprintf('%s has already entered the giveaway.', $viewer['handle']));
         }
 
-        $cost = $this->calculateCost($entry->getTickets());
+        $cost = $this->calculateCost($entry->getChannel(), $entry->getTickets());
 
         if ($cost > $viewer['points']) {
-            throw new GiveAwayException(sprintf('%s does not have enough %s', $viewer['handle'], $entry->getChannel()->currency_name));
+            throw new GiveAwayException(sprintf('%s does not have enough %s', $viewer['handle'], $entry->getChannel()->getSetting('currency.name')));
         }
 
         $this->chatterRepo->setGiveAwayStatus($entry->getChannel(), $entry->getHandle(), true);
-//        $this->currencyManager->remove($entry->getChannel(), $entry->getChannel()->name, $entry->getHandle(), $cost);
+        $this->currencyManager->remove($entry->getChannel(), $entry->getChannel()->name, $entry->getHandle(), $cost);
 
         for ($i = 0; $i < $entry->getTickets(); $i++) {
             $this->redis->lpush('giveaway:2', $entry->getHandle());

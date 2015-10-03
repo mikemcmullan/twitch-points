@@ -64,11 +64,11 @@ class ProcessChatList
         $status = $status === true ? 'online' : 'offline';
 
         if ($status === 'online') {
-            $pointInterval = (int) $channel->currency_interval[0];
-            $pointsAwarded = (int) $channel->currency_awarded[0];
+            $pointInterval = (int) $channel->getSetting('currency.interval', [0,0])[0];
+            $pointsAwarded = (int) $channel->getSetting('currency.awarded', [0,0])[0];
         } else {
-            $pointInterval = (int) $channel->currency_interval[1];
-            $pointsAwarded = (int) $channel->currency_awarded[1];
+            $pointInterval = (int) $channel->getSetting('currency.interval', [0,0])[1];
+            $pointsAwarded = (int) $channel->getSetting('currency.awarded', [0,0])[1];
         }
 
         $pointsPerMinute = $pointsAwarded / $pointInterval;

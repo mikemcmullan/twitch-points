@@ -12,6 +12,9 @@ class Channel extends Model implements AuthenticatableContract, CanResetPassword
 {
     use Authenticatable, CanResetPassword;
 
+    /**
+     * @var bool
+     */
     public $timestamps = false;
 
     /**
@@ -26,30 +29,90 @@ class Channel extends Model implements AuthenticatableContract, CanResetPassword
      *
      * @var array
      */
-    protected $fillable = ['name', 'slug', 'display_name', 'currency_name', 'title', 'currency_interval', 'currency_awarded'];
+    protected $fillable = ['name', 'slug', 'display_name', 'settings'];
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
     public function trackPoints()
     {
         return $this->hasMany('App\TrackPointsSession');
     }
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
     public function users()
     {
         return $this->belongsToMany(User::class);
     }
 
-    public function getCurrencyIntervalAttribute($value)
+    /**
+     * Get a channel setting.
+     *
+     * @param $setting
+     * @param string $default
+     */
+    public function getSetting($setting, $default = null)
     {
-        return json_decode($value);
+        return array_get($this->settings, $setting, $default);
     }
 
-    public function getCurrencyAwardedAttribute($value)
+    /**
+     * Set the value of a channel setting or add a new setting. If array is
+     * provided the key of each element is the setting name.
+     *
+     * @param string|array $setting
+     * @param string $value
+     * @return bool|int
+     */
+    public function setSetting($setting, $value = '')
     {
-        return json_decode($value);
+        $settings = $this->settings;
+        $newSettings = [];
+
+        if ( ! is_array($setting)) {
+            $newSettings[$setting] = $value;
+        } else {
+            $newSettings = $setting;
+        }
+
+        foreach ($newSettings as $setting => $value) {
+            array_set($settings, $setting, $value);
+        }
+
+        return $this->update(['settings' => $settings]);
     }
 
-    public function getRankModsAttribute($value)
+    /**
+     * Remove channel setting(s).
+     *
+     * @param array|string $setting
+     * @return bool|int
+     */
+    public function removeSetting($setting)
     {
-        return (bool) $value;
+        $settings = $this->settings;
+
+        array_forget($settings, $setting);
+
+        return $this->update(['settings' => $settings]);
+    }
+
+    /**
+     * @param $value
+     * @return mixed
+     */
+    protected function getSettingsAttribute($value)
+    {
+        return json_decode($value, true);
+    }
+
+    /**
+     * @param $value
+     */
+    protected function setSettingsAttribute($value)
+    {
+        $this->attributes['settings'] = json_encode($value);
     }
 }
