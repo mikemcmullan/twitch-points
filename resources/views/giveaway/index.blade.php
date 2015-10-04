@@ -123,6 +123,29 @@
                 entriesCount: 0
             },
 
+            methods: {
+                clearEntries: function() {
+                    this.entries = [];
+                    this.entriesCount = 0;
+                },
+
+                removeEntry: function(handle) {
+                    var i = -1;
+
+                    $.each(this.entries, function(key, value) {
+                        if (value.handle === handle) {
+                            i = key;
+                        }
+                    }.bind(this));
+
+                    if (i != -1) {
+                        this.entries.splice(i, 1);
+                    }
+
+                    this.entriesCount -= 1;
+                }
+            },
+
             ready: function() {
                 var self = this;
 
@@ -167,9 +190,22 @@
                 resetGiveAway: function() {
                     this.disableButtons = true;
 
-                    $.post('/giveaway/reset', {
-                        _token: csrfToken
+                    var xhr = $.ajax({
+                        url: '/giveaway/reset',
+                        method: 'POST',
+                        data: {
+                            _token: csrfToken
+                        }
                     });
+
+                    xhr.done(function(data) {
+                        entries.clearEntries();
+                        this.winner = '';
+                        this.status = 'Stopped';
+                        this.statusClass = 'label-danger';
+                        this.disableButtons = false;
+                        console.log('Reset');
+                    }.bind(this));
                 },
 
                 startGiveAway: function() {
@@ -179,9 +215,20 @@
 
                     this.disableButtons = true;
 
-                    $.post('/giveaway/start', {
-                        _token: csrfToken
+                    var xhr = $.ajax({
+                        url: '/giveaway/start',
+                        method: 'POST',
+                        data: {
+                            _token: csrfToken
+                        }
                     });
+
+                    xhr.done(function(data) {
+                        this.status = 'Running';
+                        this.statusClass = 'label-primary';
+                        this.disableButtons = false;
+                        console.log('Started');
+                    }.bind(this));
                 },
 
                 stopGiveAway: function() {
@@ -191,9 +238,20 @@
 
                     this.disableButtons = true;
 
-                    $.post('/giveaway/stop', {
-                        _token: csrfToken
+                    var xhr = $.ajax({
+                        url: '/giveaway/stop',
+                        method: 'POST',
+                        data: {
+                            _token: csrfToken
+                        }
                     });
+
+                    xhr.done(function(data) {
+                        this.status = 'Stopped';
+                        this.statusClass = 'label-danger';
+                        this.disableButtons = false;
+                        console.log('Stopped');
+                    }.bind(this));
                 },
 
                 selectWinner: function() {
@@ -203,31 +261,24 @@
 
                     this.disableButtons = true;
 
-                    $.post('/giveaway/winner', {
-                        _token: csrfToken
-                    }, function(response) {
-                        if (response.error) {
-                            alert(response.error);
+                    var xhr = $.ajax({
+                        url: '/giveaway/winner',
+                        method: 'POST',
+                        data: {
+                            _token: csrfToken
+                        }
+                    });
+
+                    xhr.done(function(data) {
+                        if (data.error) {
+                            alert(data.error);
                             this.disableButtons = false;
                             return;
                         }
 
-                        var i = -1;
+                        entries.removeEntry(data.winner);
 
-                        $.each(entries.entries, function(key, value) {
-                            if (value.handle === response.winner) {
-                                i = key;
-                            }
-                        });
-
-                        if (i != -1) {
-                            entries.entries.splice(i, 1);
-                        }
-
-                        entries.entriesCount -= 1;
-
-                        this.winner = response.winner;
-
+                        this.winner = data.winner;
                         this.disableButtons = false;
                     }.bind(this));
                 }
@@ -238,32 +289,8 @@
             },
 
             ready: function() {
-                var self = this;
-
-                self.status = '{{ $status }}';
-                self.disableButtons = false;
-
-                channel.bind('App\\Events\\GiveAwayWasStarted', function(data) {
-                    self.status = 'Running';
-                    self.statusClass = 'label-primary';
-                    self.disableButtons = false;
-                    console.log('Started');
-                });
-
-                channel.bind('App\\Events\\GiveAwayWasReset', function(data) {
-                    entries.entries = [];
-                    entries.entriesCount = 0;
-                    self.winner = '';
-                    self.disableButtons = false;
-                    console.log('Reset');
-                });
-
-                channel.bind('App\\Events\\GiveAwayWasStopped', function(data) {
-                    self.status = 'Stopped';
-                    self.statusClass = 'label-danger';
-                    self.disableButtons = false;
-                    console.log('Stopped');
-                });
+                this.status = '{{ $status }}';
+                this.disableButtons = false;
             }
         });
 
