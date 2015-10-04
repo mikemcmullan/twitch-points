@@ -112,8 +112,8 @@ class Manager
             throw new InvalidArgumentException('points value must be greater than zero.');
         }
 
-        if ($points > 1000) {
-            throw new InvalidArgumentException('You cannot award or take away more than 1000 points at a time.');
+        if ($points > 10000) {
+            throw new InvalidArgumentException('You cannot award or take away more than 10000 points at a time.');
         }
     }
 
