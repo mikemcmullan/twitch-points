@@ -73,6 +73,11 @@ Route::group(['domain' => '{channel}.' . env('CHANNEL_DOMAIN', 'twitch.dev')], f
         'uses'  => 'GiveAwayController@winner',
         'as'    => 'giveaway_winner_path'
     ]);
+
+    post('/giveaway/save-settings', [
+        'uses'  => 'GiveAwayController@saveSettings',
+        'as'    => 'giveaway_save_settings_path'
+    ]);
         
     Route::group(['prefix' => 'api', 'namespace' => 'API'], function () {
         get('/viewer', [

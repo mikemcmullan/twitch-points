@@ -85,4 +85,18 @@ class GiveAwayController extends Controller
             return response()->json(['error' => $e->getMessage()]);
         }
     }
+
+    public function saveSettings(Request $request)
+    {
+        $ticketMax = (int) $request->input('ticket-max');
+        $ticketCost = (int) $request->input('ticket-cost');
+
+        $this->channel->setSetting([
+            'giveaway.ticket-max' => $ticketMax,
+            'giveaway.ticket-cost' => $ticketCost
+        ]);
+
+        return redirect()
+            ->back();
+    }
 }

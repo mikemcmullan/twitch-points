@@ -53,22 +53,26 @@
                             </div><!-- .panel-body -->
                         </div><!-- .panel -->
 
-                        <div class="panel panel-default">
+                        <div class="panel panel-default" id="settings">
                             <div class="panel-heading">Settings</div>
                             <div class="panel-body">
-                                <div class="form-group">
-                                    <label for="ticket-max">Ticket Cost:</label>
-                                    <input type="number" class="form-control" value="{{ $channel->getSetting('giveaway.ticket-cost') }}" name="ticket-cost">
-                                    <p class="help-block">How many {{ $channel->getSetting('currency.name') }} will a ticket cost.</p>
-                                </div>
+                                <div class="alert alert-success" v-class="hide : ! showAlert" v-text="messageText"></div>
 
-                                <div class="form-group">
-                                    <label for="ticket-max">Ticket Max:</label>
-                                    <input type="number" class="form-control" value="{{ $channel->getSetting('giveaway.ticket-max') }}" name="ticket-max">
-                                    <p class="help-block">The maximum amount of tickets a user may purchase.</p>
-                                </div>
+                                {!! Form::open(['route' => ['giveaway_save_settings_path', $channel->slug], 'method' => 'post']) !!}
+                                    <div class="form-group">
+                                        <label for="ticket-max">Ticket Cost:</label>
+                                        <input type="number" class="form-control" v-model="ticketCost" value="{{ $channel->getSetting('giveaway.ticket-cost') }}" name="ticket-cost">
+                                        <p class="help-block">How many {{ $channel->getSetting('currency.name') }} will a ticket cost.</p>
+                                    </div>
 
-                                <button type="button" class="btn btn-primary">Save</button>
+                                    <div class="form-group">
+                                        <label for="ticket-max">Ticket Max:</label>
+                                        <input type="number" class="form-control" v-model="ticketMax" value="{{ $channel->getSetting('giveaway.ticket-max') }}" name="ticket-max">
+                                        <p class="help-block">The maximum amount of tickets a user may purchase.</p>
+                                    </div>
+
+                                    <button type="button" v-on="click: saveSettings" v-attr="disabled : formSubmitting" class="btn btn-primary">Save</button>
+                                {!! Form::close() !!}
                             </div>
                         </div>
                     </div>
@@ -260,6 +264,44 @@
                     self.disableButtons = false;
                     console.log('Stopped');
                 });
+            }
+        });
+
+        settings = new Vue({
+            el: '#settings',
+
+            data: {
+                messageText: '',
+                showAlert: false,
+                formSubmitting: false,
+                ticketCost: 0,
+                ticketMax: 0
+            },
+
+            methods: {
+                saveSettings: function() {
+                    var self = this;
+
+                    self.formSubmitting = true;
+
+                    $.post('/giveaway/save-settings', {
+                        _token: csrfToken,
+                        'ticket-max': this.ticketMax,
+                        'ticket-cost': this.ticketCost
+                    }, function() {
+                        self.messageText = 'Settings Saved.';
+                        self.showAlert = true;
+                        self.formSubmitting = false;
+
+                        setTimeout(function(){
+                            self.showAlert = false;
+                        }, 3000);
+                    });
+                }
+            },
+
+            ready: function() {
+
             }
         });
     </script>
