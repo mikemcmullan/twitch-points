@@ -29,10 +29,10 @@ class RepositoryServiceProvider extends ServiceProvider
             'App\Repositories\Chatter\RedisChatterRepository'
         );
 
-        $this->app->bind(
-            'App\Contracts\Repositories\ChannelRepository',
-            'App\Repositories\Channel\EloquentChannelRepository'
-        );
+//        $this->app->bind(
+//            'App\Contracts\Repositories\ChannelRepository',
+//            'App\Repositories\Channel\EloquentChannelRepository'
+//        );
 
         $this->app->bind(
             'App\Contracts\Repositories\TrackSessionRepository',

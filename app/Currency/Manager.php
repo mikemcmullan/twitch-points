@@ -18,18 +18,12 @@ class Manager
     private $chatterRepo;
 
     /**
-     * @var ChannelRepository
-     */
-    private $channelRepo;
-
-    /**
      * @param ChatterRepository $chatterRepo
      * @param ChannelRepository $channelRepo
      */
-    public function __construct(ChatterRepository $chatterRepo, ChannelRepository $channelRepo)
+    public function __construct(ChatterRepository $chatterRepo)
     {
         $this->chatterRepo = $chatterRepo;
-        $this->channelRepo = $channelRepo;
     }
 
     /**
@@ -94,7 +88,7 @@ class Manager
     private function resolveChannel($channel)
     {
         if (! $channel instanceof Channel) {
-            $channel = $this->channelRepo->findByName($channel);
+            $channel = \App\Channel::findByName($channel);
         }
 
         if (! $channel) {

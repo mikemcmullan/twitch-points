@@ -16,11 +16,6 @@ class AuthenticateUser
     private $twitchSDK;
 
     /**
-     * @var ChannelRepository
-     */
-    private $channelRepository;
-
-    /**
      * @var Authenticator
      */
     private $auth;
@@ -32,14 +27,12 @@ class AuthenticateUser
 
     /**
      * @param TwitchSDKAdapter $twitchSDK
-     * @param ChannelRepository $channelRepo
      * @param UserRepository $userRepo
      * @param Guard $auth
      */
-    public function __construct(TwitchSDKAdapter $twitchSDK, ChannelRepository $channelRepo, UserRepository $userRepo, Guard $auth)
+    public function __construct(TwitchSDKAdapter $twitchSDK, UserRepository $userRepo, Guard $auth)
     {
         $this->twitchSDK = $twitchSDK;
-        $this->channelRepo = $channelRepo;
         $this->auth = $auth;
         $this->userRepo = $userRepo;
     }

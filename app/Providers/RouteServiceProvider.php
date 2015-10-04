@@ -29,7 +29,7 @@ class RouteServiceProvider extends ServiceProvider
         parent::boot($router);
 
         $router->bind('channel', function ($value) {
-            $channel = app(ChannelRepository::class)->findBySlug($value);
+            $channel = \App\Channel::findBySlug($value);
 
             if (! $channel) {
                 throw new InvalidChannelException;

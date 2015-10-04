@@ -17,22 +17,15 @@ class PointsController extends Controller
      * @var ChatterRepository
      */
     private $chatterRepository;
-    
-    /**
-     * @var ChannelRepository
-     */
-    private $channelRepository;
 
     /**
      * @param Request $request
      * @param ChatterRepository $chatterRepository
-     * @param ChannelRepository $channelRepository
      */
-    public function __construct(Request $request, ChatterRepository $chatterRepository, ChannelRepository $channelRepository)
+    public function __construct(Request $request, ChatterRepository $chatterRepository)
     {
         $this->middleware('auth', ['except' => ['checkPoints', 'scoreboard']]);
         $this->chatterRepository = $chatterRepository;
-        $this->channelRepository = $channelRepository;
         $this->channel = $request->route()->getParameter('channel');
         // \Auth::loginUsingId(2, false);
     }

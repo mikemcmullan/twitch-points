@@ -48,6 +48,28 @@ class Channel extends Model implements AuthenticatableContract, CanResetPassword
     }
 
     /**
+     * Find a channel by name.
+     *
+     * @param $slug
+     * @return mixed
+     */
+    public static function findBySlug($slug)
+    {
+        return (new static)->where('slug', $slug)->first();
+    }
+
+    /**
+     * Find a channel by slug.
+     *
+     * @param $name
+     * @return mixed
+     */
+    public static function findByName($name)
+    {
+        return (new static)->where('name', $name)->first();
+    }
+
+    /**
      * Get a channel setting.
      *
      * @param $setting
