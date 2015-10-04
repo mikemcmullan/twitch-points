@@ -3,10 +3,8 @@
 namespace App\Services;
 
 use App\Channel;
-use App\Contracts\Repositories\ChannelRepository;
 use App\Contracts\Repositories\UserRepository;
 use Illuminate\Contracts\Auth\Guard;
-use Illuminate\Cookie\CookieJar;
 
 class AuthenticateUser
 {

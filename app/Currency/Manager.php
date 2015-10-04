@@ -2,7 +2,6 @@
 
 namespace App\Currency;
 
-use App\Contracts\Repositories\ChannelRepository;
 use App\Contracts\Repositories\ChatterRepository;
 use App\Exceptions\AccessDeniedException;
 use App\Exceptions\UnknownUserException;

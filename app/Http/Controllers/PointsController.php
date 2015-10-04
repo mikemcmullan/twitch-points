@@ -7,7 +7,6 @@ use App\Contracts\Repositories\ChatterRepository;
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
 use App\Contracts\Repositories\TrackSessionRepository;
-use App\Contracts\Repositories\ChannelRepository;
 use Illuminate\Http\Request;
 use JasonGrimes\Paginator;
 

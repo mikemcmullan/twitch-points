@@ -2,8 +2,8 @@
 
 namespace App\Console\Commands;
 
+use App\Channel;
 use App\Commands\RemoveOldViewersCommand;
-use App\Contracts\Repositories\ChannelRepository;
 use Illuminate\Console\Command;
 use Illuminate\Contracts\Config\Repository;
 use Illuminate\Foundation\Bus\DispatchesJobs;
@@ -34,21 +34,14 @@ class RemoveOldViewers extends Command
     private $config;
 
     /**
-     * @var ChannelRepository
-     */
-    private $channelRepository;
-
-    /**
      * Create a new command instance.
      *
      * @param Repository $config
-     * @param ChannelRepository $channelRepository
      */
-    public function __construct(Repository $config, ChannelRepository $channelRepository)
+    public function __construct(Repository $config)
     {
         parent::__construct();
         $this->config = $config;
-        $this->channelRepository = $channelRepository;
     }
 
     /**
@@ -58,7 +51,7 @@ class RemoveOldViewers extends Command
      */
     public function fire()
     {
-        $channel = $this->channelRepository->findByName($this->config->get('twitch.points.default_channel'));
+        $channel = Channel::findByName($this->config->get('twitch.points.default_channel'));
         $minutes = $this->config->get('twitch.points.expire.days');
         $points  = $this->config->get('twitch.points.expire.points');
 

@@ -2,7 +2,6 @@
 
 namespace App\Providers;
 
-use App\Contracts\Repositories\ChannelRepository;
 use App\Exceptions\InvalidChannelException;
 use Illuminate\Routing\Router;
 use Illuminate\Foundation\Support\Providers\RouteServiceProvider as ServiceProvider;

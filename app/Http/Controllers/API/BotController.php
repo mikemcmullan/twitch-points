@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers\API;
 
-use App\Contracts\Repositories\ChannelRepository;
 use App\Http\Controllers\Controller;
 use App\Bot\Manager;
 use Illuminate\Http\Request;

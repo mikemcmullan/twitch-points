@@ -2,11 +2,11 @@
 
 namespace App\Console\Commands;
 
+use App\Channel;
 use Illuminate\Console\Command;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Input\InputArgument;
-use App\Contracts\Repositories\ChannelRepository;
 use App\Contracts\Repositories\TrackSessionRepository;
 use App\Services\TwitchApi;
 use App\Commands\StartSystemCommand;
@@ -29,10 +29,14 @@ class SyncSystemStatus extends Command
      */
     protected $description = 'Command description.';
 
-    protected $channelRepository;
-
+    /**
+     * @var TrackSessionRepository
+     */
     protected $trackSessionRepository;
 
+    /**
+     * @var TwitchApi
+     */
     protected $twitchApi;
 
     /**
@@ -40,11 +44,10 @@ class SyncSystemStatus extends Command
      *
      * @return void
      */
-    public function __construct(ChannelRepository $channelRepository, TrackSessionRepository $trackSessionRepository, TwitchApi $twitchApi)
+    public function __construct(TrackSessionRepository $trackSessionRepository, TwitchApi $twitchApi)
     {
         parent::__construct();
 
-        $this->channelRepository = $channelRepository;
         $this->trackSessionRepository = $trackSessionRepository;
         $this->twitchApi = $twitchApi;
     }
@@ -56,7 +59,7 @@ class SyncSystemStatus extends Command
      */
     public function fire()
     {
-        $channel = $this->channelRepository->findBySlug($this->argument('channel'));
+        $channel = Channel::findBySlug($this->argument('channel'));
 
         if ($channel) {
             if (! $this->twitchApi->validChannel($channel->name)) {
