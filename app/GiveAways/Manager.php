@@ -234,8 +234,8 @@ class Manager
             throw new GiveAwayException(sprintf('%s does not have enough %s', $viewer['handle'], $entry->getChannel()->getSetting('currency.name')));
         }
 
-        $this->chatterRepo->setGiveAwayStatus($entry->getChannel(), $entry->getHandle(), true);
         $this->currencyManager->remove($entry->getChannel(), $entry->getChannel()->name, $entry->getHandle(), $cost);
+        $this->chatterRepo->setGiveAwayStatus($entry->getChannel(), $entry->getHandle(), true);
 
         for ($i = 0; $i < $entry->getTickets(); $i++) {
             $this->redis->lpush('giveaway:2', $entry->getHandle());
