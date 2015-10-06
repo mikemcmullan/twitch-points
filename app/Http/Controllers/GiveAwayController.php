@@ -91,9 +91,22 @@ class GiveAwayController extends Controller
         $ticketMax = (int) $request->input('ticket-max');
         $ticketCost = (int) $request->input('ticket-cost');
 
+        if ($ticketCost < 0 || $ticketCost > 1000) {
+            $ticketCost = 0;
+        }
+
+        if ($ticketMax < 0 || $ticketMax > 100) {
+            $ticketMax = 10;
+        }
+
+        $giveawayStarted = substr(e($request->input('giveaway-started-text')), 0, 250);
+        $giveawayStopped = substr(e($request->input('giveaway-stopped-text')), 0, 250);
+
         $this->channel->setSetting([
             'giveaway.ticket-max' => $ticketMax,
-            'giveaway.ticket-cost' => $ticketCost
+            'giveaway.ticket-cost' => $ticketCost,
+            'giveaway.started-text' => $giveawayStarted,
+            'giveaway.stopped-text' => $giveawayStopped
         ]);
 
         return redirect()

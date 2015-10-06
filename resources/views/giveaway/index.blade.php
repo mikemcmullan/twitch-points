@@ -58,20 +58,32 @@
                             <div class="panel-body">
                                 <div class="alert alert-success" v-class="hide : ! showAlert" v-text="messageText"></div>
 
-                                {!! Form::open(['route' => ['giveaway_save_settings_path', $channel->slug], 'method' => 'post']) !!}
+                                {!! Form::open(['route' => ['giveaway_save_settings_path', $channel->slug], 'method' => 'post', 'v-on' => 'submit:saveSettings']) !!}
                                     <div class="form-group">
-                                        <label for="ticket-max">Ticket Cost:</label>
-                                        <input type="number" class="form-control" v-model="ticketCost" value="{{ $channel->getSetting('giveaway.ticket-cost') }}" name="ticket-cost">
-                                        <p class="help-block">How many {{ $channel->getSetting('currency.name') }} will a ticket cost.</p>
+                                        <label for="ticket-cost">Ticket Cost:</label>
+                                        <input type="number" id="ticket-cost" class="form-control" min="0" max="1000" v-model="ticketCost" value="{{ $channel->getSetting('giveaway.ticket-cost') }}" name="ticket-cost">
+                                        <p class="help-block">How many {{ $channel->getSetting('currency.name') }} will a ticket cost. Max 1000</p>
                                     </div>
 
                                     <div class="form-group">
                                         <label for="ticket-max">Ticket Max:</label>
-                                        <input type="number" class="form-control" v-model="ticketMax" value="{{ $channel->getSetting('giveaway.ticket-max') }}" name="ticket-max">
-                                        <p class="help-block">The maximum amount of tickets a user may purchase.</p>
+                                        <input type="number" id="ticket-max" class="form-control" min="0" max="100" v-model="ticketMax" value="{{ $channel->getSetting('giveaway.ticket-max') }}" name="ticket-max">
+                                        <p class="help-block">The maximum amount of tickets a user may purchase. Max 100.</p>
                                     </div>
 
-                                    <button type="button" v-on="click: saveSettings" v-attr="disabled : formSubmitting" class="btn btn-primary">Save</button>
+                                    <div class="form-group">
+                                        <label for="giveaway-started">Giveaway Started Text</label>
+                                        <textarea id="giveaway-started" class="form-control" v-model="giveawayStartedText" maxlength="250" cols="30" rows="3">{{ $channel->getSetting('giveaway.started-text') }}</textarea>
+                                        <p class="help-block">The bot will display this message when the giveaway starts. Max characters 250.</p>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="giveaway-stopped">Giveaway Stopped Text</label>
+                                        <textarea id="giveaway-stopped" class="form-control" v-model="giveawayStoppedText" maxlength="250" cols="30" rows="3">{{ $channel->getSetting('giveaway.stopped-text') }}</textarea>
+                                        <p class="help-block">The bot will display this message when the giveaway is stopped. Max characters 250.</p>
+                                    </div>
+
+                                    <button type="submit" v-attr="disabled : formSubmitting" class="btn btn-primary">Save</button>
                                 {!! Form::close() !!}
                             </div>
                         </div>
@@ -99,6 +111,7 @@
 @section('after-js')
     <script src="https://js.pusher.com/3.0/pusher.min.js"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/vue/0.12.16/vue.min.js"></script>
+
     <script>
         var csrfToken = $('meta[name=csrf_token]').attr('content');
 
@@ -302,28 +315,32 @@
                 showAlert: false,
                 formSubmitting: false,
                 ticketCost: 0,
-                ticketMax: 0
+                ticketMax: 0,
+                giveawayStartedText: '',
+                giveawayStoppedText: ''
             },
 
             methods: {
-                saveSettings: function() {
-                    var self = this;
-
-                    self.formSubmitting = true;
+                saveSettings: function(e) {
+                    this.formSubmitting = true;
 
                     $.post('/giveaway/save-settings', {
                         _token: csrfToken,
                         'ticket-max': this.ticketMax,
-                        'ticket-cost': this.ticketCost
+                        'ticket-cost': this.ticketCost,
+                        'giveaway-started-text': this.giveawayStartedText,
+                        'giveaway-stopped-text': this.giveawayStoppedText
                     }, function() {
-                        self.messageText = 'Settings Saved.';
-                        self.showAlert = true;
-                        self.formSubmitting = false;
+                        this.messageText = 'Settings Saved.';
+                        this.showAlert = true;
+                        this.formSubmitting = false;
 
                         setTimeout(function(){
-                            self.showAlert = false;
-                        }, 3000);
-                    });
+                            this.showAlert = false;
+                        }.bind(this), 3000);
+                    }.bind(this));
+
+                    e.preventDefault();
                 }
             },
 
