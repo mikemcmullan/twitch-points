@@ -99,8 +99,8 @@ class GiveAwayController extends Controller
             $ticketMax = 10;
         }
 
-        $giveawayStarted = substr(htmlentities($request->input('giveaway-started-text'), ENT_NOQUOTES, 'UTF-8', false), 0, 250);
-        $giveawayStopped = substr(htmlentities($request->input('giveaway-stopped-text'), ENT_NOQUOTES, 'UTF-8', false), 0, 250);
+        $giveawayStarted = (string) substr(htmlentities($request->input('giveaway-started-text'), ENT_NOQUOTES, 'UTF-8', false), 0, 250);
+        $giveawayStopped = (string) substr(htmlentities($request->input('giveaway-stopped-text'), ENT_NOQUOTES, 'UTF-8', false), 0, 250);
 
         $this->channel->setSetting([
             'giveaway.ticket-max' => $ticketMax,
