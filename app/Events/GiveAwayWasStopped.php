@@ -7,12 +7,17 @@ use App\Events\Event;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 
-class GiveAwayWasStopped extends Event implements ShouldBroadcast
+class GiveAwayWasStopped extends Event
 {
     /**
      * @var Channel
      */
-    private $channel;
+    public $channel;
+
+    /**
+     * @var
+     */
+    public $message;
 
     /**
      * Create a new event instance.
@@ -22,6 +27,8 @@ class GiveAwayWasStopped extends Event implements ShouldBroadcast
     public function __construct(Channel $channel)
     {
         $this->channel = $channel;
+
+        $this->message = $channel->getSetting('giveaway.stopped-text');
     }
 
     /**

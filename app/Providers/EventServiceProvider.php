@@ -19,6 +19,14 @@ class EventServiceProvider extends ServiceProvider
 
         'App\Events\ChatListWasDownloaded' => [
             'App\Handlers\Events\ProcessChatList'
+        ],
+
+        'App\Events\GiveAwayWasStarted' => [
+            'App\Listeners\PushToBot'
+        ],
+
+        'App\Events\GiveAwayWasStopped' => [
+            'App\Listeners\PushToBot'
         ]
     ];
 

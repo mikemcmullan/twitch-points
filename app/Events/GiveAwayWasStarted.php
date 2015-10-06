@@ -6,12 +6,17 @@ use App\Channel;
 use App\Events\Event;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 
-class GiveAwayWasStarted extends Event implements ShouldBroadcast
+class GiveAwayWasStarted extends Event
 {
     /**
      * @var Channel
      */
-    private $channel;
+    public $channel;
+
+    /**
+     * @var
+     */
+    public $message;
 
     /**
      * Create a new event instance.
@@ -21,6 +26,8 @@ class GiveAwayWasStarted extends Event implements ShouldBroadcast
     public function __construct(Channel $channel)
     {
         $this->channel = $channel;
+
+        $this->message = $channel->getSetting('giveaway.started-text');
     }
 
     /**
