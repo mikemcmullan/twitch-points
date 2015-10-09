@@ -367,7 +367,7 @@ class RedisChatterRepository implements ChatterRepository
                 'handle'  => $key['handle'],
                 'channel' => $key['channel'],
                 'minutes' => $data['minutes'],
-                'points'  => (float) $data['points'],
+                'points'  => $data['points'],
                 'rank'    => $rank,
                 'updated' => $data['updated'],
                 'mod'     => $mod,
@@ -390,7 +390,7 @@ class RedisChatterRepository implements ChatterRepository
      */
     private function mapUser($channel, $handle, array $user)
     {
-        $user['points']   = (float) array_get($user, 'points', 0);
+        $user['points']   = array_get($user, 'points', 0);
         $user['key']      = $this->makeKey($channel['id'], $handle);
         $user['channel']  = $channel;
         $user['handle']   = $handle;
