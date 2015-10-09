@@ -47,7 +47,7 @@ class PointsController extends Controller
             $data['chatter'] = $this->chatterRepository->findByHandle($this->channel, $data['handle']);
         }
 
-        $data['chatters'] = $this->chatterRepository->paginate(1, 25)->allForChannel($this->channel, false, $this->channel->rank_mods);
+        $data['chatters'] = $this->chatterRepository->paginate(1, 25)->allForChannel($this->channel, false, $this->channel->getSetting('rank-mods', false));
         $data['channel'] = $this->channel;
 
         return view('check-points', $data);
@@ -61,7 +61,7 @@ class PointsController extends Controller
     public function scoreboard(Request $request)
     {
         $data['channel'] = $this->channel;
-        $data['chatters'] = $this->chatterRepository->paginate($request->get('page', 1), 100)->allForChannel($this->channel, false, $this->channel->rank_mods);
+        $data['chatters'] = $this->chatterRepository->paginate($request->get('page', 1), 100)->allForChannel($this->channel, false, $this->channel->getSetting('rank-mods', false));
         $data['chatterCount'] = $this->chatterRepository->getCountForChannel($this->channel);
         $data['paginator'] = new Paginator($data['chatterCount'], 100, $request->get('page', 1), route('scoreboard_path', [$this->channel->slug]) . '?page=(:num)');
 
