@@ -31,7 +31,7 @@ class RankChattersCommandHandler
      */
     public function handle(RankChattersCommand $command)
     {
-        $chatters = $this->chatterRepository->allForChannel($command->channel, false, $command->channel->rank_mods);
+        $chatters = $this->chatterRepository->allForChannel($command->channel, false, $command->channel->getSetting('rank-mods'));
         $rankings = new Collection();
         $rank = 1;
 
