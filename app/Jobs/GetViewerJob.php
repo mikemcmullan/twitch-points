@@ -50,7 +50,8 @@ class GetViewerJob extends Job implements SelfHandling
             'points'    => floor($viewer['points']),
             'minutes'   => (int) $viewer['minutes'],
             'rank'      => (int) array_get($viewer, 'rank'),
-            'mod'       => (bool) array_get($viewer, 'mod')
+            'mod'       => (bool) array_get($viewer, 'mod'),
+            'admin'     => (bool) array_get($viewer, 'admin')
         ];
     }
 }
