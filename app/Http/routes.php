@@ -84,6 +84,11 @@ Route::group(['domain' => '{channel}.' . env('CHANNEL_DOMAIN', 'twitch.dev')], f
             'uses'  => 'ViewerController@getViewer',
             'as'    => 'api_points_path'
         ]);
+
+        get('/vips', [
+            'uses'  => 'GeneralController@getVIPs',
+            'as'    => 'api_vips_path'
+        ]);
     
         post('/points', [
             'uses'  => 'PointsController@addPoints',

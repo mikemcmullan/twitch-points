@@ -46,6 +46,22 @@ interface ChatterRepository
     public function allForChannel(Channel $channel, $showHidden = false, $showMod = false);
 
     /**
+     * Get all mods belonging to a channel.
+     *
+     * @param Channel $channel
+     * @return Collection
+     */
+    public function allModsForChannel(Channel $channel);
+
+    /**
+     * Get all admins belonging to a channel.
+     *
+     * @param Channel $channel
+     * @return Collection
+     */
+    public function allAdminsForChannel(Channel $channel);
+
+    /**
      * Get the number of chatters a channel has.
      *
      * @param Channel $channel

@@ -24,6 +24,11 @@ class RedisChatterRepository implements ChatterRepository
     const CHAT_INDEX_KEY_FORMAT = 'chattersIndex:%s';
 
     /**
+     * Admin Index Key Format
+     */
+    const ADMIN_INDEX_KEY_FORMAT = 'adminsIndex:%s';
+
+    /**
      * Mod Index Key Format
      */
     const MOD_INDEX_KEY_FORMAT = 'modsIndex:%s';
@@ -150,6 +155,34 @@ class RedisChatterRepository implements ChatterRepository
     }
 
     /**
+     * Get all mods belonging to a channel.
+     *
+     * @param Channel $channel
+     * @return Collection
+     */
+    public function allModsForChannel(Channel $channel)
+    {
+        $mods = $this->redis->smembers($this->makeModIndexKey($channel['id']));
+        $collection = new Collection($this->mapUsers($mods, true, true));
+
+        return $collection;
+    }
+
+    /**
+     * Get all admins belonging to a channel.
+     *
+     * @param Channel $channel
+     * @return Collection
+     */
+    public function allAdminsForChannel(Channel $channel)
+    {
+        $admins = $this->redis->smembers($this->makeAdminIndexKey($channel['id']));
+        $collection = new Collection($this->mapUsers($admins, true, true));
+
+        return $collection;
+    }
+
+    /**
      * Get the number of chatters a channel has.
      *
      * @param Channel $channel
@@ -259,7 +292,7 @@ class RedisChatterRepository implements ChatterRepository
         }
 
         $pipe->zincrby($this->makeModIndexKey($channel['id']), $points, $key);
-        $pipe->zincrby($this->makeChatIndexKey($channel['id']), $points, $key);
+        $pipe->sadd($this->makeChatIndexKey($channel['id']), $key);
         $pipe->hincrbyfloat($key, 'points', $points);
         $pipe->hincrby($key, 'minutes', $minutes);
         $pipe->hset($key, 'mod', true);
@@ -322,6 +355,17 @@ class RedisChatterRepository implements ChatterRepository
     private function makeChatIndexKey($channel)
     {
         return sprintf(self::CHAT_INDEX_KEY_FORMAT, $channel);
+    }
+
+    /**
+     * Make a redis key for the admin index.
+     * @param $channel
+     *
+     * @return string
+     */
+    private function makeAdminIndexKey($channel)
+    {
+        return sprintf(self::ADMIN_INDEX_KEY_FORMAT, $channel);
     }
 
     /**
@@ -401,6 +445,19 @@ class RedisChatterRepository implements ChatterRepository
 
         return $user;
     }
+
+    // private function mapMods(array $mods)
+    // {
+    //     $mappedMods = [];
+    //
+    //     foreach ($mods as $mod) {
+    //         $key = $this->parseKey($mod);
+    //         $data= $this->redis->hgetall($chatter);
+    //         $mappedMods[$key['handle']] = $this->mapUser()
+    //     }
+    //
+    //     return $mappedMods;
+    // }
 
     /**
      * Parse a redis key to provide the channel and handle.
