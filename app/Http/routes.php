@@ -7,7 +7,35 @@ Route::group(['domain' => env('AUTH_DOMAIN', 'auth.twitch.dev')], function () {
     ]);
 });
 
-Route::group(['domain' => '{channel}.' . env('CHANNEL_DOMAIN', 'twitch.dev')], function () {
+Route::group(['domain' => 'api.' . config('app.root_domain'), 'prefix' => '{channel}', 'namespace' => 'API'], function () {
+    Route::get('/viewer', [
+        'uses'  => 'ViewerController@getViewer',
+        'as'    => 'api_points_path'
+    ]);
+
+    Route::get('/vips', [
+        'uses'  => 'GeneralController@getVIPs',
+        'as'    => 'api_vips_path'
+    ]);
+
+    Route::post('/points', [
+        'uses'  => 'PointsController@addPoints',
+        'as'    => 'api_points_add_path'
+    ]);
+
+    Route::delete('/points', [
+        'uses'  => 'PointsController@removePoints',
+        'as'    => 'api_points_remove_path'
+    ]);
+
+    Route::get('/giveaway/enter', [
+        'uses'  => 'GiveAwayController@enter',
+        'as'    => 'api_giveaway_enter_path'
+    ]);
+});
+
+
+Route::group(['domain' => '{channel}.' . config('app.root_domain'), 'middleware' => ['web']], function () {
 
     Route::get('/', [
         'uses'  => 'PointsController@checkPoints',
@@ -78,31 +106,4 @@ Route::group(['domain' => '{channel}.' . env('CHANNEL_DOMAIN', 'twitch.dev')], f
         'uses'  => 'GiveAwayController@saveSettings',
         'as'    => 'giveaway_save_settings_path'
     ]);
-
-    Route::group(['prefix' => 'api', 'namespace' => 'API'], function () {
-        Route::get('/viewer', [
-            'uses'  => 'ViewerController@getViewer',
-            'as'    => 'api_points_path'
-        ]);
-
-        Route::get('/vips', [
-            'uses'  => 'GeneralController@getVIPs',
-            'as'    => 'api_vips_path'
-        ]);
-
-        Route::post('/points', [
-            'uses'  => 'PointsController@addPoints',
-            'as'    => 'api_points_add_path'
-        ]);
-
-        Route::delete('/points', [
-            'uses'  => 'PointsController@removePoints',
-            'as'    => 'api_points_remove_path'
-        ]);
-
-        Route::get('/giveaway/enter', [
-            'uses'  => 'GiveAwayController@enter',
-            'as'    => 'api_giveaway_enter_path'
-        ]);
-    });
 });

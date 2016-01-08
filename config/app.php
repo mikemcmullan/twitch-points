@@ -1,6 +1,8 @@
 <?php
 
 return [
+    'root_domain' => env('ROOT_DOMAIN', 'twitch.dev'),
+
     'env' => env('APP_ENV', 'production'),
 
     /*
