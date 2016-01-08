@@ -181,7 +181,8 @@ class Manager
             'channel'=> $channel['name'],
             'handle' => $target['handle'],
             'points' => floor($pointTotal),
-            'minutes'=> (int) $target['minutes']
+            'minutes'=> (int) $target['minutes'],
+            'amount' => (int) $points
         ];
     }
 
