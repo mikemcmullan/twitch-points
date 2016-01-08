@@ -16,7 +16,11 @@ class ProtectApi
     public function handle($request, Closure $next)
     {
         if ($request->server('HTTP_ACCESS_TOKEN') !== env('API_KEY')) {
-            return response()->json(['error' => 'Unauthorized.'], 401);
+            return response()->json([
+                'error' => 'Unauthorized',
+                'code'  => 401,
+                'message' => 'Missing or incorrect access token.'
+            ], 401);
         }
 
         return $next($request);

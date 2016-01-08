@@ -45,15 +45,19 @@ class GiveAwayController extends Controller
             ];
         } catch (InvalidArgumentException $e) {
             $response = [
-                'error' => $e->getMessage()
+                'error' => 'Bad Request',
+                'code'  => $code = 400,
+                'message' => $e->getMessage()
             ];
         } catch (GiveAwayException $e) {
             $response = [
-                'error' => $e->getMessage()
+                'error' => 'Conflict',
+                'code'  => $code = 409,
+                'message' => $e->getMessage()
             ];
         }
 
-        return response()->json($response);
+        return response()->json($response, $code);
     }
 
 }

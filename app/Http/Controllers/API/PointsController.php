@@ -40,23 +40,21 @@ class PointsController extends Controller
             $response = $this->dispatch(new AddCurrencyJob($channel, $data['handle'], $data['target'], $data['points']));
         } catch (UnknownHandleException $e) {
             $response = [
-                'error' => $e->getMessage(),
-                'level' => 'regular'
-            ];
-        } catch (AccessDeniedException $e) {
-            $response = [
-                'error' => $e->getMessage(),
-                'level' => 'regular'
+                'error' => 'Not Found',
+                'code'  => $code = 404,
+                'message' => $e->getMessage()
             ];
         } catch (InvalidArgumentException $e) {
             $response = [
-                'error' => $e->getMessage(),
-                'level' => 'regular'
+                'error' => 'Bad Request',
+                'code'  => $code = 400,
+                'message' => $e->getMessage()
             ];
         } catch (Exception $e) {
             $response = [
-                'error' => 'Unknown error occurred.',
-                'level' => 'regular'
+                'error' => 'Internal Server Error',
+                'code'  => $code = 500,
+                'message' => 'Unknown error occurred.'
             ];
         }
 

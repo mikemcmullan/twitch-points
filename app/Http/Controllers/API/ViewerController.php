@@ -34,25 +34,29 @@ class ViewerController extends Controller
 
         try {
             $response = $this->dispatch(new GetViewerJob($channel, $handle));
+            $code = 200;
 
             $response['time_online'] = presentTimeOnline($response['minutes']);
         } catch (UnknownHandleException $e) {
             $response = [
-                'level' => 'notice',
-                'error' => $e->getMessage()
+                'error' => 'Not Found',
+                'code'  => $code = 404,
+                'message' => $e->getMessage()
             ];
         } catch (InvalidArgumentException $e) {
             $response = [
-                'level' => 'notice',
-                'error' => $e->getMessage()
+                'error' => 'Bad Request',
+                'code'  => $code = 400,
+                'message' => $e->getMessage()
             ];
         } catch (Exception $e) {
             $response = [
-                'level' => 'notice',
-                'error' => 'Unknown error occurred.'
+                'error' => 'Internal Server Error',
+                'code'  => $code = 500,
+                'message' => 'Unknown error occurred.'
             ];
         }
 
-        return response()->json($response);
+        return response()->json($response, $code);
     }
 }
