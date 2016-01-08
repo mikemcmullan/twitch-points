@@ -18,14 +18,19 @@ Route::group(['domain' => 'api.' . config('app.root_domain'), 'prefix' => '{chan
         'as'    => 'api_vips_path'
     ]);
 
-    Route::post('/points', [
-        'uses'  => 'PointsController@addPoints',
-        'as'    => 'api_points_add_path'
+    Route::get('/commands', [
+        'uses'  => 'GeneralController@getCommands',
+        'as'    => 'api_commands_path'
     ]);
 
-    Route::delete('/points', [
-        'uses'  => 'PointsController@removePoints',
-        'as'    => 'api_points_remove_path'
+    Route::post('/currency', [
+        'uses'  => 'CurrencyController@addPoints',
+        'as'    => 'api_currency_add_path'
+    ]);
+
+    Route::delete('/currency', [
+        'uses'  => 'CurrencyController@removePoints',
+        'as'    => 'api_currency_remove_path'
     ]);
 
     Route::get('/giveaway/enter', [
@@ -38,32 +43,32 @@ Route::group(['domain' => 'api.' . config('app.root_domain'), 'prefix' => '{chan
 Route::group(['domain' => '{channel}.' . config('app.root_domain'), 'middleware' => ['web']], function () {
 
     Route::get('/', [
-        'uses'  => 'PointsController@checkPoints',
+        'uses'  => 'CurrencyController@checkPoints',
         'as'    => 'home_path'
     ]);
 
     Route::get('/check-points', [
-        'uses'  => 'PointsController@checkPoints',
+        'uses'  => 'CurrencyController@checkPoints',
         'as'    => 'check_points_path'
     ]);
 
     Route::get('/system-control', [
-        'uses'  => 'PointsController@systemControl',
+        'uses'  => 'CurrencyController@systemControl',
         'as'    => 'system_control_path'
     ]);
 
     Route::patch('/system-control', [
-        'uses'  => 'PointsController@startSystem',
+        'uses'  => 'CurrencyController@startSystem',
         'as'    => 'start_system_path'
     ]);
 
     Route::get('/scoreboard', [
-        'uses'  => 'PointsController@scoreboard',
+        'uses'  => 'CurrencyController@scoreboard',
         'as'    => 'scoreboard_path'
     ]);
 
     Route::get('/login', [
-        'uses'  => 'AuthController@login',
+        'uses'  => 'CurrencyController@login',
         'as'    => 'login_path'
     ]);
 

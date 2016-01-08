@@ -14,7 +14,7 @@ use InvalidArgumentException;
 use App\Exceptions\AccessDeniedException;
 use App\Exceptions\UnknownHandleException;
 
-class PointsController extends Controller
+class CurrencyController extends Controller
 {
     use DispatchesJobs;
 

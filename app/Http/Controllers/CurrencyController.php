@@ -10,7 +10,7 @@ use App\Contracts\Repositories\TrackSessionRepository;
 use Illuminate\Http\Request;
 use JasonGrimes\Paginator;
 
-class PointsController extends Controller
+class CurrencyController extends Controller
 {
     /**
      * @var ChatterRepository
