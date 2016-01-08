@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Commands\StartSystemCommand;
+use App\Jobs\StartSystemJob;
 use App\Contracts\Repositories\ChatterRepository;
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
@@ -88,7 +88,7 @@ class PointsController extends Controller
      */
     public function startSystem()
     {
-        $this->dispatch(new StartSystemCommand($this->channel));
+        $this->dispatch(new StartSystemJob($this->channel));
 
         return redirect()->back();
     }

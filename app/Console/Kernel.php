@@ -13,9 +13,9 @@ class Kernel extends ConsoleKernel
      * @var array
      */
     protected $commands = [
-        'App\Console\Commands\UpdatePoints',
-        'App\Console\Commands\RankChatters',
-        'App\Console\Commands\SyncSystemStatus'
+        \App\Console\Commands\UpdatePoints::class,
+        \App\Console\Commands\RankChatters::class,
+        \App\Console\Commands\SyncSystemStatus::class
     ];
 
     /**

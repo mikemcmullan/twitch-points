@@ -12,6 +12,8 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
 {
     use Authenticatable, Authorizable;
 
+    public $incrementing = true;
+
     protected $fillable = ['name', 'email', 'logo', 'permissions'];
 
     protected $hidden = ['access_token', 'remember_token'];

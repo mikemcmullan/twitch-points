@@ -13,6 +13,13 @@ class Channel extends Model implements AuthenticatableContract, CanResetPassword
     use Authenticatable, CanResetPassword;
 
     /**
+     * Indicates if the IDs are auto-incrementing.
+     *
+     * @var bool
+     */
+    public $incrementing = true;
+
+    /**
      * @var bool
      */
     public $timestamps = false;

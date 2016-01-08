@@ -2,7 +2,7 @@
 
 namespace App\Console\Commands;
 
-use App\Commands\DownloadChatList;
+use App\Jobs\DownloadChatListJob;
 use App\Contracts\Repositories\TrackSessionRepository;
 use Illuminate\Console\Command;
 use Illuminate\Foundation\Bus\DispatchesJobs;
@@ -55,10 +55,10 @@ class UpdatePoints extends Command
 
         try {
             foreach ($sessions as $session) {
-                $this->dispatch(new DownloadChatList($session->channel));
+                $this->dispatch(new DownloadChatListJob($session->channel));
             }
         } catch (\Exception $e) {
-            dd($e->getFile(), $e->getLine());
+            dd($e->getMessage());
         }
 
         $end = microtime(true) - $startTime;

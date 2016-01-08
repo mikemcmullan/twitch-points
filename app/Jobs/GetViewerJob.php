@@ -4,10 +4,9 @@ namespace App\Jobs;
 
 use App\Currency\Manager;
 use App\Jobs\Job;
-use Illuminate\Contracts\Bus\SelfHandling;
 use InvalidArgumentException;
 
-class GetViewerJob extends Job implements SelfHandling
+class GetViewerJob extends Job
 {
     /**
      * @var

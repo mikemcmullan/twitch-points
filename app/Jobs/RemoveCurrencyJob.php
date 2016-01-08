@@ -4,9 +4,8 @@ namespace App\Jobs;
 
 use App\Currency\Manager;
 use App\Jobs\Job;
-use Illuminate\Contracts\Bus\SelfHandling;
 
-class RemoveCurrencyJob extends Job implements SelfHandling
+class RemoveCurrencyJob extends Job
 {
     /**
      * @var

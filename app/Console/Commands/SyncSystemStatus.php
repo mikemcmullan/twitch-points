@@ -9,7 +9,7 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Input\InputArgument;
 use App\Contracts\Repositories\TrackSessionRepository;
 use App\Services\TwitchApi;
-use App\Commands\StartSystemCommand;
+use App\Jobs\StartSystemJob;
 
 class SyncSystemStatus extends Command
 {
@@ -71,7 +71,7 @@ class SyncSystemStatus extends Command
             $systemStatus = (bool) $this->trackSessionRepository->findIncompletedSession($channel);
 
             if (($status && ! $systemStatus) || ($systemStatus && ! $status)) {
-                $this->dispatch(new StartSystemCommand($channel));
+                $this->dispatch(new StartSystemJob($channel));
                 $this->info('Starting / Stopping system for ' . $channel->slug);
             }
         }

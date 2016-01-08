@@ -7,7 +7,7 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Input\InputArgument;
 use App\Contracts\Repositories\TrackSessionRepository;
 use Illuminate\Foundation\Bus\DispatchesJobs;
-use App\Commands\RankChattersCommand;
+use App\Jobs\RankChattersJob;
 
 class RankChatters extends Command
 {
@@ -54,7 +54,7 @@ class RankChatters extends Command
         $sessions = $this->pointsSession->allIncompletedSessions();
 
         foreach ($sessions as $session) {
-            $this->dispatch(new RankChattersCommand($session->channel));
+            $this->dispatch(new RankChattersJob($session->channel));
         }
 
         $end = microtime(true) - $startTime;

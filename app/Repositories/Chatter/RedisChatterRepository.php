@@ -291,8 +291,8 @@ class RedisChatterRepository implements ChatterRepository
             $pipe = $this->redis;
         }
 
-        $pipe->zincrby($this->makeModIndexKey($channel['id']), $points, $key);
-        $pipe->sadd($this->makeChatIndexKey($channel['id']), $key);
+        $pipe->zincrby($this->makeChatIndexKey($channel['id']), $points, $key);
+        $pipe->sadd($this->makeModIndexKey($channel['id']), $key);
         $pipe->hincrbyfloat($key, 'points', $points);
         $pipe->hincrby($key, 'minutes', $minutes);
         $pipe->hset($key, 'mod', true);

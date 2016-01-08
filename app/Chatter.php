@@ -6,6 +6,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class Chatter extends Model
 {
+    public $incrementing = true;
+    
     protected $fillable = ['handle', 'start_time', 'total_minutes_online', 'points', 'rank'];
 
     public function getTotalMinutesOnlineAttribute($minutes)

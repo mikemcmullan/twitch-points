@@ -3,10 +3,15 @@
 namespace App\Exceptions;
 
 use Exception;
-use fXmlRpc\Exception\HttpException;
+use fXmlRpc\Exception\HttpException as RrcHttpException;
 use fXmlRpc\Exception\TransportException;
 use App\Exceptions\FileInaccessibleException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+
+use Illuminate\Auth\Access\AuthorizationException;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Symfony\Component\HttpKernel\Exception\HttpException;
+use Illuminate\Foundation\Validation\ValidationException;
 
 class Handler extends ExceptionHandler
 {
@@ -15,8 +20,11 @@ class Handler extends ExceptionHandler
      *
      * @var array
      */
-    protected $dontReport = [
-        'Symfony\Component\HttpKernel\Exception\HttpException'
+     protected $dontReport = [
+        AuthorizationException::class,
+        HttpException::class,
+        ModelNotFoundException::class,
+        ValidationException::class,
     ];
 
     /**
@@ -41,7 +49,7 @@ class Handler extends ExceptionHandler
      */
     public function render($request, Exception $e)
     {
-        if ($request->is('api/bot/*') && ($e instanceof TransportException || $e instanceof HttpException)) {
+        if ($request->is('api/bot/*') && ($e instanceof TransportException || $e instanceof RrcHttpException)) {
             return response()->json([
                 'error' => 'Unable to connect to Supervisor.',
                 'level' => 'regular'

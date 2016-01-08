@@ -6,3 +6,4 @@ config.codekit
 Envoy.blade.php
 Capfile
 deploy
+composer.lock
