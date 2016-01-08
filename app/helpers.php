@@ -1,6 +1,17 @@
 <?php
 
 /**
+ * Check if we are in the api based on the host name.
+ * @param $host
+ *
+ * @return bool
+ */
+function isApi($host)
+{
+    return substr($host, 0 , 3) === 'api';
+}
+
+/**
  * Display time in days and hours.
  *
  * @param $minutes

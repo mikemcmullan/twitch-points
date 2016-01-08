@@ -7,11 +7,13 @@ use fXmlRpc\Exception\HttpException as RrcHttpException;
 use fXmlRpc\Exception\TransportException;
 use App\Exceptions\FileInaccessibleException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Illuminate\Foundation\Validation\ValidationException;
+use App\Exceptions\InvalidChannelException;
 
 class Handler extends ExceptionHandler
 {
@@ -25,6 +27,7 @@ class Handler extends ExceptionHandler
         HttpException::class,
         ModelNotFoundException::class,
         ValidationException::class,
+        InvalidChannelException::class
     ];
 
     /**
@@ -49,26 +52,38 @@ class Handler extends ExceptionHandler
      */
     public function render($request, Exception $e)
     {
-        if ($request->is('api/bot/*') && ($e instanceof TransportException || $e instanceof RrcHttpException)) {
-            return response()->json([
-                'error' => 'Unable to connect to Supervisor.',
-                'level' => 'regular'
-            ]);
+        if (isApi($request->getHost())) {
+
+            if ($e instanceof InvalidChannelException || $e instanceof NotFoundHttpException) {
+                return response()->json([
+                    'error' => 'Not Found',
+                    'status'=> 404,
+                    'message' => null
+                ], 404);
+            }
+            
         }
 
-        if ($request->is('api/bot/*') && $e instanceof FileInaccessibleException) {
-            return response()->json([
-                'error' => $e->getMessage(),
-                'level' => 'regular'
-            ]);
-        }
-
-        if ($request->is('api/bot/*') && $e instanceof BotStateException) {
-            return response()->json([
-                'error' => $e->getMessage(),
-                'level' => 'regular'
-            ]);
-        }
+        // if ($request->is('api/bot/*') && ($e instanceof TransportException || $e instanceof RrcHttpException)) {
+        //     return response()->json([
+        //         'error' => 'Unable to connect to Supervisor.',
+        //         'level' => 'regular'
+        //     ]);
+        // }
+        //
+        // if ($request->is('api/bot/*') && $e instanceof FileInaccessibleException) {
+        //     return response()->json([
+        //         'error' => $e->getMessage(),
+        //         'level' => 'regular'
+        //     ]);
+        // }
+        //
+        // if ($request->is('api/bot/*') && $e instanceof BotStateException) {
+        //     return response()->json([
+        //         'error' => $e->getMessage(),
+        //         'level' => 'regular'
+        //     ]);
+        // }
 
         return parent::render($request, $e);
     }
