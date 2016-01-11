@@ -1,5 +1,4 @@
 <?php
-use Illuminate\Http\Request;
 
 Route::group(['domain' => config('app.auth_domain')], function () {
     Route::get('/login', [
@@ -8,7 +7,7 @@ Route::group(['domain' => config('app.auth_domain')], function () {
     ]);
 });
 
-Route::group(['domain' => 'api.' . config('app.api_domain'), 'prefix' => '{channel}', 'namespace' => 'API'], function () {
+Route::group(['domain' => config('app.api_domain'), 'prefix' => '{channel}', 'namespace' => 'API'], function () {
     Route::get('/viewer', [
         'uses'  => 'ViewerController@getViewer',
         'as'    => 'api_points_path'
