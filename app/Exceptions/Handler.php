@@ -13,6 +13,7 @@ use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Illuminate\Foundation\Validation\ValidationException;
+use Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
 use App\Exceptions\InvalidChannelException;
 
 class Handler extends ExceptionHandler
@@ -54,14 +55,14 @@ class Handler extends ExceptionHandler
     {
         if (isApi($request->getHost())) {
 
-            if ($e instanceof InvalidChannelException || $e instanceof NotFoundHttpException) {
+            if ($e instanceof InvalidChannelException || $e instanceof NotFoundHttpException || $e instanceof MethodNotAllowedHttpException) {
                 return response()->json([
                     'error' => 'Not Found',
                     'status'=> 404,
                     'message' => null
                 ], 404);
             }
-            
+
         }
 
         // if ($request->is('api/bot/*') && ($e instanceof TransportException || $e instanceof RrcHttpException)) {
