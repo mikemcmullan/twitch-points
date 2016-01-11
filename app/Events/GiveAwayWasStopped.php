@@ -32,6 +32,28 @@ class GiveAwayWasStopped extends Event
     }
 
     /**
+     * Get the broadcast data.
+     *
+     * @return array
+     */
+    public function broadcastData()
+    {
+        return [
+            'message' => $this->message
+        ];
+    }
+
+    /**
+     * Get the broadcast event name.
+     *
+     * @return string
+     */
+    public function broadcastAs()
+    {
+        return 'giveaway.was-stopped';
+    }
+
+    /**
      * Get the channels the event should be broadcast on.
      *
      * @return array

@@ -25,6 +25,24 @@ class PushToBot
         $this->redis = $redis;
     }
 
+    private function getCommand($event)
+    {
+        if (method_exists($event, 'broadcastAs')) {
+            return $event->broadcastAs();
+        }
+
+        return null;
+    }
+
+    private function getData($event)
+    {
+        if (method_exists($event, 'broadcastData')) {
+            return $event->broadcastData();
+        }
+
+        return null;
+    }
+
     /**
      * Handle the event.
      *
@@ -34,14 +52,11 @@ class PushToBot
     public function handle($event)
     {
         $outEvent = [
-            'event' => 'Event::Announce',
-            'data'  => [
-                'server' => 'twitch-' . $event->channel->name,
-                'channel'=> '#' . $event->channel->name,
-                'message'=> $event->message
-            ]
+            'channel'=> "#{$event->channel->name}",
+            'command'=> $this->getCommand($event),
+            'data' => $this->getData($event)
         ];
 
-        $this->redis->lpush('bot-message-list', json_encode($outEvent));
+        $this->redis->publish('bot', json_encode($outEvent));
     }
 }

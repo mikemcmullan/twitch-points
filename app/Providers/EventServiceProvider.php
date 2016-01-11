@@ -13,16 +13,24 @@ class EventServiceProvider extends ServiceProvider
      * @var array
      */
     protected $listen = [
-        'App\Events\ChatListWasDownloaded' => [
-            'App\Handlers\Events\ProcessChatList'
+        \App\Events\ChatListWasDownloaded::class => [
+            \App\Handlers\Events\ProcessChatList::class
         ],
 
-        'App\Events\GiveAwayWasStarted' => [
-            'App\Listeners\PushToBot'
+        \App\Events\CommandWasUpdated::class => [
+            \App\Listeners\PushToBot::class
         ],
 
-        'App\Events\GiveAwayWasStopped' => [
-            'App\Listeners\PushToBot'
+        \App\Events\VIPsWasUpdated::class => [
+            \App\Listeners\PushToBot::class
+        ],
+
+        \App\Events\GiveAwayWasStarted::class => [
+            \App\Listeners\PushToBot::class
+        ],
+
+        \App\Events\GiveAwayWasStopped::class => [
+            \App\Listeners\PushToBot::class
         ]
     ];
 

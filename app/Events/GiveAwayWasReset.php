@@ -24,6 +24,16 @@ class GiveAwayWasReset extends Event implements ShouldBroadcast
     }
 
     /**
+     * Get the broadcast event name.
+     *
+     * @return string
+     */
+    public function broadcastAs()
+    {
+        return 'giveaway.was-reset';
+    }
+
+    /**
      * Get the channels the event should be broadcast on.
      *
      * @return array
