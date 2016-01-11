@@ -23,24 +23,17 @@ class RemoveCurrencyJob extends Job
     public $points;
 
     /**
-     * @var
-     */
-    public $target;
-
-    /**
      * Create a new command instance.
      *
      * @param string $channel  The channel the chatter belongs to.
-     * @param string $handle   The chat handle of the user making the request.
-     * @param string $target   The chat handle of the user who will receive the points.
+     * @param string $handle   The chat handle of the user who will receive the points.
      * @param int $points      Amount of points to remove.
      */
-    public function __construct($channel, $handle, $target, $points)
+    public function __construct($channel, $handle, $points)
     {
         $this->channel = $channel;
         $this->handle = $handle;
         $this->points = $points;
-        $this->target = $target;
     }
 
     /**
@@ -50,6 +43,6 @@ class RemoveCurrencyJob extends Job
      */
     public function handle(Manager $manager)
     {
-        return $manager->removePoints($this->channel, $this->handle, $this->target, $this->points);
+        return $manager->removePoints($this->channel, $this->handle, $this->points);
     }
 }

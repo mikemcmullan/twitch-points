@@ -1,4 +1,5 @@
 <?php
+use Illuminate\Http\Request;
 
 Route::group(['domain' => env('AUTH_DOMAIN', 'auth.twitch.dev')], function () {
     Route::get('/login', [
@@ -19,17 +20,17 @@ Route::group(['domain' => 'api.' . config('app.root_domain'), 'prefix' => '{chan
     ]);
 
     Route::get('/commands', [
-        'uses'  => 'GeneralController@getCommands',
+        'uses'  => 'CommandsController@getCommands',
         'as'    => 'api_commands_path'
     ]);
 
     Route::post('/currency', [
-        'uses'  => 'CurrencyController@addPoints',
+        'uses'  => 'CurrencyController@addCurrency',
         'as'    => 'api_currency_add_path'
     ]);
 
     Route::delete('/currency', [
-        'uses'  => 'CurrencyController@removePoints',
+        'uses'  => 'CurrencyController@removeCurrency',
         'as'    => 'api_currency_remove_path'
     ]);
 
@@ -37,6 +38,7 @@ Route::group(['domain' => 'api.' . config('app.root_domain'), 'prefix' => '{chan
         'uses'  => 'GiveAwayController@enter',
         'as'    => 'api_giveaway_enter_path'
     ]);
+
 });
 
 
@@ -68,7 +70,7 @@ Route::group(['domain' => '{channel}.' . config('app.root_domain'), 'middleware'
     ]);
 
     Route::get('/login', [
-        'uses'  => 'CurrencyController@login',
+        'uses'  => 'AuthController@login',
         'as'    => 'login_path'
     ]);
 
