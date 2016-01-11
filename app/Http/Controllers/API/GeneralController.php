@@ -14,13 +14,20 @@ class GeneralController extends Controller
      */
     private $chatterRepository;
 
+    /*
+     * @param Request $request
+     * @param ChatterRepository $chatterRepository
+     */
     public function __construct(Request $request, ChatterRepository $chatterRepository)
     {
         $this->chatterRepository = $chatterRepository;
         $this->channel = $request->route()->getParameter('channel');
     }
 
-    public function getVIPs(ChatterRepository $chatterRepo)
+    /**
+     * @return \Symfony\Component\HttpFoundation\Response
+     */
+    public function getVIPs()
     {
         $mods = $this->chatterRepository->allModsForChannel($this->channel);
         $admins = $this->chatterRepository->allAdminsForChannel($this->channel);
