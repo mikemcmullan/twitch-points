@@ -1,14 +1,14 @@
 <?php
 use Illuminate\Http\Request;
 
-Route::group(['domain' => env('AUTH_DOMAIN', 'auth.twitch.dev')], function () {
+Route::group(['domain' => config('app.auth_domain')], function () {
     Route::get('/login', [
         'uses'  => 'AuthController@loginProxy',
         'as'    => 'login_proxy_path'
     ]);
 });
 
-Route::group(['domain' => 'api.' . config('app.root_domain'), 'prefix' => '{channel}', 'namespace' => 'API'], function () {
+Route::group(['domain' => 'api.' . config('app.api_domain'), 'prefix' => '{channel}', 'namespace' => 'API'], function () {
     Route::get('/viewer', [
         'uses'  => 'ViewerController@getViewer',
         'as'    => 'api_points_path'

@@ -3,6 +3,10 @@
 return [
     'root_domain' => env('ROOT_DOMAIN', 'twitch.dev'),
 
+    'api_domain'  => env('API_DOMAIN', 'api.twitch.dev'),
+
+    'auth_domain' => env('AUTH_DOMAIN', 'auth.twitch.dev'),
+
     'env' => env('APP_ENV', 'production'),
 
     /*
