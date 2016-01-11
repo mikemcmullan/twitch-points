@@ -54,6 +54,11 @@ class Channel extends Model implements AuthenticatableContract, CanResetPassword
         return $this->belongsToMany(User::class);
     }
 
+    public function commands()
+    {
+        return $this->hasMany(Command::class);
+    }
+
     /**
      * Find a channel by name.
      *
