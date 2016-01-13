@@ -158,7 +158,7 @@ class Manager
         $winner = $entries[array_rand($entries)];
 
         if ($removeWinner) {
-            $this->redis->lrem('giveaway:2', 0, $winner);
+            $this->redis->lrem("giveaway:{$channel->id}", 0, $winner);
             $this->chatterRepo->setGiveAwayStatus($channel, $winner, false);
         }
 
@@ -234,11 +234,11 @@ class Manager
             throw new GiveAwayException(sprintf('%s does not have enough %s', $viewer['handle'], $entry->getChannel()->getSetting('currency.name')));
         }
 
-        $this->currencyManager->remove($entry->getChannel(), $entry->getChannel()->name, $entry->getHandle(), $cost);
+        $this->currencyManager->remove($entry->getChannel(), $entry->getHandle(), $cost);
         $this->chatterRepo->setGiveAwayStatus($entry->getChannel(), $entry->getHandle(), true);
 
         for ($i = 0; $i < $entry->getTickets(); $i++) {
-            $this->redis->lpush('giveaway:2', $entry->getHandle());
+            $this->redis->lpush("giveaway:{$entry->getChannel()->id}", $entry->getHandle());
         }
 
         $this->events->fire(new GiveAwayWasEntered($entry->getChannel(), $entry->getHandle(), $entry->getTickets()));

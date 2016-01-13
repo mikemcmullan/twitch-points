@@ -39,7 +39,7 @@ class GiveAwayController extends Controller
 
         try {
             $response = $this->dispatch(new EnterGiveAwayJob($channel, $handle, $tickets));
-
+            $code = 200;
             $response = [
                 'status' => $response
             ];

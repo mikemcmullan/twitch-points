@@ -22,22 +22,22 @@
                                     <span
                                             v-text="status"
                                             class="label text-uppercase"
-                                            v-class="
-                                                label-primary : isStatusRunning,
-                                                label-danger  : isStatusStopped
-                                            "
+                                            :class="{
+                                                'label-primary' : isStatusRunning,
+                                                'label-danger'  : isStatusStopped
+                                            }"
                                     ></span>
                                 </p>
 
                                 <div class="btn-group btn-group-justified giveaway-controls">
                                     <div class="btn-group">
-                                        <button type="button" v-attr="disabled: disableButtons" v-on="click: startGiveAway" class="btn btn-primary">Start</button>
+                                        <button type="button" :disabled="disableButtons" @click="startGiveAway" class="btn btn-primary">Start</button>
                                     </div>
                                     <div class="btn-group">
-                                        <button type="button" v-attr="disabled: disableButtons" v-on="click: stopGiveAway" class="btn btn-warning">Stop</button>
+                                        <button type="button" :disabled="disableButtons" @click="stopGiveAway" class="btn btn-warning">Stop</button>
                                     </div>
                                     <div class="btn-group">
-                                        <button type="button" v-attr="disabled: disableButtons" v-on="click: resetGiveAway" class="btn btn-danger">Reset</button>
+                                        <button type="button" :disabled="disableButtons" @click="resetGiveAway" class="btn btn-danger">Reset</button>
                                     </div>
                                 </div>
 
@@ -47,7 +47,7 @@
 
                                 <div class="btn-group btn-group-justified giveaway-select">
                                     <div class="btn-group">
-                                        <button type="button" v-attr="disabled: disableButtons" v-on="click: selectWinner" class="btn btn-primary">Select Winner</button>
+                                        <button type="button" :disabled="disableButtons" @click="selectWinner" class="btn btn-primary">Select Winner</button>
                                     </div>
                                 </div>
                             </div><!-- .panel-body -->
@@ -56,20 +56,11 @@
                         <div class="panel panel-default" id="settings">
                             <div class="panel-heading">Settings</div>
                             <div class="panel-body">
-                                <div class="alert alert-success" v-class="hide : ! showAlert" v-text="messageText"></div>
+                                <div class="alert alert-success" v-if="showAlert" v-text="messageText"></div>
 
-                                {!! Form::open(['route' => ['giveaway_save_settings_path', $channel->slug], 'method' => 'post', 'v-on' => 'submit:saveSettings']) !!}
-                                    <div class="form-group">
-                                        <label for="ticket-cost">Ticket Cost:</label>
-                                        <input type="number" id="ticket-cost" class="form-control" min="0" max="1000" v-model="ticketCost" value="{{ $channel->getSetting('giveaway.ticket-cost') }}" name="ticket-cost">
-                                        <p class="help-block">How many {{ $channel->getSetting('currency.name') }} will a ticket cost. Max 1000</p>
-                                    </div>
+                                <form action="{{ route('giveaway_save_settings_path', [$channel->slug]) }}" method="post" @submit.prevent @submit="saveSettings">
 
-                                    <div class="form-group">
-                                        <label for="ticket-max">Ticket Max:</label>
-                                        <input type="number" id="ticket-max" class="form-control" min="0" max="100" v-model="ticketMax" value="{{ $channel->getSetting('giveaway.ticket-max') }}" name="ticket-max">
-                                        <p class="help-block">The maximum amount of tickets a user may purchase. Max 100.</p>
-                                    </div>
+                                    {{ csrf_field() }}
 
                                     <div class="form-group">
                                         <label for="giveaway-started">Giveaway Started Text</label>
@@ -83,7 +74,24 @@
                                         <p class="help-block">The bot will display this message when the giveaway is stopped. Max characters 250.</p>
                                     </div>
 
-                                    <button type="submit" v-attr="disabled : formSubmitting" class="btn btn-primary">Save</button>
+                                    <div class="form-group">
+                                        <label for="use-currency">Use Currency For Giveaway</label><br>
+                                        <input type="checkbox" id="use-currency" v-model="useCurrency">
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="ticket-cost">Ticket Cost:</label>
+                                        <input type="number" id="ticket-cost" class="form-control" min="0" max="1000" v-model="ticketCost" value="{{ $channel->getSetting('giveaway.ticket-cost') }}" name="ticket-cost">
+                                        <p class="help-block">How many {{ $channel->getSetting('currency.name') }} will a ticket cost. Max 1000</p>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="ticket-max">Ticket Max:</label>
+                                        <input type="number" id="ticket-max" class="form-control" min="0" max="100" v-bind:disabled="useCurrency" v-model="ticketMax" value="{{ $channel->getSetting('giveaway.ticket-max') }}" name="ticket-max">
+                                        <p class="help-block">The maximum amount of tickets a user may purchase. Max 100.</p>
+                                    </div>
+
+                                    <button type="submit" :disabled"formSubmitting" class="btn btn-primary">Save</button>
                                 {!! Form::close() !!}
                             </div>
                         </div>
@@ -94,7 +102,7 @@
                             <div class="panel-body">
                                 <div class="well bot-log">
                                     <ul class="bot-log-list">
-                                        <li v-repeat="entries" v-text="handle + ' - ' + tickets + ' Tickets'">Loading...</li>
+                                        <li v-for="entry in entries" v-text="entry.handle + ' - ' + entry.tickets + ' Tickets'">Loading...</li>
                                     </ul>
                                 </div>
                             </div><!-- .panel-body -->
@@ -109,10 +117,12 @@
 @endsection
 
 @section('after-js')
-    <script src="https://js.pusher.com/3.0/pusher.min.js"></script>
-    <script src="//cdnjs.cloudflare.com/ajax/libs/vue/0.12.16/vue.min.js"></script>
+    <script src="//js.pusher.com/3.0/pusher.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/vue/1.0.13/vue.min.js"></script>
 
     <script>
+        Vue.config.debug = true
+
         var csrfToken = $('meta[name=csrf_token]').attr('content');
 
         var pusher = new Pusher('{{ env('PUSHER_KEY') }}', {
@@ -126,7 +136,7 @@
         });
 
         var entries = {!! $entries !!},
-            channel = pusher.subscribe('private-jonzzzzz');
+            channel = pusher.subscribe('private-{{ $channel->name }}');
 
         var entries = new Vue({
             el: '#giveaway-entries',
@@ -167,7 +177,7 @@
                     self.entries.unshift({ handle: value.handle, tickets: value.tickets });
                 });
 
-                channel.bind('App\\Events\\GiveAwayWasEntered', function(data) {
+                channel.bind('giveaway.was-entered', function(data) {
                     console.log(data);
                     self.entriesCount += 1;
                     self.entries.unshift({ handle: data.handle, tickets: data.tickets });
@@ -317,7 +327,8 @@
                 ticketCost: 0,
                 ticketMax: 0,
                 giveawayStartedText: '',
-                giveawayStoppedText: ''
+                giveawayStoppedText: '',
+                useCurrency: true
             },
 
             methods: {
@@ -329,7 +340,8 @@
                         'ticket-max': this.ticketMax,
                         'ticket-cost': this.ticketCost,
                         'giveaway-started-text': this.giveawayStartedText,
-                        'giveaway-stopped-text': this.giveawayStoppedText
+                        'giveaway-stopped-text': this.giveawayStoppedText,
+                        'use-currency': this.useCurrency
                     }, function() {
                         this.messageText = 'Settings Saved.';
                         this.showAlert = true;
