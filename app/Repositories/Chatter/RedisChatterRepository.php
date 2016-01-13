@@ -213,6 +213,15 @@ class RedisChatterRepository implements ChatterRepository
         return $this->mapUser($channel, $handle, $result);
     }
 
+    public function deleteChannel(Channel $channel)
+    {
+        $this->redis->del($this->makeModIndexKey($channel['id']));
+        $this->redis->del($this->makeAdminIndexKey($channel['id']));
+        $this->redis->del($this->makeChatIndexKey($channel['id']));
+
+        return true;
+    }
+
     /**
      * Delete a chatter, will only delete moderators.
      *
@@ -227,8 +236,9 @@ class RedisChatterRepository implements ChatterRepository
 
         if ($viewer) {
             $this->redis->del($viewer['key']);
+            $this->redis->srem($this->makeModIndexKey($channel['id']), $viewer['key']);
+            $this->redis->srem($this->makeAdminIndexKey($channel['id']), $viewer['key']);
             $this->redis->zrem($this->makeChatIndexKey($channel['id']), $viewer['key']);
-            $this->redis->zrem($this->makeModIndexKey($channel['id']), $viewer['key']);
 
             return true;
         }
@@ -396,6 +406,11 @@ class RedisChatterRepository implements ChatterRepository
             $key = $this->parseKey($chatter);
 
             $data     = $this->redis->hgetall($chatter);
+
+            if (empty($data)) {
+                continue;
+            }
+
             $rank     = isset($data['rank']) ? $data['rank'] : 0;
             $mod      = (bool) array_get($data, 'mod');
             $hide     = (bool) array_get($data, 'hide');
@@ -438,6 +453,7 @@ class RedisChatterRepository implements ChatterRepository
         $user['key']      = $this->makeKey($channel['id'], $handle);
         $user['channel']  = $channel;
         $user['handle']   = $handle;
+        $user['minutes']  = (int) array_get($user, 'minutes');
         $user['mod']      = (bool) array_get($user, 'mod');
         $user['hide']     = (bool) array_get($user, 'hide');
         $user['admin']    = (bool) array_get($user, 'admin');

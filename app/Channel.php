@@ -4,9 +4,11 @@ namespace App;
 
 use Illuminate\Auth\Authenticatable;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Auth\Passwords\CanResetPassword;
 use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
 use Illuminate\Contracts\Auth\CanResetPassword as CanResetPasswordContract;
+use App\TrackSession;
 
 class Channel extends Model implements AuthenticatableContract, CanResetPasswordContract
 {
@@ -54,9 +56,20 @@ class Channel extends Model implements AuthenticatableContract, CanResetPassword
         return $this->belongsToMany(User::class);
     }
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
     public function commands()
     {
         return $this->hasMany(Command::class);
+    }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function trackSessions()
+    {
+        return $this->hasMany(TrackSession::class);
     }
 
     /**
