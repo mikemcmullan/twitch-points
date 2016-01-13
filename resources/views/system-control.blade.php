@@ -25,6 +25,11 @@
                             <p><button class="btn btn-primary btn-lg">Start</button></p>
                             @endif
 
+                            <p>
+                                <label for="sync-status">Sync system status with stream status:</label>
+                                {{ Form::checkbox('sync-status', 'yes', $syncStatus, ['id' => 'sync-status']) }}
+                            </p>
+
                             <p>Note: this page can be closed after the system has been started.</p>
                         {!! Form::close() !!}
                     </div><!-- .panel-body -->

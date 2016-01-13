@@ -11,7 +11,7 @@ use App\Contracts\Repositories\ChatterRepository;
 use Carbon\Carbon;
 use App\Channel;
 
-class StartSystemJob extends Job
+class ToggleSystemJob extends Job
 {
     /**
      * @var User

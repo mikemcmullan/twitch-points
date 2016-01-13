@@ -5,11 +5,6 @@ namespace App\Console\Commands;
 use App\Channel;
 use Illuminate\Console\Command;
 use Illuminate\Foundation\Bus\DispatchesJobs;
-use Symfony\Component\Console\Input\InputOption;
-use Symfony\Component\Console\Input\InputArgument;
-use App\Contracts\Repositories\TrackSessionRepository;
-use App\Services\TwitchApi;
-use App\Jobs\StartSystemJob;
 
 class SyncSystemStatus extends Command
 {
@@ -27,7 +22,7 @@ class SyncSystemStatus extends Command
      *
      * @var string
      */
-    protected $description = 'Command description.';
+    protected $description = 'Sync the status of the system with the status of the twitch channel.';
 
     /**
      * @var TrackSessionRepository
@@ -44,12 +39,9 @@ class SyncSystemStatus extends Command
      *
      * @return void
      */
-    public function __construct(TrackSessionRepository $trackSessionRepository, TwitchApi $twitchApi)
+    public function __construct()
     {
         parent::__construct();
-
-        $this->trackSessionRepository = $trackSessionRepository;
-        $this->twitchApi = $twitchApi;
     }
 
     /**
@@ -59,33 +51,6 @@ class SyncSystemStatus extends Command
      */
     public function fire()
     {
-        $channel = Channel::findBySlug($this->argument('channel'));
-
-        if ($channel) {
-            if (! $this->twitchApi->validChannel($channel->name)) {
-                $this->error('Channel not valid.');
-                return;
-            }
-
-            $status = $this->twitchApi->channelOnline($channel->name);
-            $systemStatus = (bool) $this->trackSessionRepository->findIncompletedSession($channel);
-
-            if (($status && ! $systemStatus) || ($systemStatus && ! $status)) {
-                $this->dispatch(new StartSystemJob($channel));
-                $this->info('Starting / Stopping system for ' . $channel->slug);
-            }
-        }
-    }
-
-    /**
-     * Get the console command arguments.
-     *
-     * @return array
-     */
-    protected function getArguments()
-    {
-        return [
-            ['channel', InputArgument::REQUIRED, 'Channel'],
-        ];
+        $this->dispatch(new \App\Jobs\SyncSystemStatus);
     }
 }

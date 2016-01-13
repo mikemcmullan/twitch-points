@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Jobs\StartSystemJob;
+use App\Jobs\ToggleSystemJob;
 use App\Contracts\Repositories\ChatterRepository;
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
@@ -77,8 +77,9 @@ class CurrencyController extends Controller
     {
         $systemStarted = (bool) $trackPointsSession->findIncompletedSession($this->channel);
         $channel = $this->channel;
+        $syncStatus = $channel->getSetting('sync-system-status', false);
 
-        return view('system-control', compact('systemStarted', 'channel'));
+        return view('system-control', compact('systemStarted', 'channel', 'syncStatus'));
     }
 
     /**
@@ -86,9 +87,11 @@ class CurrencyController extends Controller
      *
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function startSystem()
+    public function startSystem(Request $request)
     {
-        $this->dispatch(new StartSystemJob($this->channel));
+        $this->dispatch(new ToggleSystemJob($this->channel));
+
+        $this->channel->setSetting('sync-system-status', (bool) $request->get('sync-status'));
 
         return redirect()->back();
     }
