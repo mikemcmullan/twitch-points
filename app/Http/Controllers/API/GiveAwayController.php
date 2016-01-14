@@ -4,6 +4,7 @@ namespace App\Http\Controllers\API;
 
 use App\Channel;
 use App\Exceptions\GiveAwayException;
+use App\Exceptions\UnknownHandleException;
 use App\GiveAways\Manager;
 use App\Jobs\GiveAways\EnterGiveAwayJob;
 use App\Jobs\GiveAways\StartGiveAwayJob;
@@ -47,6 +48,12 @@ class GiveAwayController extends Controller
             $response = [
                 'error' => 'Bad Request',
                 'code'  => $code = 400,
+                'message' => $e->getMessage()
+            ];
+        } catch(UnknownHandleException $e) {
+            $response = [
+                'error' => 'Not Found',
+                'code'  => $code = 404,
                 'message' => $e->getMessage()
             ];
         } catch (GiveAwayException $e) {

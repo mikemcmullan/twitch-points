@@ -198,6 +198,7 @@ class Manager
      * @param Entry $entry
      * @return string
      * @throws GiveAwayException
+     * @throws InvalidHandleException
      */
     public function enter(Entry $entry)
     {
@@ -215,15 +216,7 @@ class Manager
             throw new InvalidArgumentException('Missing ticket amount.');
         }
 
-        try {
-            $viewer = $this->currencyManager->getViewer($entry->getChannel(), $entry->getHandle());
-        } catch (UnknownHandleException $e) {
-            $viewer = [
-                'points' => 0,
-                'handle' => $entry->getHandle(),
-                'giveaway' => false
-            ];
-        }
+        $viewer = $this->currencyManager->getViewer($entry->getChannel(), $entry->getHandle());
 
         if ($this->checkIfEntered($viewer)) {
             throw new GiveAwayException(sprintf('%s has already entered the giveaway.', $viewer['handle']));
