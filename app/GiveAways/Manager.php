@@ -220,6 +220,7 @@ class Manager
         } catch (UnknownHandleException $e) {
             $viewer = [
                 'points' => 0,
+                'handle' => $entry->getHandle(),
                 'giveaway' => false
             ];
         }
@@ -231,7 +232,7 @@ class Manager
         $cost = $this->calculateCost($entry->getChannel(), $entry->getTickets());
 
         if ($cost > $viewer['points']) {
-            throw new GiveAwayException(sprintf('%s does not have enough %s', $viewer['handle'], $entry->getChannel()->getSetting('currency.name')));
+            throw new GiveAwayException(sprintf('%s does not have enough %s.', $viewer['handle'], strtolower($entry->getChannel()->getSetting('currency.name'))));
         }
 
         $this->currencyManager->remove($entry->getChannel(), $entry->getHandle(), $cost);
