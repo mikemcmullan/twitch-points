@@ -74,10 +74,12 @@
                                         <p class="help-block">The bot will display this message when the giveaway is stopped. Max characters 250.</p>
                                     </div>
 
+                                    {{--
                                     <div class="form-group">
                                         <label for="use-currency">Use Currency For Giveaway</label><br>
                                         <input type="checkbox" id="use-currency" v-model="useCurrency">
                                     </div>
+                                    --}}
 
                                     <div class="form-group">
                                         <label for="ticket-cost">Ticket Cost:</label>
@@ -87,7 +89,7 @@
 
                                     <div class="form-group">
                                         <label for="ticket-max">Ticket Max:</label>
-                                        <input type="number" id="ticket-max" class="form-control" min="0" max="100" v-bind:disabled="useCurrency" v-model="ticketMax" value="{{ $channel->getSetting('giveaway.ticket-max') }}" name="ticket-max">
+                                        <input type="number" id="ticket-max" class="form-control" min="0" max="100" v-model="ticketMax" value="{{ $channel->getSetting('giveaway.ticket-max') }}" name="ticket-max">
                                         <p class="help-block">The maximum amount of tickets a user may purchase. Max 100.</p>
                                     </div>
 
