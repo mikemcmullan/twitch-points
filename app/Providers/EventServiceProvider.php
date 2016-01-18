@@ -25,6 +25,10 @@ class EventServiceProvider extends ServiceProvider
             \App\Listeners\PushToBot::class
         ],
 
+        \App\Events\BettingWasUpdated::class => [
+            \App\Listeners\PushToBot::class
+        ],
+
         \App\Events\GiveAwayWasStarted::class => [
             \App\Listeners\PushToBot::class
         ],
