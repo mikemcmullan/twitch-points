@@ -19,4 +19,9 @@ class Command extends Model
      * @var array
      */
     protected $fillable = ['pattern', 'level', 'type', 'file', 'response'];
+
+    public function strings()
+    {
+        return $this->belongsToMany(CommandString::class, 'commands_strings', 'command_id', 'string_id');
+    }
 }

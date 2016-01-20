@@ -28,8 +28,16 @@ class CommandsController extends Controller
      */
     public function getCommands()
     {
-        return $this->channel->commands->map(function($item) {
-            return array_except($item, ['channel_id', 'created_at', 'updated_at']);
+        $results = $this->channel->commands()->with('strings')->get();
+
+        return $results->map(function ($command) {
+            $array = array_only($command->toArray(), ['id', 'pattern', 'level', 'type', 'file', 'response']);
+
+            $command->strings->each(function ($string) use (&$array) {
+                $array['strings'][$string->name] = $string->value;
+            });
+
+            return $array;
         });
     }
 }
