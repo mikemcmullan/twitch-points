@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
+use App\Channel;
 
 class SettingsController extends Controller
 {
@@ -22,7 +23,7 @@ class SettingsController extends Controller
     /**
      * Update settings.
      */
-    public function update(Request $request)
+    public function update(Request $request, Channel $channel)
     {
         $newSettings = $request->except("/{$channel->slug}/settings");
         $errors = [];
