@@ -24,7 +24,7 @@ class SettingsController extends Controller
      */
     public function update(Request $request)
     {
-        $newSettings = $request->all();
+        $newSettings = $request->except("/{$channel->slug}/settings");
         $errors = [];
 
         foreach ($newSettings as $setting => $value) {
