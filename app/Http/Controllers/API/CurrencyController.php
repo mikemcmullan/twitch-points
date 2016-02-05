@@ -28,6 +28,8 @@ class CurrencyController extends Controller
     }
 
     /**
+     * Add currency to viewer.
+     *
      * @param Request $request
      * @param Channel $channel
      *
@@ -43,6 +45,8 @@ class CurrencyController extends Controller
     }
 
     /**
+     * Remove currency from viewer.
+     *
      * @param Request $request
      * @param Channel $channel
      *
@@ -57,6 +61,14 @@ class CurrencyController extends Controller
         return response()->json($response);
     }
 
+    /**
+     * Start currency system.
+     *
+     * @param Request $Request
+     * @param Channel $channel
+     *
+     * @return \Symfony\Component\HttpFoundation\Response
+     */
     public function startSystem(Request $request, Channel $channel)
     {
         $this->dispatch(new StartCurrencySystemJob($channel));
@@ -64,6 +76,14 @@ class CurrencyController extends Controller
         return response()->json(['ok' => 'success']);
     }
 
+    /**
+     * Stop currency system.
+     *
+     * @param Request $Request
+     * @param Channel $channel
+     *
+     * @return \Symfony\Component\HttpFoundation\Response
+     */
     public function stopSystem(Request $request, Channel $channel)
     {
         $this->dispatch(new StopCurrencySystemJob($channel));
