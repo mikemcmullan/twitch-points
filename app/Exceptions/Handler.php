@@ -13,8 +13,13 @@ use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Illuminate\Foundation\Validation\ValidationException;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
+use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 use Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
+use App\Exceptions\GiveAwayException;
+use App\Exceptions\UnknownHandleException;
 use App\Exceptions\InvalidChannelException;
+use App\Exceptions\InvalidContentTypeException;
 
 class Handler extends ExceptionHandler
 {
@@ -55,14 +60,49 @@ class Handler extends ExceptionHandler
     {
         if (isApi($request->getHost())) {
 
-            if ($e instanceof InvalidChannelException || $e instanceof NotFoundHttpException || $e instanceof MethodNotAllowedHttpException) {
+            if ($e instanceof InvalidChannelException ||
+                $e instanceof NotFoundHttpException ||
+                $e instanceof MethodNotAllowedHttpException ||
+                $e instanceof ModelNotFoundException ||
+                $e instanceof UnknownHandleException
+                ) {
                 return response()->json([
                     'error' => 'Not Found',
                     'status'=> 404,
-                    'message' => null
+                    'message' => $e->getMessage()
                 ], 404);
             }
 
+            if ($e instanceof UnauthorizedHttpException) {
+                return response()->json([
+                    'error'   => 'Unauthorized Request',
+                    'code'    => 401,
+                    'message' => $e->getMessage()
+                ], 401);
+            }
+
+            if ($e instanceof BadRequestHttpException ||
+                $e instanceof \InvalidArgumentException) {
+                $message = json_decode($e->getMessage());
+
+                if (! $message) {
+                    $message = $e->getMessage();
+                }
+
+                return response()->json([
+                    'error'   => 'Bad Request',
+                    'code'    => 400,
+                    'message' => $message
+                ], 400);
+            }
+
+            if ($e instanceof GiveAwayException) {
+                return response()->json([
+                    'error' => 'Conflict',
+                    'code'  => 409,
+                    'message' => $e->getMessage()
+                ], 409);
+            }
         }
 
         // if ($request->is('api/bot/*') && ($e instanceof TransportException || $e instanceof RrcHttpException)) {
