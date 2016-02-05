@@ -1,6 +1,12 @@
 {
   "devDependencies": {
     "gulp": "^3.8.8",
-    "laravel-elixir": "*"
+    "laravel-elixir": "*",
+    "laravel-elixir-vueify": "^1.0.2",
+    "underscore": "^1.8.3"
+  },
+  "dependencies": {
+    "vue-resource": "^0.7.0",
+    "vue-validator": "2.0.0-alpha.18"
   }
 }
