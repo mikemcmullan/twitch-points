@@ -89,6 +89,13 @@ interface ChatterRepository
     public function deleteChatter(Channel $channel, $handle);
 
     /**
+     * Delete a channel. This only deletes the indexes.
+     *
+     * @param Channel $channel
+     */
+    public function deleteChannel(Channel $channel);
+
+    /**
      * Setup pagination for results.
      *
      * @param int $page

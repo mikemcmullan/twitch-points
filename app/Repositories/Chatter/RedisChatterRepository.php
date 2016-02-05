@@ -213,6 +213,11 @@ class RedisChatterRepository implements ChatterRepository
         return $this->mapUser($channel, $handle, $result);
     }
 
+    /**
+     * Delete a channel. This only deletes the indexes.
+     *
+     * @param Channel $channel
+     */
     public function deleteChannel(Channel $channel)
     {
         $this->redis->del($this->makeModIndexKey($channel['id']));
