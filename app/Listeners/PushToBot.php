@@ -2,8 +2,6 @@
 
 namespace App\Listeners;
 
-use App\Events\GiveAwayWasStarted;
-use App\Events\GiveAwayWasStopped;
 use Illuminate\Contracts\Redis\Database;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -36,8 +34,8 @@ class PushToBot
 
     private function getData($event)
     {
-        if (method_exists($event, 'broadcastData')) {
-            return $event->broadcastData();
+        if (method_exists($event, 'broadcastWith')) {
+            return $event->broadcastWith();
         }
 
         return null;

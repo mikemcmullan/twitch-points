@@ -1,12 +1,13 @@
 <?php
 
-namespace App\Events;
+namespace App\Events\Commands;
 
 use App\Channel;
+use App\Command;
 use App\Events\Event;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 
-class CommandWasUpdated extends Event
+class CommandsWereUpdated extends Event
 {
     /**
      * @var Channel
@@ -14,21 +15,9 @@ class CommandWasUpdated extends Event
     public $channel;
 
     /**
-     * Get the broadcast event name.
-     *
-     * @return string
-     */
-    public function broadcastAs()
-    {
-        return 'bot.commands-were-updated';
-    }
-
-    /**
      * Create a new event instance.
      *
      * @param Channel $channel
-     * @param $handle
-     * @param $tickets
      */
     public function __construct(Channel $channel)
     {

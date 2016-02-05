@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Events;
+namespace App\Events\Giveaway;
 
 use App\Channel;
 use App\Events\Event;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 
-class GiveAwayWasEntered extends Event implements ShouldBroadcast
+class GiveawayWasEntered extends Event implements ShouldBroadcast
 {
     /**
      * @var Channel

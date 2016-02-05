@@ -1,13 +1,13 @@
 <?php
 
-namespace App\Events;
+namespace App\Events\Giveaway;
 
 use App\Channel;
 use App\Events\Event;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 
-class GiveAwayWasStopped extends Event
+class GiveawayWasStopped extends Event
 {
     /**
      * @var Channel
@@ -32,11 +32,11 @@ class GiveAwayWasStopped extends Event
     }
 
     /**
-     * Get the broadcast data.
+     * Get the data to broadcast.
      *
      * @return array
      */
-    public function broadcastData()
+    public function broadcastWith()
     {
         return [
             'message' => $this->message

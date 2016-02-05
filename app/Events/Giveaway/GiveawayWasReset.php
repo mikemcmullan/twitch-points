@@ -1,22 +1,17 @@
 <?php
 
-namespace App\Events;
+namespace App\Events\Giveaway;
 
 use App\Channel;
 use App\Events\Event;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 
-class GiveAwayWasStarted extends Event
+class GiveawayWasReset extends Event implements ShouldBroadcast
 {
     /**
      * @var Channel
      */
-    public $channel;
-
-    /**
-     * @var
-     */
-    public $message;
+    private $channel;
 
     /**
      * Create a new event instance.
@@ -26,20 +21,6 @@ class GiveAwayWasStarted extends Event
     public function __construct(Channel $channel)
     {
         $this->channel = $channel;
-
-        $this->message = $channel->getSetting('giveaway.started-text');
-    }
-
-    /**
-     * Get the broadcast data.
-     *
-     * @return array
-     */
-    public function broadcastData()
-    {
-        return [
-            'message' => $this->message
-        ];
     }
 
     /**
@@ -49,7 +30,7 @@ class GiveAwayWasStarted extends Event
      */
     public function broadcastAs()
     {
-        return 'giveaway.was-started';
+        return 'giveaway.was-reset';
     }
 
     /**

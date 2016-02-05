@@ -1,26 +1,34 @@
 <?php
 
-namespace App\Events;
+namespace App\Events\Commands;
 
 use App\Channel;
+use App\Command;
 use App\Events\Event;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 
-class GiveAwayWasReset extends Event implements ShouldBroadcast
+class CommandWasDeleted extends Event
 {
     /**
      * @var Channel
      */
-    private $channel;
+    public $channel;
+
+    /**
+     * @var Command
+     */
+    public $command;
 
     /**
      * Create a new event instance.
      *
      * @param Channel $channel
      */
-    public function __construct(Channel $channel)
+    public function __construct(Channel $channel, Command $command)
     {
         $this->channel = $channel;
+
+        $this->command = $command;
     }
 
     /**
@@ -30,16 +38,18 @@ class GiveAwayWasReset extends Event implements ShouldBroadcast
      */
     public function broadcastAs()
     {
-        return 'giveaway.was-reset';
+        return 'bot.command-was-deleted';
     }
 
     /**
-     * Get the channels the event should be broadcast on.
+     * Get the data to broadcast.
      *
      * @return array
      */
-    public function broadcastOn()
+    public function broadcastWith()
     {
-        return ['private-' . $this->channel->name];
+        return [
+            'id' => $this->command->id
+        ];
     }
 }
