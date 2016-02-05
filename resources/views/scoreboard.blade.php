@@ -166,7 +166,7 @@
             var options = {
                 api: {
                     token: '{{ $apiToken }}',
-                    root: '//api.twitch.dev/{{ $channel->slug }}'
+                    root: '//{{ config('app.api_domain') }}/{{ $channel->slug }}'
                 },
                 channel: '{{ $channel->slug }}'
             };

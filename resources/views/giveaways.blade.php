@@ -132,7 +132,7 @@
             var options = {
                 api: {
                     token: '{{ $apiToken }}',
-                    root: 'http://api.twitch.dev/{{ $channel->slug }}'
+                    root: '//{{ config('app.api_domain') }}/{{ $channel->slug }}'
                 },
                 csrf_token: '{{ csrf_token() }}',
                 giveaway: {
