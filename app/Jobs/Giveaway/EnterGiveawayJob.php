@@ -1,10 +1,11 @@
 <?php
 
-namespace App\Jobs\GiveAways;
+namespace App\Jobs\Giveaway;
 
-use App\GiveAways\Entry;
-use App\GiveAways\Manager;
+use App\Giveaway\Entry;
+use App\Giveaway\Manager;
 use Illuminate\Contracts\Bus\SelfHandling;
+use App\Channel;
 
 class EnterGiveawayJob implements SelfHandling
 {
@@ -24,15 +25,22 @@ class EnterGiveawayJob implements SelfHandling
     private $tickets;
 
     /**
-     *
+     * @param Channel $channel
+     * @param string $handle
+     * @param int $tickets
      */
-    public function __construct($channel, $handle, $tickets)
+    public function __construct(Channel $channel, $handle, $tickets)
     {
         $this->channel = $channel;
         $this->handle = $handle;
         $this->tickets = $tickets;
     }
 
+    /**
+     * Execute the job.
+     *
+     * @param Manager $manager
+     */
     public function handle(Manager $manager)
     {
         return $manager->enter(new Entry($this->channel, $this->handle, $this->tickets));
