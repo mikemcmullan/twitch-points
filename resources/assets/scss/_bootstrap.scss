@@ -1,8 +1,8 @@
 @import "../../../public/bower_components/bootstrap-sass-official/assets/stylesheets/_bootstrap-compass.scss";
 
 // Core variables and mixins
-//@import "../../../public/bower_components/bootstrap-sass-official/assets/stylesheets/bootstrap/variables";
-@import "bootswatch/_variables";
+@import "../../../public/bower_components/bootstrap-sass-official/assets/stylesheets/bootstrap/variables";
+// @import "bootswatch/_variables";
 @import "../../../public/bower_components/bootstrap-sass-official/assets/stylesheets/bootstrap/mixins";
 
 // Reset and dependencies
@@ -52,4 +52,4 @@
 @import "../../../public/bower_components/bootstrap-sass-official/assets/stylesheets/bootstrap/utilities";
 @import "../../../public/bower_components/bootstrap-sass-official/assets/stylesheets/bootstrap/responsive-utilities";
 
-@import 'bootswatch/_bootswatch';
+// @import 'bootswatch/_bootswatch';
