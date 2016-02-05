@@ -3,31 +3,43 @@
 namespace App\Http\Controllers\API;
 
 use App\Channel;
-use App\Exceptions\GiveAwayException;
-use App\Exceptions\UnknownHandleException;
-use App\GiveAways\Manager;
-use App\Jobs\GiveAways\EnterGiveAwayJob;
-use App\Jobs\GiveAways\StartGiveAwayJob;
-use Illuminate\Foundation\Bus\DispatchesJobs;
+use App\Jobs\Giveaway\EnterGiveawayJob;
+use App\Jobs\Giveaway\GetGiveawayEntriesJob;
+use App\Jobs\Giveaway\StartGiveAwayJob;
+use App\Jobs\Giveaway\StopGiveawayJob;
+use App\Jobs\Giveaway\ResetGiveawayJob;
+use App\Jobs\Giveaway\SelectGiveawayWinnerJob;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use Exception;
-use InvalidArgumentException;
 
-class GiveAwayController extends Controller
+class GiveawayController extends Controller
 {
-    use DispatchesJobs;
-
     /**
      *
      */
     public function __construct()
     {
-        $this->middleware('protect.api');
+        $this->middleware('jwt.auth');
     }
 
+    /**
+     *  Get giveaway entries.
+     *
+     * @param Request $request
+     * @param Channel $channel
+     *
+     * @return \Symfony\Component\HttpFoundation\Response
+     */
+    public function entries(Request $request, Channel $channel)
+    {
+        $entries = $this->dispatch(new GetGiveawayEntriesJob($channel));
+
+        return response()->json($entries);
+    }
 
     /**
+     * Enter the giveaway.
+     *
      * @param Request $request
      * @param Channel $channel
      *
@@ -38,33 +50,59 @@ class GiveAwayController extends Controller
         $handle = $request->get('handle');
         $tickets = $request->get('tickets');
 
-        try {
-            $response = $this->dispatch(new EnterGiveAwayJob($channel, $handle, $tickets));
-            $code = 200;
-            $response = [
-                'status' => $response
-            ];
-        } catch (InvalidArgumentException $e) {
-            $response = [
-                'error' => 'Bad Request',
-                'code'  => $code = 400,
-                'message' => $e->getMessage()
-            ];
-        } catch(UnknownHandleException $e) {
-            $response = [
-                'error' => 'Not Found',
-                'code'  => $code = 404,
-                'message' => $e->getMessage()
-            ];
-        } catch (GiveAwayException $e) {
-            $response = [
-                'error' => 'Conflict',
-                'code'  => $code = 409,
-                'message' => $e->getMessage()
-            ];
-        }
+        $response = $this->dispatch(new EnterGiveawayJob($channel, $handle, $tickets));
 
-        return response()->json($response, $code);
+        return response()->json(['status' => $response]);
     }
 
+    /*
+     * Select a winner of the giveaway.
+     *
+     * @param Channel $channel
+     * @return \Symfony\Component\HttpFoundation\Response
+     */
+    public function winner(Channel $channel)
+    {
+        $winner = $this->dispatch(new SelectGiveawayWinnerJob($channel));
+
+        return response()->json(['winner' => $winner]);
+    }
+
+    /*
+     * Start the giveaway.
+     *
+     * @param Channel $channel
+     */
+    public function start(Channel $channel)
+    {
+        $this->dispatch(new StartGiveawayJob($channel));
+
+        return response()->json(['ok' => 'success']);
+    }
+
+    /*
+     * Stop the giveaway.
+     *
+     * @param Channel $channel
+     * @return \Symfony\Component\HttpFoundation\Response
+     */
+    public function stop(Channel $channel)
+    {
+        $this->dispatch(new StopGiveawayJob($channel));
+
+        return response()->json(['ok' => 'success']);
+    }
+
+    /*
+     * Reset the giveaway.
+     *
+     * @param Channel $channel
+     * @return \Symfony\Component\HttpFoundation\Response
+     */
+    public function reset(Channel $channel)
+    {
+        $this->dispatch(new ResetGiveawayJob($channel));
+
+        return response()->json(['ok' => 'success']);
+    }
 }
