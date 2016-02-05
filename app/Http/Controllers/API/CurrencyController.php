@@ -37,27 +37,7 @@ class CurrencyController extends Controller
     {
         $data = $request->only(['handle', 'points']);
 
-        try {
-            $response = $this->dispatch(new AddCurrencyJob($channel, $data['handle'], $data['points']));
-        } catch (UnknownHandleException $e) {
-            $response = [
-                'error' => 'Not Found',
-                'code'  => $code = 404,
-                'message' => $e->getMessage()
-            ];
-        } catch (InvalidArgumentException $e) {
-            $response = [
-                'error' => 'Bad Request',
-                'code'  => $code = 400,
-                'message' => $e->getMessage()
-            ];
-        } catch (Exception $e) {
-            $response = [
-                'error' => 'Internal Server Error',
-                'code'  => $code = 500,
-                'message' => 'Unknown error occurred.'
-            ];
-        }
+        $response = $this->dispatch(new AddCurrencyJob($channel, $data['handle'], $data['points']));
 
         return response()->json($response);
     }
@@ -72,27 +52,7 @@ class CurrencyController extends Controller
     {
         $data = $request->only(['handle', 'points']);
 
-        try {
-            $response = $this->dispatch(new RemoveCurrencyJob($channel, $data['handle'], $data['points']));
-        } catch (UnknownHandleException $e) {
-            $response = [
-                'error' => 'Not Found',
-                'code'  => $code = 404,
-                'message' => $e->getMessage()
-            ];
-        } catch (InvalidArgumentException $e) {
-            $response = [
-                'error' => 'Bad Request',
-                'code'  => $code = 400,
-                'message' => $e->getMessage()
-            ];
-        } catch (Exception $e) {
-            $response = [
-                'error' => 'Internal Server Error',
-                'code'  => $code = 500,
-                'message' => 'Unknown error occurred.'
-            ];
-        }
+        $response = $this->dispatch(new RemoveCurrencyJob($channel, $data['handle'], $data['points']));
 
         return response()->json($response);
     }
