@@ -17,25 +17,29 @@ class EventServiceProvider extends ServiceProvider
             \App\Handlers\Events\ProcessChatList::class
         ],
 
-        \App\Events\CommandWasUpdated::class => [
+        \App\Events\Commands\CommandWasUpdated::class => [
+            \App\Listeners\Commands\UpdateCommandBotCache::class
+        ],
+
+        \App\Events\Commands\CommandWasDeleted::class => [
+            \App\Listeners\Commands\DeleteCommandFromBotCache::class
+        ],
+
+        \App\Events\Commands\CommandsWereUpdated::class => [
+            \App\Listeners\Commands\UpdateCommandsBotCache::class
+        ],
+
+        \App\Events\VIPsWereUpdated::class => [
+            \App\Listeners\UpdateVIPsBotCache::class
+        ],
+
+        \App\Events\Giveaway\GiveawayWasStarted::class => [
             \App\Listeners\PushToBot::class
         ],
 
-        \App\Events\VIPsWasUpdated::class => [
+        \App\Events\Giveaway\GiveawayWasStopped::class => [
             \App\Listeners\PushToBot::class
         ],
-
-        \App\Events\BettingWasUpdated::class => [
-            \App\Listeners\PushToBot::class
-        ],
-
-        \App\Events\GiveAwayWasStarted::class => [
-            \App\Listeners\PushToBot::class
-        ],
-
-        \App\Events\GiveAwayWasStopped::class => [
-            \App\Listeners\PushToBot::class
-        ]
     ];
 
     /**
@@ -48,6 +52,36 @@ class EventServiceProvider extends ServiceProvider
     {
         parent::boot($events);
 
-        //
+        $events->listen('tymon.jwt.absent', function () {
+            return response()->json([
+                'error' => 'Forbidden',
+                'status'=> 400,
+                'message' => 'token_not_provided'
+            ], 400);
+        });
+
+        $events->listen('tymon.jwt.expired', function ($e) {
+            return response()->json([
+                'error' => 'Forbidden',
+                'status'=> 403,
+                'message' => 'token_expired'
+            ], 403);
+        });
+
+        $events->listen('tymon.jwt.invalid', function ($e) {
+            return response()->json([
+                'error' => 'Forbidden',
+                'status'=> 403,
+                'message' => 'token_invalid'
+            ], 403);
+        });
+
+        $events->listen('tymon.jwt.user_not_found', function () {
+            return response()->json([
+                'error' => 'Not Found',
+                'status'=> 404,
+                'message' => 'user_not_found'
+            ], 404);
+        });
     }
 }
