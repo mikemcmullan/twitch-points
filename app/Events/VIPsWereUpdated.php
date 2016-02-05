@@ -6,7 +6,7 @@ use App\Channel;
 use App\Events\Event;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 
-class VIPsWasUpdated extends Event
+class VIPsWereUpdated extends Event
 {
     /**
      * @var Channel
