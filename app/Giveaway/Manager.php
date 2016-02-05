@@ -1,14 +1,14 @@
 <?php
 
-namespace App\GiveAways;
+namespace App\Giveaway;
 
 use App\Channel;
 use App\Contracts\Repositories\ChatterRepository;
 use App\Currency\Manager as CurrencyManager;
-use App\Events\GiveAwayWasEntered;
-use App\Events\GiveAwayWasReset;
-use App\Events\GiveAwayWasStarted;
-use App\Events\GiveAwayWasStopped;
+use App\Events\Giveaway\GiveawayWasEntered;
+use App\Events\Giveaway\GiveawayWasReset;
+use App\Events\Giveaway\GiveawayWasStarted;
+use App\Events\Giveaway\GiveawayWasStopped;
 use App\Exceptions\GiveAwayException;
 use App\Exceptions\UnknownHandleException;
 use Illuminate\Contracts\Events\Dispatcher;
@@ -66,7 +66,7 @@ class Manager
      */
     public function start(Channel $channel)
     {
-        $this->events->fire(new GiveAwayWasStarted($channel));
+        $this->events->fire(new GiveawayWasStarted($channel));
 
         return $this->redis->set(sprintf('giveaway:%d:started', $channel['id']), 1);
     }
@@ -78,7 +78,7 @@ class Manager
      */
     public function stop(Channel $channel)
     {
-        $this->events->fire(new GiveAwayWasStopped($channel));
+        $this->events->fire(new GiveawayWasStopped($channel));
 
         return $this->redis->set(sprintf('giveaway:%d:started', $channel['id']), 0);
     }
@@ -99,7 +99,7 @@ class Manager
         $this->stop($channel);
         $this->redis->del(sprintf('giveaway:%d', $channel['id']));
 
-        $this->events->fire(new GiveAwayWasReset($channel));
+        $this->events->fire(new GiveawayWasReset($channel));
 
         return true;
     }
@@ -108,7 +108,7 @@ class Manager
      * Get the giveaway entries.
      *
      * @param Channel $channel
-     * @param bool|false $grouped Should be group the entries bye handle?
+     * @param bool|false $grouped Should group the entries bye handle?
      * @return array|Collection
      */
     public function entries(Channel $channel, $grouped = false)
@@ -235,7 +235,7 @@ class Manager
             $this->redis->lpush("giveaway:{$entry->getChannel()->id}", $entry->getHandle());
         }
 
-        $this->events->fire(new GiveAwayWasEntered($entry->getChannel(), $entry->getHandle(), $entry->getTickets()));
+        $this->events->fire(new GiveawayWasEntered($entry->getChannel(), $entry->getHandle(), $entry->getTickets()));
 
         return true;
     }
