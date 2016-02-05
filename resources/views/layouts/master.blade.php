@@ -3,89 +3,126 @@
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
     <meta name="csrf_token" content="{{ csrf_token() }}">
+    @yield('custom-meta')
     <title>{{ $channel->getSetting('title') }}</title>
 
     <!-- Bootstrap -->
-    {!! Html::style('/assets/css/bootstrap.css') !!}
     {!! Html::style('/assets/css/style.css') !!}
+    {!! Html::style('/assets/css/AdminLTE.css') !!}
 
     <!--[if lt IE 9]>
         <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
         <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
     <![endif]-->
 </head>
-<body>
+<body class="hold-transition skin-purple sidebar-mini">
+    <div class="wrapper">
 
-<nav class="navbar navbar-default navbar-fixed-top" id="top-nav">
-    <div class="container-fluid">
-        <div class="navbar-header">
-            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#top-navbar-collapse">
-                <span class="sr-only">Toggle navigation</span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-            </button>
-            {!! link_to_route('home_path', $channel->getSetting('title'), [$channel->slug], ['class' => 'navbar-brand']) !!}
-        </div>
+        <header class="main-header">
+            <a href="{{ route('home_path', [$channel->slug]) }}" class="logo">
+                <?php $title = $channel->getSetting('title') ?>
+                <span class="logo-mini"><strong>{{ $title[0] }}</strong></span>
+                <span class="logo-lg"><strong>{{ $title }}</strong></span>
+            </a><!-- .logo -->
 
-        <div class="collapse navbar-collapse" id="top-navbar-collapse">
-        @if (Auth::check())
-            <ul class="nav navbar-nav">
-                <li{!! in_array(Route::currentRouteName(), ['check_points_path', 'home_path']) ? ' class="active"' : '' !!}><a href="{!! route('check_points_path', [$channel->slug]) !!}">Check Points</a></li>
-                <li{!! Route::currentRouteName() === 'scoreboard_path' ? ' class="active"' : '' !!}><a href="{!! route('scoreboard_path', [$channel->slug]) !!}">Scoreboard</a></li>
-                @if (Auth::user()->hasPermission('system-control'))
-                <li{!! Route::currentRouteName() === 'system_control_path' ? ' class="active"' : '' !!}><a href="{!! route('system_control_path', [$channel->slug]) !!}">System Control</a></li>
+            <nav class="navbar navbar-static-top" role="navigation">
+                <a href="#" class="sidebar-toggle" data-toggle="offcanvas" role="button">
+                    <span class="sr-only">Toggle navigation</span>
+                </a>
+
+                @if (Auth::check())
+                <div class="navbar-custom-menu">
+                    <ul class="nav navbar-nav">
+                        <li><a href="{{ route('logout_path', $channel->slug) }}">Logout</a></li>
+                    </ul>
+                </div><!-- .navbar-custom-menu -->
                 @endif
+            </nav><!-- .navbar -->
+        </header><!-- .main-header -->
 
-                @if (Auth::user()->hasPermission('giveaway'))
-                    <li{!! Route::currentRouteName() === 'giveaway_path' ? ' class="active"' : '' !!}><a href="{!! route('giveaway_path', [$channel->slug]) !!}">Giveaway</a></li>
-                @endif
-            </ul>
+        <aside class="main-sidebar">
+            <section class="sidebar">
+                <ul class="sidebar-menu">
+                    <li{!! in_array(Route::currentRouteName(), ['scoreboard_path', 'home_path']) ? ' class="active"' : '' !!}><a href="{!! route('scoreboard_path', [$channel->slug]) !!}"><i class="fa fa-money"></i> <span>Scoreboard</span></a></li>
 
-            <ul class="nav navbar-nav navbar-right">
-                <li><a href="#0">Welcome, {{ Auth::user()['name'] }}</a></li>
-                <li><a href="{!! route('logout_path', [$channel->slug]) !!}"><i class="fa fa-sign-out"></i> Logout</a></li>
-            </ul>
-        @else
-            <div class="nav navbar-nav">
-                <li{!! in_array(Route::currentRouteName(), ['check_points_path', 'home_path']) ? ' class="active"' : '' !!}><a href="{!! route('check_points_path', [$channel->slug]) !!}">Check Points</a></li>
-                <li{!! Route::currentRouteName() === 'scoreboard_path' ? ' class="active"' : '' !!}><a href="{!! route('scoreboard_path', [$channel->slug]) !!}">Scoreboard</a></li>
-            </div>
-        @endif
-        </div><!-- .navbar-collapse -->
-    </div><!-- .container-fluid -->
-</nav><!-- .navbar -->
+                    @if ($user)
+                        @if ($user->hasPermission('giveaway'))
+                            <li{!! Route::currentRouteName() === 'giveaway_path' ? ' class="active"' : '' !!}><a href="{!! route('giveaway_path', [$channel->slug]) !!}"><i class="fa fa-gift"></i> <span>Giveaways</span></a></li>
+                        @endif
 
-@yield('content')
+                        {{--
+                        @if ($user->hasPermission('commands'))
+                            <li{!! Route::currentRouteName() === 'commands_path' ? ' class="active"' : '' !!}><a href="{!! route('commands_path', [$channel->slug]) !!}"><i class="fa fa-list"></i> <span>Commands</span></a></li>
+                        @endif
+                        --}}
+                    @endif
+                </ul>
+            </section><!-- .sidebar -->
+        </aside><!-- .main-sidebar -->
 
-<footer id="bottom-footer">
-    <div class="container">
-        <div class="row">
-            <div class="col-md-12">
-                <div class="text-center">
-                    {{ $channel->title  }} was created by {!! link_to('https://twitter.com/mikemcmullan', 'Mike McMullan') !!} a.k.a {!! link_to('http://twitch.tv/mcsmike', 'MCSMike') !!}
-                </div>
-            </div><!-- .col-*-* -->
-        </div><!-- .row -->
-    </div><!-- .container -->
-</footer><!-- footer -->
+        <div class="content-wrapper">
+            <section class="content-header">
+                <h1>@yield('heading', 'Dashboard')</h1>
+                {{--<ol class="breadcrumb">
+                    <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
+                    <li class="active">Dashboard</li>
+                </ol>--}}
+            </section><!-- .content-header -->
 
-<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
-<script src="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.2/js/bootstrap.min.js"></script>
+            @yield('content')
+        </div><!-- .content-wrapper -->
 
-@if (Request::is('bot-control'))
+        <footer class="main-footer">
+            <strong>Copyright &copy; {{ date('Y') }} Created by <a href="https://twitter.com/mikemcmullan">Mike McMullan</a> a.k.a <a href="https://twitch.tv/mcsmike">MCSMike</a></strong> All rights reserved.
+        </footer>
+
+        <div class="control-sidebar-bg"></div>
+
+    </div><!-- .wrapper -->
+
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.2/js/bootstrap.min.js"></script>
     <script>
-        var bot_token = '{{ env('BOT_SOCKET_TOKEN') }}',
-            bot_ws_server = '{{ env('BOT_WS_SERVER')  }}'
+        var screenSizes = {
+            xs: 480,
+            sm: 768,
+            md: 992,
+            lg: 1200
+        };
+
+        var body = $('body');
+
+        $('.sidebar-toggle').on('click', function (e) {
+            e.preventDefault();
+
+            //Enable sidebar push menu
+            if ($(window).width() > (screenSizes.sm - 1)) {
+                if (body.hasClass('sidebar-collapse')) {
+                    body.removeClass('sidebar-collapse');
+                } else {
+                    body.addClass('sidebar-collapse');
+                }
+            }
+            //Handle sidebar push menu for small screens
+            else {
+                if (body.hasClass('sidebar-open')) {
+                    body.removeClass('sidebar-open').removeClass('sidebar-collapse');
+                } else {
+                    body.addClass('sidebar-open');
+                }
+            }
+        });
+
+        $(".content-wrapper").click(function () {
+            //Enable hide menu when clicking on the content-wrapper on small screens
+            if ($(window).width() <= (screenSizes.sm - 1) && $("body").hasClass("sidebar-open")) {
+                body.removeClass('sidebar-open');
+            }
+        });
     </script>
 
-    <script src="//cdnjs.cloudflare.com/ajax/libs/vue/0.12.5/vue.min.js"></script>
-    <script src="//cdn.socket.io/socket.io-1.3.5.js"></script>
-    <script src="/assets/js/bot-control-min.js"></script>
-@endif
-
-@yield('after-js')
+    @yield('after-js')
 </body>
 </html>
