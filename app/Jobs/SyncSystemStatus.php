@@ -34,7 +34,7 @@ class SyncSystemStatus extends Job implements ShouldQueue
     public function handle(Channel $channel, TwitchApi $twitchApi, TrackSessionRepository $trackSessionRepo)
     {
         $channels = $channel->all()->filter(function($channel) {
-            return $channel->getSetting('sync-system-status', false) == true;
+            return $channel->getSetting('currency.sync-status', false) == true;
         });
 
         foreach ($channels as $channel) {
@@ -46,7 +46,11 @@ class SyncSystemStatus extends Job implements ShouldQueue
             $systemStatus = (bool) $trackSessionRepo->findIncompletedSession($channel);
 
             if (($status && ! $systemStatus) || ($systemStatus && ! $status)) {
-                $this->dispatch(new ToggleSystemJob($channel));
+                if ($systemStatus) {
+                    $this->dispatch(new StopCurrencySystemJob($channel));
+                } else {
+                    $this->dispatch(new StartCurrencySystemJob($channel));
+                }
             }
         }
     }

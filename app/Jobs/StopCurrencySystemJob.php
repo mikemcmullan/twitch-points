@@ -11,7 +11,7 @@ use App\Contracts\Repositories\ChatterRepository;
 use Carbon\Carbon;
 use App\Channel;
 
-class ToggleSystemJob extends Job
+class StopCurrencySystemJob extends Job
 {
     /**
      * @var User
@@ -38,12 +38,8 @@ class ToggleSystemJob extends Job
     {
         $session = $trackSessionRepository->findIncompletedSession($this->channel);
 
-        if (! $session) {
-            $chatterRepository->setLastUpdate($this->channel, Carbon::now());
-
-            return $trackSessionRepository->create($this->channel);
+        if ($session) {
+            return $trackSessionRepository->end($session);
         }
-
-        return $trackSessionRepository->end($session);
     }
 }
