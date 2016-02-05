@@ -5,7 +5,7 @@ namespace App\Http\Controllers\API;
 use App\Channel;
 use App\Jobs\Giveaway\EnterGiveawayJob;
 use App\Jobs\Giveaway\GetGiveawayEntriesJob;
-use App\Jobs\Giveaway\StartGiveAwayJob;
+use App\Jobs\Giveaway\StartGiveawayJob;
 use App\Jobs\Giveaway\StopGiveawayJob;
 use App\Jobs\Giveaway\ResetGiveawayJob;
 use App\Jobs\Giveaway\SelectGiveawayWinnerJob;
