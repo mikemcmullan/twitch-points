@@ -13,6 +13,7 @@ class Kernel extends HttpKernel
      */
     protected $middleware = [
         \Illuminate\Foundation\Http\Middleware\CheckForMaintenanceMode::class,
+        \App\Http\Middleware\CorsHeaders::class
     ];
 
     /**
@@ -29,7 +30,8 @@ class Kernel extends HttpKernel
             \App\Http\Middleware\VerifyCsrfToken::class,
         ],
         'api' => [
-            'throttle:60,1',
+            // 'throttle:60,1'
+            \App\Http\Middleware\ApiResponseHeaders::class
         ],
     ];
 
@@ -43,7 +45,7 @@ class Kernel extends HttpKernel
         'auth.twitch' => \App\Http\Middleware\TwitchAuthenticate::class,
         'auth.basic' => \Illuminate\Auth\Middleware\AuthenticateWithBasicAuth::class,
         'guest' => \App\Http\Middleware\RedirectIfAuthenticated::class,
-        'protect.api' => \App\Http\Middleware\ProtectApi::class,
+        'jwt.auth' => \Tymon\JWTAuth\Middleware\GetUserFromToken::class,
         'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
     ];
 }
