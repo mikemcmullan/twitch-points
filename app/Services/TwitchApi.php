@@ -51,7 +51,23 @@ class TwitchApi
      */
     public function chatList($channel)
     {
-        $response = $this->httpClient->get(sprintf('https://tmi.twitch.tv/group/user/%s/chatters', $channel));
+        $attempts = 0;
+        $stop = false;
+
+        // Sometimes the tmi server returns an error, we'll try multiple times
+        // before  giving up.
+        while ($stop === false) {
+            try {
+                $response = $this->httpClient->get(sprintf('https://tmi.twitch.tv/group/user/%s/chatters', $channel));
+                $stop = true;
+            } catch (\GuzzleHttp\Exception\BadResponseException $e) {
+                $attempts += 1;
+
+                if ($attempts > 3) {
+                    $stop = true;
+                }
+            }
+        }
 
         return $this->parseChatList((string) $response->getBody());
     }
