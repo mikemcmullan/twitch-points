@@ -9,6 +9,8 @@ use App\Channel;
 use App\Http\Requests;
 use App\Jobs\AddCurrencyJob;
 use App\Jobs\RemoveCurrencyJob;
+use App\Jobs\StopCurrencySystemJob;
+use App\Jobs\StartCurrencySystemJob;
 use Exception;
 use InvalidArgumentException;
 use App\Exceptions\UnknownHandleException;
@@ -22,7 +24,7 @@ class CurrencyController extends Controller
      */
     public function __construct()
     {
-        $this->middleware('protect.api', ['only' => ['addCurrency', 'removeCurrency']]);
+        $this->middleware('jwt.auth');
     }
 
     /**
@@ -93,5 +95,19 @@ class CurrencyController extends Controller
         }
 
         return response()->json($response);
+    }
+
+    public function startSystem(Request $request, Channel $channel)
+    {
+        $this->dispatch(new StartCurrencySystemJob($channel));
+
+        return response()->json(['ok' => 'success']);
+    }
+
+    public function stopSystem(Request $request, Channel $channel)
+    {
+        $this->dispatch(new StopCurrencySystemJob($channel));
+
+        return response()->json(['ok' => 'success']);
     }
 }
