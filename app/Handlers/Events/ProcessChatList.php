@@ -3,8 +3,10 @@
 namespace App\Handlers\Events;
 
 use App\Contracts\Repositories\ChatterRepository;
+use App\Events\VIPsWereUpdated;
 use App\Events\ChatListWasDownloaded;
 use Illuminate\Contracts\Config\Repository as ConfigRepository;
+use Illuminate\Events\Dispatcher;
 use Carbon\Carbon;
 use App\Channel;
 
@@ -21,15 +23,21 @@ class ProcessChatList
     private $config;
 
     /**
+     * @var Dispatcher
+     */
+     private $events;
+
+    /**
      * Create the event handler.
      *
      * @param ChatterRepository $chatterRepository
      * @param ConfigRepository $config
      */
-    public function __construct(ChatterRepository $chatterRepository, ConfigRepository $config)
+    public function __construct(ChatterRepository $chatterRepository, ConfigRepository $config, Dispatcher $events)
     {
         $this->chatterRepository = $chatterRepository;
         $this->config = $config;
+        $this->events = $events;
     }
 
     /**
@@ -63,13 +71,8 @@ class ProcessChatList
     {
         $status = $status === true ? 'online' : 'offline';
 
-        if ($status === 'online') {
-            $pointInterval = (int) $channel->getSetting('currency.interval', [0,0])[0];
-            $pointsAwarded = (int) $channel->getSetting('currency.awarded', [0,0])[0];
-        } else {
-            $pointInterval = (int) $channel->getSetting('currency.interval', [0,0])[1];
-            $pointsAwarded = (int) $channel->getSetting('currency.awarded', [0,0])[1];
-        }
+        $pointInterval = (int) $channel->getSetting('currency.interval', 0);
+        $pointsAwarded = (int) $channel->getSetting('currency.awarded', 0);
 
         $pointsPerMinute = $pointsAwarded / $pointInterval;
 
@@ -92,5 +95,7 @@ class ProcessChatList
 
         $this->chatterRepository->updateChatters($event->channel, $chattersList, $minutes, $points);
         $this->chatterRepository->updateModerators($event->channel, $modList, $minutes, $points);
+
+        $this->events->fire(new VIPsWereUpdated($event->channel));
     }
 }
