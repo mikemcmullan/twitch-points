@@ -31,31 +31,9 @@ class ViewerController extends Controller
     public function getViewer(Request $request, Channel $channel)
     {
         $handle = $request->get('handle');
-
-        try {
-            $response = $this->dispatch(new GetViewerJob($channel, $handle));
-            $code = 200;
-
-            $response['time_online'] = presentTimeOnline($response['minutes']);
-        } catch (UnknownHandleException $e) {
-            $response = [
-                'error' => 'Not Found',
-                'code'  => $code = 404,
-                'message' => $e->getMessage()
-            ];
-        } catch (InvalidArgumentException $e) {
-            $response = [
-                'error' => 'Bad Request',
-                'code'  => $code = 400,
-                'message' => $e->getMessage()
-            ];
-        } catch (Exception $e) {
-            $response = [
-                'error' => 'Internal Server Error',
-                'code'  => $code = 500,
-                'message' => 'Unknown error occurred.'
-            ];
-        }
+        
+        $response = $this->dispatch(new GetViewerJob($channel, $handle));
+        $response['time_online'] = presentTimeOnline($response['minutes']);
 
         return response()->json($response, $code);
     }
