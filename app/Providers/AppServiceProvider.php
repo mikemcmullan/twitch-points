@@ -13,7 +13,10 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        //
+        view()->composer('*', function($view){
+            $view->with('user', \Auth::user());
+            view()->share('channel', request()->route()->getParameter('channel'));
+        });
     }
 
     /**
@@ -28,9 +31,9 @@ class AppServiceProvider extends ServiceProvider
     public function register()
     {
         $this->app->bind('Pusher', function ($app) {
-            $appKey = env('PUSHER_KEY');
-            $appSecret = env('PUSHER_SECRET');
-            $appId = env('PUSHER_APP_ID');
+            $appKey = config('services.pusher.key');
+            $appSecret = config('services.pusher.secret');
+            $appId = config('services.pusher.app_id');
 
             return new \Pusher($appKey, $appSecret, $appId, ['encrypted' => true]);
         });
