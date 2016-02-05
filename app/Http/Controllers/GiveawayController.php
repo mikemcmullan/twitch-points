@@ -33,7 +33,7 @@ class GiveawayController extends Controller
     {
         $data['status'] = $this->giveawayManager->isGiveAwayRunning($channel) ? 'Running' : 'Stopped';
         $data['apiToken'] = \JWTAuth::fromUser(\Auth::user());
-        $data['enterCommand'] = Command::where('file', 'Giveaway')->first();
+        $data['enterCommand'] = Command::where(['file', 'Giveaway', 'channel_id' => $channel->id])->first();
 
         return view('giveaways', $data);
     }
