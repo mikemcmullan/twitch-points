@@ -6,7 +6,7 @@ use App\GiveAways\Entry;
 use App\GiveAways\Manager;
 use Illuminate\Contracts\Bus\SelfHandling;
 
-class EnterGiveAwayJob implements SelfHandling
+class EnterGiveawayJob implements SelfHandling
 {
     /**
      * @var
