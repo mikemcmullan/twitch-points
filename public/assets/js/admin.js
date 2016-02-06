@@ -13216,6 +13216,14 @@ var _vue = require('vue');
 
 var _vue2 = _interopRequireDefault(_vue);
 
+var _editModal = require('./components/commands/edit-modal.vue');
+
+var _editModal2 = _interopRequireDefault(_editModal);
+
+var _deleteModal = require('./components/commands/delete-modal.vue');
+
+var _deleteModal2 = _interopRequireDefault(_deleteModal);
+
 var _entries = require('./components/giveaway/entries.vue');
 
 var _entries2 = _interopRequireDefault(_entries);
@@ -13251,70 +13259,80 @@ _vue2.default.transition('fade', {
     leaveClass: 'fadeOut'
 });
 
-// import editCommandModal from './components/edit-command-modal.vue'
-// import deleteCommandModal from './components/delete-command-modal.vue'
+if (document.querySelector('#commands')) {
+    new _vue2.default({
+        el: '#commands',
 
-// var commandsTable = new Vue({
-//     el: '#commands-table',
-//
-//     components: {
-//         'edit-command-modal': editCommandModal,
-//         'delete-command-modal': deleteCommandModal
-//     },
-//
-//     data: {
-//         commands: data
-//     },
-//
-//     ready() {
-//         document.querySelector('#commands-table tbody').className = '';
-//     },
-//
-//     methods: {
-//         newCommandModal() {
-//             this.$broadcast('openNewCommandModal');
-//         },
-//
-//         editCommandModal(index) {
-//             this.$broadcast('openEditCommandModal', this.commands[index]);
-//         },
-//
-//         deleteCommandModal(index) {
-//             this.$broadcast('openDeleteCommandModal', this.commands[index]);
-//         },
-//
-//         deleteFromTable(command) {
-//             var index = null;
-//             for (var i in this.commands) {
-//                 if (this.commands[i].id == command.id) {
-//                     index = i;
-//                 }
-//             }
-//
-//             if (index) {
-//                 this.commands.splice(index, 1);
-//             }
-//         },
-//
-//         updateOrAddToTable(command) {
-//             var index = null;
-//             for (var i in this.commands) {
-//                 if (this.commands[i].id == command.id) {
-//                     index = i;
-//                 }
-//             }
-//
-//             if (index) {
-//                 this.commands.splice(index, 1, command);
-//             } else {
-//                 this.commands.unshift(command);
-//             }
-//
-//         }
-//     }
-// });
+        components: {
+            'edit-command-modal': _editModal2.default,
+            'delete-command-modal': _deleteModal2.default
+        },
 
-// Vue.config.debug = true;
+        data: {
+            customCommands: [],
+            systemCommands: []
+        },
+
+        ready: function ready() {
+            var _this = this;
+
+            this.$http.get('commands').then(function (response) {
+                var command = undefined;
+
+                for (command in response.data) {
+                    switch (response.data[command].type) {
+                        case 'system':
+                            _this.systemCommands.push(response.data[command]);
+                            break;
+                        case 'custom':
+                            _this.customCommands.push(response.data[command]);
+                            break;
+                    }
+                }
+
+                document.querySelector('#commands-table tbody').className = '';
+            });
+        },
+
+        methods: {
+            newCommandModal: function newCommandModal() {
+                this.$broadcast('openNewCommandModal', null, 'New Command');
+            },
+            editCommandModal: function editCommandModal(index) {
+                this.$broadcast('openEditCommandModal', this.customCommands[index]);
+            },
+            deleteCommandModal: function deleteCommandModal(index) {
+                this.$broadcast('openDeleteCommandModal', this.customCommands[index]);
+            },
+            deleteFromTable: function deleteFromTable(command) {
+                var index = null;
+                for (var i in this.customCommands) {
+                    if (this.customCommands[i].id == command.id) {
+                        index = i;
+                    }
+                }
+
+                if (index) {
+                    this.customCommands.splice(index, 1);
+                }
+            },
+            updateOrAddToTable: function updateOrAddToTable(command) {
+                var index = null;
+                for (var i in this.customCommands) {
+                    if (this.customCommands[i].id == command.id) {
+                        index = i;
+                    }
+                }
+
+                if (index) {
+                    this.customCommands.splice(index, 1, command);
+                } else {
+                    this.customCommands.unshift(command);
+                }
+            }
+        }
+    });
+}
 
 if (document.querySelector('#giveaway')) {
     (function () {
@@ -13347,12 +13365,12 @@ if (document.querySelector('#giveaway')) {
             },
 
             ready: function ready() {
-                var _this = this;
+                var _this2 = this;
 
                 var channel = pusher.subscribe('private-' + options.channel);
 
                 channel.bind('giveaway.was-entered', function (data) {
-                    _this.$broadcast('newEntry', { handle: data.handle, tickets: data.tickets });
+                    _this2.$broadcast('newEntry', { handle: data.handle, tickets: data.tickets });
                 });
             }
         });
@@ -13369,7 +13387,205 @@ if (document.querySelector('#currency')) {
     });
 }
 
-},{"./components/currency/settings.vue":30,"./components/giveaway/control-panel.vue":31,"./components/giveaway/entries.vue":32,"./components/giveaway/settings.vue":33,"vue":28,"vue-resource":16,"vue-validator":27}],30:[function(require,module,exports){
+},{"./components/commands/delete-modal.vue":30,"./components/commands/edit-modal.vue":31,"./components/currency/settings.vue":32,"./components/giveaway/control-panel.vue":33,"./components/giveaway/entries.vue":34,"./components/giveaway/settings.vue":35,"vue":28,"vue-resource":16,"vue-validator":27}],30:[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+exports.default = {
+
+    props: {
+        title: {
+            default: 'Delete Command'
+        }
+    },
+
+    data: function data() {
+        return {
+            modal: false,
+            command: false,
+            deleting: false
+        };
+    },
+
+    ready: function ready() {
+        var _this = this;
+
+        this.$set('modal', $(this.$els.modal));
+
+        this.modal.on('hide.bs.modal', function () {
+            setTimeout(function () {
+                _this.command = false;
+                _this.deleting = false;
+            }, 500);
+        });
+    },
+
+    events: {
+        openDeleteCommandModal: function openDeleteCommandModal(command) {
+            this.open(command);
+        }
+    },
+
+    methods: {
+        delete: function _delete() {
+            var _this2 = this;
+
+            this.$http.delete('commands/' + this.command.id, {}, {
+                beforeSend: function beforeSend(request) {
+                    _this2.deleting = true;
+                }
+            }).then(function (response) {
+                _this2.$parent.deleteFromTable(_this2.command);
+                _this2.close();
+            }, function (response) {
+                _this2.deleting = true;
+
+                if (response.status === 403) {
+                    _this2.alert.visible = true;
+                    _this2.alert.text = 'There was an error authenticating with the api, please refresh the page.';
+                    return;
+                }
+            });
+        },
+        open: function open(command) {
+            this.command = command;
+            this.modal.modal('toggle');
+        },
+        close: function close() {
+            this.modal.modal('toggle');
+        }
+    }
+};
+if (module.exports.__esModule) module.exports = module.exports.default
+;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n<div class=\"modal fade\" v-el:modal=\"\">\n    <div class=\"modal-dialog\" role=\"document\">\n        <div class=\"modal-content\">\n            <div class=\"modal-header\">\n                <button type=\"button\" class=\"close\" @click=\"close\" aria-label=\"Close\"><span aria-hidden=\"true\">×</span></button>\n                <h4 class=\"modal-title\">{{ title }}</h4>\n            </div><!-- .modal-header -->\n\n            <form @submit.prevent=\"\" @submit=\"delete\">\n                <div class=\"modal-body\">\n                    Are you sure you want to delete the command <code>{{ command.command }}</code> ?\n                </div><!-- .modal-body -->\n\n                <div class=\"modal-footer\">\n                    <button type=\"button\" class=\"btn btn-default\" @click=\"close\">Cancel</button>\n                    <button type=\"submit\" class=\"btn btn-primary\" v-if=\"!deleting\">Yes, Delete</button>\n                    <button type=\"submit\" class=\"btn btn-primary\" disabled=\"disabled\" v-if=\"deleting\">Deleting...</button>\n                </div><!-- .modal-footer -->\n            </form><!-- form -->\n        </div><!-- .modal-content -->\n    </div><!-- .modal-dialog -->\n</div><!-- .modal -->\n"
+if (module.hot) {(function () {  module.hot.accept()
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), true)
+  if (!hotAPI.compatible) return
+  var id = "/home/vagrant/Code/twitch-points/resources/assets/js/components/commands/delete-modal.vue"
+  if (!module.hot.data) {
+    hotAPI.createRecord(id, module.exports)
+  } else {
+    hotAPI.update(id, module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
+  }
+})()}
+},{"vue":28,"vue-hot-reload-api":2}],31:[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+exports.default = {
+    props: {},
+
+    data: function data() {
+        return {
+            title: 'Edit Command',
+            originalCommand: false,
+            newCommand: {
+                command: '',
+                level: 'everyone',
+                response: ''
+            },
+            modal: false,
+            saving: false
+        };
+    },
+
+    ready: function ready() {
+        var _this = this;
+
+        this.$set('modal', $(this.$els.modal));
+
+        this.modal.on('hide.bs.modal', function () {
+            setTimeout(function () {
+                _this.newCommand.command = '';
+                _this.newCommand.level = 'everyone';
+                _this.newCommand.response = '';
+                _this.originalCommand = false;
+                _this.saving = false;
+            }, 500);
+        });
+    },
+
+    events: {
+        openEditCommandModal: function openEditCommandModal(command, title) {
+            this.title = 'Edit Command';
+            this.open(command);
+        },
+        openNewCommandModal: function openNewCommandModal() {
+            this.title = 'New Command';
+            this.open();
+        },
+        closeEditCommandModal: function closeEditCommandModal() {
+            this.close();
+        }
+    },
+
+    methods: {
+        save: function save() {
+            var _this2 = this;
+
+            var request = undefined,
+                data = {
+                command: this.newCommand.command,
+                level: this.newCommand.level,
+                response: this.newCommand.response
+            };
+
+            if (this.originalCommand === false) {
+                request = this.$http.post('commands', data, {
+                    beforeSend: function beforeSend() {
+                        _this2.saving = true;
+                    }
+                });
+            } else {
+                request = this.$http.put('commands/' + this.originalCommand.id, data, {
+                    beforeSend: function beforeSend() {
+                        _this2.saving = true;
+                    }
+                });
+            }
+
+            request.then(function (response) {
+                _this2.$parent.updateOrAddToTable(response.data);
+                _this2.close();
+            }, this._handleErrors);
+        },
+        open: function open(command) {
+            if (command) {
+                this.originalCommand = command;
+                this.newCommand.command = command.command;
+                this.newCommand.level = command.level;
+                this.newCommand.response = command.response;
+            }
+
+            this.modal.modal('toggle');
+        },
+        close: function close() {
+            this.modal.modal('toggle');
+        },
+        _handleErrors: function _handleErrors(response) {
+            this.saving = false;
+        }
+    }
+};
+if (module.exports.__esModule) module.exports = module.exports.default
+;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n<div class=\"modal fade\" v-el:modal=\"\">\n    <div class=\"modal-dialog\" role=\"document\">\n        <div class=\"modal-content\">\n            <div class=\"modal-header\">\n                <button type=\"button\" class=\"close\" @click=\"close\" aria-label=\"Close\"><span aria-hidden=\"true\">×</span></button>\n                <h4 class=\"modal-title\">{{ title }}</h4>\n            </div><!-- .modal-header -->\n\n            <validator name=\"editValidation\">\n                <form @submit.prevent=\"\" @submit=\"save\">\n                    <div class=\"modal-body\">\n                        <div class=\"form-group\" v-bind:class=\"{ 'has-error': !$editValidation.command.valid &amp;&amp; $editValidation.command.modified }\">\n                            <label for=\"command-input\">Command:</label>\n                            <input type=\"text\" class=\"form-control\" id=\"command-input\" name=\"command\" placeholder=\"!command\" v-model=\"newCommand.command\" v-validate:command=\"{ minlength: 1, maxlength: 80, required: true }\">\n\n                            <span class=\"help-block\" v-if=\"!$editValidation.command.valid &amp;&amp; $editValidation.command.modified\">Command requires a minimum of 1 characters and has a maximum 80 characters.</span>\n                        </div><!-- .form-group -->\n\n                        <div class=\"form-group\">\n                            <label for=\"level-input\">Level:</label>\n                            <select class=\"form-control\" id=\"level-input\" name=\"level\" v-model=\"newCommand.level\">\n                                <option value=\"owner\">Owner</option>\n                                <option value=\"admin\">Admin</option>\n                                <option value=\"mod\">Mod</option>\n                                <option value=\"everyone\" selected=\"selected\">Everyone</option>\n                            </select>\n                        </div><!-- .form-group -->\n\n                        <div class=\"form-group\" v-bind:class=\"{ 'has-error': !$editValidation.response.valid &amp;&amp; $editValidation.response.modified }\">\n                            <label for=\"response-input\">Response:</label>\n                            <textarea class=\"form-control\" id=\"response-input\" name=\"command\" v-model=\"newCommand.response\" placeholder=\"This is a response output by the bot when the command is executed.\" v-validate:response=\"{ minlength: 2, maxlength: 400, required: true }\"></textarea>\n\n                            <span class=\"help-block\" v-if=\"!$editValidation.response.valid &amp;&amp; $editValidation.response.modified\">Response requires a minimum of 2 characters and has a maximum 400 characters.</span>\n                        </div><!-- .form-group -->\n                    </div><!-- .modal-body -->\n\n                    <div class=\"modal-footer\">\n                        <button type=\"button\" class=\"btn btn-default\" @click=\"close\">Close</button>\n                        <button type=\"submit\" class=\"btn btn-primary\" v-bind:disabled=\"saving || !$editValidation.valid\">Save</button>\n                    </div><!-- .modal-footer -->\n                </form><!-- form -->\n            </validator>\n        </div><!-- .modal-content -->\n    </div><!-- .modal-dialog -->\n</div><!-- .modal -->\n"
+if (module.hot) {(function () {  module.hot.accept()
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), true)
+  if (!hotAPI.compatible) return
+  var id = "/home/vagrant/Code/twitch-points/resources/assets/js/components/commands/edit-modal.vue"
+  if (!module.hot.data) {
+    hotAPI.createRecord(id, module.exports)
+  } else {
+    hotAPI.update(id, module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
+  }
+})()}
+},{"vue":28,"vue-hot-reload-api":2}],32:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -13445,7 +13661,7 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update(id, module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"vue":28,"vue-hot-reload-api":2}],31:[function(require,module,exports){
+},{"vue":28,"vue-hot-reload-api":2}],33:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -13576,7 +13792,7 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update(id, module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"vue":28,"vue-hot-reload-api":2}],32:[function(require,module,exports){
+},{"vue":28,"vue-hot-reload-api":2}],34:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -13642,7 +13858,7 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update(id, module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"vue":28,"vue-hot-reload-api":2}],33:[function(require,module,exports){
+},{"vue":28,"vue-hot-reload-api":2}],35:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {

@@ -9,7 +9,6 @@
 
                 <form @submit.prevent @submit="delete">
                     <div class="modal-body">
-                        <div v-if="alert.visible" v-bind:class="alert.class" role="alert">{{ alert.text }}</div>
                         Are you sure you want to delete the command <code>{{ command.command }}</code> ?
                     </div><!-- .modal-body -->
 
@@ -27,33 +26,13 @@
 <script>
     export default {
 
-        props: {
-            title: {
-                default: 'Delete Command'
-            },
-            apiToken: {
-                type: String,
-                twoWay: false,
-                default: () => {
-                    const tag = document.querySelector('meta[name=api-token]');
-
-                    return tag ? tag.content : '';
-                }
-            },
-        },
+        props: {},
 
         data: () => {
             return {
+                title: 'Delete Command'
                 modal: false,
                 command: false,
-                alert: {
-                    visible: false,
-                    class: {
-                        alert: true,
-                        'alert-danger': true
-                    },
-                    text: ''
-                },
                 deleting: false
             }
         },
@@ -77,35 +56,17 @@
 
         methods: {
             delete() {
-                var xhr = $.ajax({
-                    url: `http://api.twitch.dev/mcsmike/commands/${this.command.id}`,
-                    contentType: 'application/json',
-                    method: 'delete',
-                    dataType: 'json',
-                    beforeSend: (xhr) => {
+                this.$http.delete(`commands/${this.command.id}`, {}, {
+                    beforeSend: (request) => {
                         this.deleting = true;
-                    },
-                    headers: {
-                        'Authorization': `Bearer ${this.apiToken}`
                     }
-                });
-
-                xhr.error((jqXHR, textStatus, errorThrown) => {
-                    const responseError = JSON.parse(jqXHR.responseText);
-
-                    this.deleting = true;
-
-                    if (responseError.status === 403) {
-                        this.alert.visible = true;
-                        this.alert.text = 'There was an error authenticating with the api, please refresh the page.';
-                        return;
-                    }
-                });
-
-                xhr.done((data) => {
-                    this.$parent.deleteFromTable(this.command);
-                    this.close();
-                });
+                })
+                    .then((response) => {
+                        this.$parent.deleteFromTable(this.command);
+                        this.close();
+                    }, (response) => {
+                        this.deleting = false;
+                    });
             },
 
             open(command) {

@@ -119,10 +119,10 @@ Route::group(['domain' => '{channel}.' . config('app.root_domain'), 'middleware'
         'as' => 'home_path'
     ]);
 
-    // Route::get('/commands', [
-    //     'uses'  => 'CommandsController@index',
-    //     'as'    => 'commands_path'
-    // ]);
+    Route::get('/commands', [
+        'uses'  => 'CommandsController@index',
+        'as'    => 'commands_path'
+    ]);
 
     /**
      * Currency Routes

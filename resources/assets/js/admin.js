@@ -17,70 +17,87 @@ Vue.transition('fade', {
     leaveClass: 'fadeOut'
 });
 
-// import editCommandModal from './components/edit-command-modal.vue'
-// import deleteCommandModal from './components/delete-command-modal.vue'
+import editCommandModal from './components/commands/edit-modal.vue'
+import deleteCommandModal from './components/commands/delete-modal.vue'
 
-// var commandsTable = new Vue({
-//     el: '#commands-table',
-//
-//     components: {
-//         'edit-command-modal': editCommandModal,
-//         'delete-command-modal': deleteCommandModal
-//     },
-//
-//     data: {
-//         commands: data
-//     },
-//
-//     ready() {
-//         document.querySelector('#commands-table tbody').className = '';
-//     },
-//
-//     methods: {
-//         newCommandModal() {
-//             this.$broadcast('openNewCommandModal');
-//         },
-//
-//         editCommandModal(index) {
-//             this.$broadcast('openEditCommandModal', this.commands[index]);
-//         },
-//
-//         deleteCommandModal(index) {
-//             this.$broadcast('openDeleteCommandModal', this.commands[index]);
-//         },
-//
-//         deleteFromTable(command) {
-//             var index = null;
-//             for (var i in this.commands) {
-//                 if (this.commands[i].id == command.id) {
-//                     index = i;
-//                 }
-//             }
-//
-//             if (index) {
-//                 this.commands.splice(index, 1);
-//             }
-//         },
-//
-//         updateOrAddToTable(command) {
-//             var index = null;
-//             for (var i in this.commands) {
-//                 if (this.commands[i].id == command.id) {
-//                     index = i;
-//                 }
-//             }
-//
-//             if (index) {
-//                 this.commands.splice(index, 1, command);
-//             } else {
-//                 this.commands.unshift(command);
-//             }
-//
-//         }
-//     }
-// });
+if (document.querySelector('#commands')) {
+    new Vue({
+        el: '#commands',
 
-// Vue.config.debug = true;
+        components: {
+            'edit-command-modal': editCommandModal,
+            'delete-command-modal': deleteCommandModal
+        },
+
+        data: {
+            customCommands: [],
+            systemCommands: []
+        },
+
+        ready() {
+            this.$http.get('commands')
+                .then((response) => {
+                    let command;
+
+                    for (command in response.data) {
+                        switch (response.data[command].type) {
+                            case 'system':
+                                this.systemCommands.push(response.data[command]);
+                                break;
+                            case 'custom':
+                                this.customCommands.push(response.data[command]);
+                                break;
+                        }
+                    }
+
+                    document.querySelector('#commands-table tbody').className = '';
+                })
+        },
+
+        methods: {
+            newCommandModal() {
+                this.$broadcast('openNewCommandModal', null, 'New Command');
+            },
+
+            editCommandModal(index) {
+                this.$broadcast('openEditCommandModal', this.customCommands[index]);
+            },
+
+            deleteCommandModal(index) {
+                this.$broadcast('openDeleteCommandModal', this.customCommands[index]);
+            },
+
+            deleteFromTable(command) {
+                var index = null;
+                for (var i in this.customCommands) {
+                    if (this.customCommands[i].id == command.id) {
+                        index = i;
+                    }
+                }
+
+                if (index) {
+                    this.customCommands.splice(index, 1);
+                }
+            },
+
+            updateOrAddToTable(command) {
+                var index = null;
+                for (var i in this.customCommands) {
+                    if (this.customCommands[i].id == command.id) {
+                        index = i;
+                    }
+                }
+
+                if (index) {
+                    this.customCommands.splice(index, 1, command);
+                } else {
+                    this.customCommands.unshift(command);
+                }
+
+            }
+        }
+    });
+}
 
 import giveawayEntries from './components/giveaway/entries.vue';
 import giveawaySettings from './components/giveaway/settings.vue';
