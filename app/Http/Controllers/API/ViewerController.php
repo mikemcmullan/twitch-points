@@ -31,10 +31,10 @@ class ViewerController extends Controller
     public function getViewer(Request $request, Channel $channel)
     {
         $handle = $request->get('handle');
-        
+
         $response = $this->dispatch(new GetViewerJob($channel, $handle));
         $response['time_online'] = presentTimeOnline($response['minutes']);
 
-        return response()->json($response, $code);
+        return response()->json($response);
     }
 }
