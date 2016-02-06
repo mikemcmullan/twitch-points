@@ -13395,14 +13395,11 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.default = {
 
-    props: {
-        title: {
-            default: 'Delete Command'
-        }
-    },
+    props: {},
 
     data: function data() {
         return {
+            title: 'Delete Command',
             modal: false,
             command: false,
             deleting: false
@@ -13440,13 +13437,7 @@ exports.default = {
                 _this2.$parent.deleteFromTable(_this2.command);
                 _this2.close();
             }, function (response) {
-                _this2.deleting = true;
-
-                if (response.status === 403) {
-                    _this2.alert.visible = true;
-                    _this2.alert.text = 'There was an error authenticating with the api, please refresh the page.';
-                    return;
-                }
+                _this2.deleting = false;
             });
         },
         open: function open(command) {
@@ -13552,7 +13543,9 @@ exports.default = {
             request.then(function (response) {
                 _this2.$parent.updateOrAddToTable(response.data);
                 _this2.close();
-            }, this._handleErrors);
+            }, function (response) {
+                _this2.saving = false;
+            });
         },
         open: function open(command) {
             if (command) {
@@ -13566,9 +13559,6 @@ exports.default = {
         },
         close: function close() {
             this.modal.modal('toggle');
-        },
-        _handleErrors: function _handleErrors(response) {
-            this.saving = false;
         }
     }
 };

@@ -30,7 +30,7 @@
 
         data: () => {
             return {
-                title: 'Delete Command'
+                title: 'Delete Command',
                 modal: false,
                 command: false,
                 deleting: false
