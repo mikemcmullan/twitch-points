@@ -30,7 +30,6 @@ class CommandsController extends Controller
     public function __construct(Request $request, CommandManager $commandManager)
     {
         $this->middleware('jwt.auth', ['only' => ['store', 'update', 'destroy']]);
-        $this->channel = $request->route()->getParameter('channel');
         $this->commandManager = $commandManager;
     }
 
@@ -70,8 +69,8 @@ class CommandsController extends Controller
 
         // Validate the request
         $validator = \Validator::make($data, [
-            'command' => 'required|min:2|max:80',
-            'level'   => 'in:everyone,mod,admin,owner',
+            'command' => 'required|min:1|max:80',
+            'level'   => 'required|in:everyone,mod,admin,owner',
             'response'=> 'required|min:2|max:400'
         ]);
 
