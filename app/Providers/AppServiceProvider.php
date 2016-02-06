@@ -15,7 +15,13 @@ class AppServiceProvider extends ServiceProvider
     {
         view()->composer('*', function($view){
             $view->with('user', \Auth::user());
-            view()->share('channel', request()->route()->getParameter('channel'));
+            $view->with('channel', request()->route()->getParameter('channel'));
+
+            if (\Auth::check()) {
+                $view->with('apiToken', \JWTAuth::fromUser(\Auth::user()));
+            } else {
+                $view->with('apiToken', '');
+            }
         });
     }
 

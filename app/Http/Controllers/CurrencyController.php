@@ -50,12 +50,6 @@ class CurrencyController extends Controller
         $data['paginator'] = new Paginator($data['count'], 100, $request->get('page', 1), route('scoreboard_path', [$channel->slug]) . '?page=(:num)');
         $data['status'] = (bool) $trackPointsSession->findIncompletedSession($channel);
 
-        if (\Auth::user()) {
-            $data['apiToken'] = \JWTAuth::fromUser(\Auth::user());
-        } else {
-            $data['apiToken'] = '';
-        }
-
         return view('scoreboard', $data);
     }
 }
