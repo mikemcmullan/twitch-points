@@ -69,12 +69,10 @@
                     <div class="box-body" id="giveaway-settings">
                         <validator name="settingsValidation">
                             <form @submit.prevent @submit="submit" novalidate>
-                                <input type="hidden" name="command-id" v-model="enterCommandId" value="{{ $enterCommand->id }}">
-
                                 <div class="form-group" v-bind:class="{ 'has-error': !$settingsValidation.keyword.valid }">
                                     <label for="giveaway-keyword">Keyword</label>
                                     <div class="input-group">
-                                        {!! Form::text('keyword', $enterCommand->command, ['id' => 'giveaway-keyword', 'class' => 'form-control', 'v-model' => 'keyword', 'v-validate:keyword' => "{ minlength: 2, maxlength: 10, required: true }"]) !!}
+                                        {!! Form::text('keyword', $channel->getSetting('giveaway.keyword'), ['id' => 'giveaway-keyword', 'class' => 'form-control', 'v-model' => 'keyword', 'v-validate:keyword' => "{ minlength: 2, maxlength: 10, required: true }"]) !!}
                                         <span class="input-group-addon">#-number-of-tickets</span>
                                     </div>
 

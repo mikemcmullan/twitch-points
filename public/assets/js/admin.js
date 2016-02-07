@@ -13586,6 +13586,7 @@ exports.default = {
         return {
             saving: false,
             amount: '',
+            keyword: '',
             timeInterval: '',
             currentStatus: '',
             syncStatus: '',
@@ -13606,7 +13607,8 @@ exports.default = {
             var request = this.$http.put('settings', {
                 'currency.interval': this.timeInterval,
                 'currency.awarded': this.amount,
-                'currency.sync-status': this.syncStatus
+                'currency.sync-status': this.syncStatus,
+                'currency.keyword': this.keyword
             }, {
                 beforeSend: function beforeSend(request) {
                     _this.saving = true;
@@ -13857,7 +13859,6 @@ Object.defineProperty(exports, "__esModule", {
 exports.default = {
     data: function data() {
         return {
-            enterCommandId: 0,
             keyword: '',
             startedText: '',
             stoppedText: '',
@@ -13883,7 +13884,8 @@ exports.default = {
                 'giveaway.started-text': this.startedText,
                 'giveaway.stopped-text': this.stoppedText,
                 'giveaway.ticket-max': this.ticketMax,
-                'giveaway.ticket-cost': this.ticketCost
+                'giveaway.ticket-cost': this.ticketCost,
+                'giveaway.keyword': this.keyword
             }, {
                 beforeSend: function beforeSend(request) {
                     _this.saving = true;
@@ -13894,10 +13896,6 @@ exports.default = {
                 _this.saving = false;
                 _this.alert.visible = true;
                 _this.alert.text = 'Settings saved.';
-
-                _this.$http.put('commands/' + _this.enterCommandId, {
-                    command: _this.keyword
-                });
 
                 setTimeout(function () {
                     _this.alert.visible = false;

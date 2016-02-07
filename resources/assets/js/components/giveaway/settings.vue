@@ -2,7 +2,6 @@
     export default {
         data: () => {
             return {
-                enterCommandId: 0,
                 keyword: '',
                 startedText: '',
                 stoppedText: '',
@@ -26,7 +25,8 @@
                     'giveaway.started-text': this.startedText,
                     'giveaway.stopped-text': this.stoppedText,
                     'giveaway.ticket-max': this.ticketMax,
-                    'giveaway.ticket-cost': this.ticketCost
+                    'giveaway.ticket-cost': this.ticketCost,
+                    'giveaway.keyword': this.keyword
                 }, {
                     beforeSend: (request) => {
                         this.saving = true;
@@ -37,10 +37,6 @@
                     this.saving = false;
                     this.alert.visible = true;
                     this.alert.text = 'Settings saved.';
-
-                    this.$http.put(`commands/${this.enterCommandId}`, {
-                        command: this.keyword
-                    });
 
                     setTimeout(() => {
                         this.alert.visible = false;

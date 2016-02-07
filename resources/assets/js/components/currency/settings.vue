@@ -4,6 +4,7 @@
             return {
                 saving: false,
                 amount: '',
+                keyword: '',
                 timeInterval: '',
                 currentStatus: '',
                 syncStatus: '',
@@ -22,7 +23,8 @@
                 let request = this.$http.put('settings', {
                     'currency.interval': this.timeInterval,
                     'currency.awarded': this.amount,
-                    'currency.sync-status': this.syncStatus
+                    'currency.sync-status': this.syncStatus,
+                    'currency.keyword': this.keyword
                 }, {
                     beforeSend: (request) => {
                         this.saving = true;
