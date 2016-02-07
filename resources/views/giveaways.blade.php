@@ -10,7 +10,7 @@
     <div class="row">
         <div class="col-md-6">
             <giveaway-control-panel inline-template>
-                <div class="box" id="giveaway-control-panel">
+                <div class="box">
                     <div class="box-header">
                         <h3 class="box-title">Control Panel</h3>
                     </div><!-- .box-header -->
@@ -44,7 +44,7 @@
             </giveaway-control-panel>
 
             <giveaway-entries inline-template>
-                <div class="box" id="giveaway-entries">
+                <div class="box">
                     <div class="box-header">
                         <h3 class="box-title">Entries (@{{ entries.length }})</h3>
                     </div><!-- .box-header -->
