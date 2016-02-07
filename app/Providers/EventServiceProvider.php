@@ -39,7 +39,16 @@ class EventServiceProvider extends ServiceProvider
 
         \App\Events\Giveaway\GiveawayWasStopped::class => [
             \App\Listeners\PushToBot::class
-        ],
+        ]
+    ];
+
+    /**
+     * The subscriber classes to register.
+     *
+     * @var array
+     */
+    protected $subscribe = [
+        'App\Listeners\SettingsEventListener'
     ];
 
     /**

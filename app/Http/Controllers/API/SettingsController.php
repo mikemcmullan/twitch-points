@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\API;
 
 use Illuminate\Http\Request;
+use Illuminate\Events\Dispatcher;
 
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
@@ -23,7 +24,7 @@ class SettingsController extends Controller
     /**
      * Update settings.
      */
-    public function update(Request $request, Channel $channel)
+    public function update(Request $request, Dispatcher $events, Channel $channel)
     {
         $newSettings = $request->except("/{$channel->slug}/settings");
         $errors = [];
@@ -36,6 +37,14 @@ class SettingsController extends Controller
 
         if (! empty($errors)) {
             throw new BadRequestHttpException(json_encode(['validation_errors' => $errors]));
+        }
+
+        foreach ($newSettings as $setting => $value) {
+            $events->fire("settings.updated.{$setting}", [
+                'channel' => $channel,
+                'old_setting' => $this->channel->getSetting($setting),
+                'new_setting' => $value
+            ]);
         }
 
         $this->channel->setSetting($newSettings);
