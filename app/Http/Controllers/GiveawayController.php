@@ -32,7 +32,6 @@ class GiveawayController extends Controller
     public function index(Channel $channel)
     {
         $data['status'] = $this->giveawayManager->isGiveAwayRunning($channel) ? 'Running' : 'Stopped';
-        $data['enterCommand'] = Command::where(['file' => 'Giveaway', 'channel_id' => $channel->id])->first();
 
         return view('giveaways', $data);
     }
