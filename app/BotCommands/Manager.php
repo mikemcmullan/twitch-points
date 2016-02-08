@@ -58,6 +58,8 @@ class Manager
         $data['pattern'] = $this->makePattern($data['command']);
         $data['type']    = 'custom';
         $data['level']   = is_null($data['level']) ? 'everyone' : $data['level'];
+        $data['usage']   = array_get($data, 'usage', '');
+        $data['description'] = array_get($data, 'description', '');
 
         $created = $channel->commands()->create($data);
 
@@ -90,6 +92,14 @@ class Manager
 
         if (array_get($data, 'response')) {
             $command->response = array_get($data, 'response');
+        }
+
+        if (array_get($data, 'usage')) {
+            $command->usage = array_get($data, 'usage');
+        }
+
+        if (array_get($data, 'description')) {
+            $command->description = array_get($data, 'description');
         }
 
         $command->save();

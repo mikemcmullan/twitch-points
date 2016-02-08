@@ -36,7 +36,8 @@ class SettingsEventListener
         $command = Command::where(['channel_id' => $channel->id, 'file' => 'GetCurrency'])->first();
 
         $this->commandsManager->update($channel, $command->id, [
-            'command' => str_replace($oldSetting, $newSetting, $command->command)
+            'command' => str_replace($oldSetting, $newSetting, $command->command),
+            'usage' => str_replace($oldSetting, $newSetting, $command->usage)
         ]);
     }
 
@@ -54,7 +55,8 @@ class SettingsEventListener
         $command = \App\Command::where(['channel_id' => $channel->id, 'file' => 'Giveaway'])->first();
 
         $this->commandsManager->update($channel, $command->id, [
-            'command' => $newSetting
+            'command' => str_replace($oldSetting, $newSetting, $command->command),
+            'usage' => str_replace($oldSetting, $newSetting, $command->usage)
         ]);
     }
 

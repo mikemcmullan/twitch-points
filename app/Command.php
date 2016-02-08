@@ -27,7 +27,7 @@ class Command extends Model
      *
      * @var array
      */
-    protected $fillable = ['command', 'pattern', 'level', 'type', 'file', 'response'];
+    protected $fillable = ['command', 'pattern', 'level', 'type', 'file', 'response', 'usage', 'description'];
 
     /**
      * Get all commands of a particular type.
