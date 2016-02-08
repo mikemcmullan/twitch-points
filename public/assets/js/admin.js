@@ -13254,6 +13254,32 @@ _vue2.default.use(require('vue-validator'));
 _vue2.default.http.options.root = options.api.root;
 _vue2.default.http.headers.common['Authorization'] = 'Bearer ' + options.api.token;
 
+if (!Array.prototype.findIndex) {
+    Array.prototype.findIndex = function (predicate) {
+        if (this === null) {
+            throw new TypeError('Array.prototype.findIndex called on null or undefined');
+        }
+
+        if (typeof predicate !== 'function') {
+            throw new TypeError('predicate must be a function');
+        }
+
+        var list = Object(this);
+        var length = list.length >>> 0;
+        var thisArg = arguments[1];
+        var value;
+
+        for (var i = 0; i < length; i++) {
+            value = list[i];
+            if (predicate.call(thisArg, value, i, list)) {
+                return i;
+            }
+        }
+
+        return -1;
+    };
+}
+
 _vue2.default.transition('fade', {
     enterClass: 'fadeIn',
     leaveClass: 'fadeOut'
@@ -13290,21 +13316,25 @@ if (document.querySelector('#commands')) {
                     }
                 }
 
-                document.querySelector('#commands-table tbody').className = '';
+                document.querySelector('#custom-commands-table tbody').className = '';
+                document.querySelector('#system-commands-table tbody').className = '';
             });
         },
 
         methods: {
-            newCommandModal: function newCommandModal() {
-                this.$broadcast('openNewCommandModal', null, 'New Command');
+            newCustomCommandModal: function newCustomCommandModal() {
+                this.$broadcast('openNewCustomCommandModal', null, 'New Command');
             },
-            editCommandModal: function editCommandModal(index) {
-                this.$broadcast('openEditCommandModal', this.customCommands[index]);
+            editCustomCommandModal: function editCustomCommandModal(index) {
+                this.$broadcast('openEditCustomCommandModal', this.customCommands[index]);
             },
-            deleteCommandModal: function deleteCommandModal(index) {
-                this.$broadcast('openDeleteCommandModal', this.customCommands[index]);
+            deleteCustomCommandModal: function deleteCustomCommandModal(index) {
+                this.$broadcast('openDeleteCustomCommandModal', this.customCommands[index]);
             },
-            deleteFromTable: function deleteFromTable(command) {
+            editSystemCommandModal: function editSystemCommandModal(index) {
+                this.$broadcast('openEditSystemCommandModal', this.systemCommands[index]);
+            },
+            deleteFromCustomCommandsTable: function deleteFromCustomCommandsTable(command) {
                 var index = null;
                 for (var i in this.customCommands) {
                     if (this.customCommands[i].id == command.id) {
@@ -13316,15 +13346,23 @@ if (document.querySelector('#commands')) {
                     this.customCommands.splice(index, 1);
                 }
             },
-            updateOrAddToTable: function updateOrAddToTable(command) {
-                var index = null;
-                for (var i in this.customCommands) {
-                    if (this.customCommands[i].id == command.id) {
-                        index = i;
-                    }
-                }
+            updateOrAddToSystemCommandTable: function updateOrAddToSystemCommandTable(command) {
+                var index = this.systemCommands.findIndex(function (row) {
+                    return row.id === command.id;
+                });
 
-                if (index) {
+                if (index !== -1) {
+                    this.systemCommands.splice(index, 1, command);
+                } else {
+                    this.systemCommands.unshift(command);
+                }
+            },
+            updateOrAddToCustomCommandTable: function updateOrAddToCustomCommandTable(command) {
+                var index = this.customCommands.findIndex(function (row) {
+                    return row.id === command.id;
+                });
+
+                if (index !== -1) {
                     this.customCommands.splice(index, 1, command);
                 } else {
                     this.customCommands.unshift(command);
@@ -13420,7 +13458,7 @@ exports.default = {
     },
 
     events: {
-        openDeleteCommandModal: function openDeleteCommandModal(command) {
+        openDeleteCustomCommandModal: function openDeleteCustomCommandModal(command) {
             this.open(command);
         }
     },
@@ -13434,7 +13472,7 @@ exports.default = {
                     _this2.deleting = true;
                 }
             }).then(function (response) {
-                _this2.$parent.deleteFromTable(_this2.command);
+                _this2.$parent.deleteFromCustomCommandsTable(_this2.command);
                 _this2.close();
             }, function (response) {
                 _this2.deleting = false;
@@ -13481,7 +13519,12 @@ exports.default = {
                 response: ''
             },
             modal: false,
-            saving: false
+            saving: false,
+            disabled: {
+                command: false,
+                level: false,
+                response: false
+            }
         };
     },
 
@@ -13497,20 +13540,30 @@ exports.default = {
                 _this.newCommand.response = '';
                 _this.originalCommand = false;
                 _this.saving = false;
+                _this.disabled.command = false;
+                _this.disabled.level = false;
+                _this.disabled.response = false;
             }, 500);
         });
     },
 
     events: {
-        openEditCommandModal: function openEditCommandModal(command, title) {
+        openEditCustomCommandModal: function openEditCustomCommandModal(command, title) {
             this.title = 'Edit Command';
             this.open(command);
         },
-        openNewCommandModal: function openNewCommandModal() {
+        openNewCustomCommandModal: function openNewCustomCommandModal() {
             this.title = 'New Command';
             this.open();
         },
-        closeEditCommandModal: function closeEditCommandModal() {
+        openEditSystemCommandModal: function openEditSystemCommandModal(command) {
+            this.title = 'Edit Command';
+
+            this.disabled.command = true;
+
+            this.open(command);
+        },
+        closeEditCustomCommandModal: function closeEditCustomCommandModal() {
             this.close();
         }
     },
@@ -13520,11 +13573,19 @@ exports.default = {
             var _this2 = this;
 
             var request = undefined,
-                data = {
-                command: this.newCommand.command,
-                level: this.newCommand.level,
-                response: this.newCommand.response
-            };
+                data = {};
+
+            if (!this.disabled.command) {
+                data.command = this.newCommand.command;
+            }
+
+            if (!this.disabled.level) {
+                data.level = this.newCommand.level;
+            }
+
+            if (!this.disabled.response) {
+                data.response = this.newCommand.response;
+            }
 
             if (this.originalCommand === false) {
                 request = this.$http.post('commands', data, {
@@ -13541,7 +13602,12 @@ exports.default = {
             }
 
             request.then(function (response) {
-                _this2.$parent.updateOrAddToTable(response.data);
+                if (response.data.type === 'custom') {
+                    _this2.$parent.updateOrAddToCustomCommandTable(response.data);
+                } else if (response.data.type === 'system') {
+                    _this2.$parent.updateOrAddToSystemCommandTable(response.data);
+                }
+
                 _this2.close();
             }, function (response) {
                 _this2.saving = false;
@@ -13563,7 +13629,7 @@ exports.default = {
     }
 };
 if (module.exports.__esModule) module.exports = module.exports.default
-;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n<div class=\"modal fade\" v-el:modal=\"\">\n    <div class=\"modal-dialog\" role=\"document\">\n        <div class=\"modal-content\">\n            <div class=\"modal-header\">\n                <button type=\"button\" class=\"close\" @click=\"close\" aria-label=\"Close\"><span aria-hidden=\"true\">×</span></button>\n                <h4 class=\"modal-title\">{{ title }}</h4>\n            </div><!-- .modal-header -->\n\n            <validator name=\"editValidation\">\n                <form @submit.prevent=\"\" @submit=\"save\">\n                    <div class=\"modal-body\">\n                        <div class=\"form-group\" v-bind:class=\"{ 'has-error': !$editValidation.command.valid &amp;&amp; $editValidation.command.modified }\">\n                            <label for=\"command-input\">Command:</label>\n                            <input type=\"text\" class=\"form-control\" id=\"command-input\" name=\"command\" placeholder=\"!command\" v-model=\"newCommand.command\" v-validate:command=\"{ minlength: 1, maxlength: 80, required: true }\">\n\n                            <span class=\"help-block\" v-if=\"!$editValidation.command.valid &amp;&amp; $editValidation.command.modified\">Command requires a minimum of 1 characters and has a maximum 80 characters.</span>\n                        </div><!-- .form-group -->\n\n                        <div class=\"form-group\">\n                            <label for=\"level-input\">Level:</label>\n                            <select class=\"form-control\" id=\"level-input\" name=\"level\" v-model=\"newCommand.level\">\n                                <option value=\"owner\">Owner</option>\n                                <option value=\"admin\">Admin</option>\n                                <option value=\"mod\">Mod</option>\n                                <option value=\"everyone\" selected=\"selected\">Everyone</option>\n                            </select>\n                        </div><!-- .form-group -->\n\n                        <div class=\"form-group\" v-bind:class=\"{ 'has-error': !$editValidation.response.valid &amp;&amp; $editValidation.response.modified }\">\n                            <label for=\"response-input\">Response:</label>\n                            <textarea class=\"form-control\" id=\"response-input\" name=\"command\" v-model=\"newCommand.response\" placeholder=\"This is a response output by the bot when the command is executed.\" v-validate:response=\"{ minlength: 2, maxlength: 400, required: true }\"></textarea>\n\n                            <span class=\"help-block\" v-if=\"!$editValidation.response.valid &amp;&amp; $editValidation.response.modified\">Response requires a minimum of 2 characters and has a maximum 400 characters.</span>\n                        </div><!-- .form-group -->\n                    </div><!-- .modal-body -->\n\n                    <div class=\"modal-footer\">\n                        <button type=\"button\" class=\"btn btn-default\" @click=\"close\">Close</button>\n                        <button type=\"submit\" class=\"btn btn-primary\" v-bind:disabled=\"saving || !$editValidation.valid\">Save</button>\n                    </div><!-- .modal-footer -->\n                </form><!-- form -->\n            </validator>\n        </div><!-- .modal-content -->\n    </div><!-- .modal-dialog -->\n</div><!-- .modal -->\n"
+;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n<div class=\"modal fade\" v-el:modal=\"\">\n    <div class=\"modal-dialog\" role=\"document\">\n        <div class=\"modal-content\">\n            <div class=\"modal-header\">\n                <button type=\"button\" class=\"close\" @click=\"close\" aria-label=\"Close\"><span aria-hidden=\"true\">×</span></button>\n                <h4 class=\"modal-title\">{{ title }}</h4>\n            </div><!-- .modal-header -->\n\n            <validator name=\"editValidation\">\n                <form @submit.prevent=\"\" @submit=\"save\">\n                    <div class=\"modal-body\">\n                        <div class=\"form-group\" v-bind:class=\"{ 'has-error': !$editValidation.command.valid &amp;&amp; $editValidation.command.modified }\">\n                            <label for=\"command-input\">Command:</label>\n                            <input type=\"text\" class=\"form-control\" id=\"command-input\" name=\"command\" placeholder=\"!command\" v-model=\"newCommand.command\" v-bind:disabled=\"disabled.command\" v-validate:command=\"{ minlength: 1, maxlength: 80, required: true }\">\n\n                            <span class=\"help-block\" v-if=\"!$editValidation.command.valid &amp;&amp; $editValidation.command.modified\">Command requires a minimum of 1 characters and has a maximum 80 characters.</span>\n                        </div><!-- .form-group -->\n\n                        <div class=\"form-group\">\n                            <label for=\"level-input\">Level:</label>\n                            <select class=\"form-control\" id=\"level-input\" name=\"level\" v-model=\"newCommand.level\" v-bind:disabled=\"disabled.level\">\n                                <option value=\"owner\">Owner</option>\n                                <option value=\"admin\">Admin</option>\n                                <option value=\"mod\">Mod</option>\n                                <option value=\"everyone\" selected=\"selected\">Everyone</option>\n                            </select>\n                        </div><!-- .form-group -->\n\n                        <div class=\"form-group\" v-bind:class=\"{ 'has-error': !$editValidation.response.valid &amp;&amp; $editValidation.response.modified }\">\n                            <label for=\"response-input\">Response:</label>\n                            <textarea class=\"form-control\" id=\"response-input\" name=\"command\" v-model=\"newCommand.response\" v-bind:disabled=\"disabled.response\" placeholder=\"This is a response output by the bot when the command is executed.\" v-validate:response=\"{ minlength: 2, maxlength: 400, required: true }\"></textarea>\n\n                            <span class=\"help-block\" v-if=\"!$editValidation.response.valid &amp;&amp; $editValidation.response.modified\">Response requires a minimum of 2 characters and has a maximum 400 characters.</span>\n                        </div><!-- .form-group -->\n                    </div><!-- .modal-body -->\n\n                    <div class=\"modal-footer\">\n                        <button type=\"button\" class=\"btn btn-default\" @click=\"close\">Close</button>\n                        <button type=\"submit\" class=\"btn btn-primary\" v-bind:disabled=\"saving || !$editValidation.valid\">Save</button>\n                    </div><!-- .modal-footer -->\n                </form><!-- form -->\n            </validator>\n        </div><!-- .modal-content -->\n    </div><!-- .modal-dialog -->\n</div><!-- .modal -->\n"
 if (module.hot) {(function () {  module.hot.accept()
   var hotAPI = require("vue-hot-reload-api")
   hotAPI.install(require("vue"), true)

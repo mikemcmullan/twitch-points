@@ -12,6 +12,32 @@ Vue.use(require('vue-validator'));
 Vue.http.options.root = options.api.root;
 Vue.http.headers.common['Authorization'] = `Bearer ${options.api.token}`;
 
+if (!Array.prototype.findIndex) {
+    Array.prototype.findIndex = function(predicate) {
+        if (this === null) {
+            throw new TypeError('Array.prototype.findIndex called on null or undefined');
+        }
+
+        if (typeof predicate !== 'function') {
+            throw new TypeError('predicate must be a function');
+        }
+
+        var list = Object(this);
+        var length = list.length >>> 0;
+        var thisArg = arguments[1];
+        var value;
+
+        for (var i = 0; i < length; i++) {
+            value = list[i];
+            if (predicate.call(thisArg, value, i, list)) {
+                return i;
+            }
+        }
+
+        return -1;
+    };
+}
+
 Vue.transition('fade', {
     enterClass: 'fadeIn',
     leaveClass: 'fadeOut'
@@ -50,24 +76,29 @@ if (document.querySelector('#commands')) {
                         }
                     }
 
-                    document.querySelector('#commands-table tbody').className = '';
+                    document.querySelector('#custom-commands-table tbody').className = '';
+                    document.querySelector('#system-commands-table tbody').className = '';
                 })
         },
 
         methods: {
-            newCommandModal() {
-                this.$broadcast('openNewCommandModal', null, 'New Command');
+            newCustomCommandModal() {
+                this.$broadcast('openNewCustomCommandModal', null, 'New Command');
             },
 
-            editCommandModal(index) {
-                this.$broadcast('openEditCommandModal', this.customCommands[index]);
+            editCustomCommandModal(index) {
+                this.$broadcast('openEditCustomCommandModal', this.customCommands[index]);
             },
 
-            deleteCommandModal(index) {
-                this.$broadcast('openDeleteCommandModal', this.customCommands[index]);
+            deleteCustomCommandModal(index) {
+                this.$broadcast('openDeleteCustomCommandModal', this.customCommands[index]);
             },
 
-            deleteFromTable(command) {
+            editSystemCommandModal(index) {
+                this.$broadcast('openEditSystemCommandModal', this.systemCommands[index]);
+            },
+
+            deleteFromCustomCommandsTable(command) {
                 var index = null;
                 for (var i in this.customCommands) {
                     if (this.customCommands[i].id == command.id) {
@@ -80,20 +111,28 @@ if (document.querySelector('#commands')) {
                 }
             },
 
-            updateOrAddToTable(command) {
-                var index = null;
-                for (var i in this.customCommands) {
-                    if (this.customCommands[i].id == command.id) {
-                        index = i;
-                    }
-                }
+            updateOrAddToSystemCommandTable(command) {
+                let index = this.systemCommands.findIndex((row) => {
+                    return row.id === command.id
+                });
 
-                if (index) {
+                if (index !== -1) {
+                    this.systemCommands.splice(index, 1, command);
+                } else {
+                    this.systemCommands.unshift(command);
+                }
+            },
+
+            updateOrAddToCustomCommandTable(command) {
+                let index = this.customCommands.findIndex((row) => {
+                    return row.id === command.id
+                });
+
+                if (index !== -1) {
                     this.customCommands.splice(index, 1, command);
                 } else {
                     this.customCommands.unshift(command);
                 }
-
             }
         }
     });

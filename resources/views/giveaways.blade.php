@@ -11,7 +11,7 @@
         <div class="col-md-6">
             <giveaway-control-panel inline-template>
                 <div class="box">
-                    <div class="box-header">
+                    <div class="box-header with-border">
                         <h3 class="box-title">Control Panel</h3>
                     </div><!-- .box-header -->
                     <div class="box-body">
@@ -45,7 +45,7 @@
 
             <giveaway-entries inline-template>
                 <div class="box">
-                    <div class="box-header">
+                    <div class="box-header with-border">
                         <h3 class="box-title">Entries (@{{ entries.length }})</h3>
                     </div><!-- .box-header -->
 
@@ -62,7 +62,7 @@
         <div class="col-md-6">
             <giveaway-settings inline-template>
                 <div class="box">
-                    <div class="box-header">
+                    <div class="box-header with-border">
                         <h3 class="box-title">Settings</h3>
                     </div><!-- .box-header -->
 

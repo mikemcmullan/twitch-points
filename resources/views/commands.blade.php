@@ -10,7 +10,7 @@
     <div class="row">
         <div class="col-md-12">
             <div class="box">
-                <div class="box-header">
+                <div class="box-header with-border">
                     <h3 class="box-title">Custom Commands</h3>
                 </div><!-- .box-header -->
                 <div class="box-body">
@@ -18,7 +18,7 @@
                     <edit-command-modal></edit-command-modal>
                     <delete-command-modal></delete-command-modal>
 
-                    <table class="table table-bordered" id="commands-table">
+                    <table class="table table-bordered" id="custom-commands-table">
 
                         <thead>
                             <th stlye="width: 15%">Command</th>
@@ -33,19 +33,56 @@
                                 <td>@{{ command.level.capitalize() }}</td>
                                 <td>@{{ command.response.substring(0, 100) }}<span v-if="command.response.length > 100">...</span></td>
                                 <td class="text-center">
-                                    <button type="button" @click="editCommandModal($index)" class="btn btn-primary btn-xs" title="Edit"><i class="fa fa-pencil-square-o"></i></button>
-                                    <button type="button" @click="deleteCommandModal($index)" class="btn btn-danger btn-xs" title="Delete"><i class="fa fa-trash-o"></i></button>
+                                    <button type="button" @click="editCustomCommandModal($index)" class="btn btn-primary btn-xs" title="Edit"><i class="fa fa-pencil-square-o"></i></button>
+                                    <button type="button" @click="deleteCustomCommandModal($index)" class="btn btn-danger btn-xs" title="Delete"><i class="fa fa-trash-o"></i></button>
                                 </td>
                             </tr>
                             <tr v-if="customCommands.length === 0">
-                                <td colspan="4">No commands have been created.</td>
+                                <td colspan="4">No custom commands have been created.</td>
                             </tr>
                         </tbody>
                     </table><!-- .table -->
 
                     <br>
 
-                    <button class="btn btn-primary" @click="newCommandModal()">Create Command</button>
+                    <button class="btn btn-primary" @click="newCustomCommandModal()">Create Command</button>
+                </div><!-- .box-body -->
+            </div><!-- .box -->
+        </div><!-- .col -->
+    </div><!-- .row -->
+
+    <div class="row">
+        <div class="col-md-12">
+            <div class="box">
+                <div class="box-header with-border">
+                    <h3 class="box-title">System Commands</h3>
+                </div><!-- .box-header -->
+                <div class="box-body">
+
+                    <table class="table table-bordered" id="system-commands-table">
+
+                        <thead>
+                            <th stlye="width: 25%">Command</th>
+                            <th style="width: 15%">Level</th>
+                            <th style="width: 50%">Description</th>
+                            <th style="width: 10%" class="text-center">Actions</th>
+                        </thead>
+
+                        <tbody class="hide">
+                            <tr v-for="command in systemCommands">
+                                <td>@{{ command.usage }}</td>
+                                <td>@{{ command.level.capitalize() }}</td>
+                                <td>@{{{ command.description }}}</td>
+                                <td class="text-center">
+                                    <button type="button" @click="editSystemCommandModal($index)" class="btn btn-primary btn-xs" title="Edit"><i class="fa fa-pencil-square-o"></i></button>
+                                </td>
+                            </tr>
+                            <tr v-if="systemCommands.length === 0">
+                                <td colspan="4">No system commands available.</td>
+                            </tr>
+                        </tbody>
+                    </table><!-- .table -->
+
                 </div><!-- .box-body -->
             </div><!-- .box -->
         </div><!-- .col -->

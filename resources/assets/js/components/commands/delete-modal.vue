@@ -49,7 +49,7 @@
         },
 
         events: {
-            openDeleteCommandModal(command) {
+            openDeleteCustomCommandModal(command) {
                 this.open(command);
             }
         },
@@ -62,7 +62,7 @@
                     }
                 })
                     .then((response) => {
-                        this.$parent.deleteFromTable(this.command);
+                        this.$parent.deleteFromCustomCommandsTable(this.command);
                         this.close();
                     }, (response) => {
                         this.deleting = false;

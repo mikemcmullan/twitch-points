@@ -12,14 +12,14 @@
                         <div class="modal-body">
                             <div class="form-group" v-bind:class="{ 'has-error': !$editValidation.command.valid && $editValidation.command.modified }">
                                 <label for="command-input">Command:</label>
-                                <input type="text" class="form-control" id="command-input" name="command" placeholder="!command" v-model="newCommand.command" v-validate:command="{ minlength: 1, maxlength: 80, required: true }">
+                                <input type="text" class="form-control" id="command-input" name="command" placeholder="!command" v-model="newCommand.command" v-bind:disabled="disabled.command" v-validate:command="{ minlength: 1, maxlength: 80, required: true }">
 
                                 <span class="help-block" v-if="!$editValidation.command.valid && $editValidation.command.modified">Command requires a minimum of 1 characters and has a maximum 80 characters.</span>
                             </div><!-- .form-group -->
 
                             <div class="form-group">
                                 <label for="level-input">Level:</label>
-                                <select class="form-control" id="level-input" name="level" v-model="newCommand.level">
+                                <select class="form-control" id="level-input" name="level" v-model="newCommand.level" v-bind:disabled="disabled.level">
                                     <option value="owner">Owner</option>
                                     <option value="admin">Admin</option>
                                     <option value="mod">Mod</option>
@@ -29,7 +29,7 @@
 
                             <div class="form-group" v-bind:class="{ 'has-error': !$editValidation.response.valid && $editValidation.response.modified }">
                                 <label for="response-input">Response:</label>
-                                <textarea class="form-control" id="response-input" name="command" v-model="newCommand.response" placeholder="This is a response output by the bot when the command is executed." v-validate:response="{ minlength: 2, maxlength: 400, required: true }"></textarea>
+                                <textarea class="form-control" id="response-input" name="command" v-model="newCommand.response" v-bind:disabled="disabled.response" placeholder="This is a response output by the bot when the command is executed." v-validate:response="{ minlength: 2, maxlength: 400, required: true }"></textarea>
 
                                 <span class="help-block" v-if="!$editValidation.response.valid && $editValidation.response.modified">Response requires a minimum of 2 characters and has a maximum 400 characters.</span>
                             </div><!-- .form-group -->
@@ -60,7 +60,12 @@
                     response: ''
                 },
                 modal: false,
-                saving: false
+                saving: false,
+                disabled: {
+                    command: false,
+                    level: false,
+                    response: false
+                }
             }
         },
 
@@ -74,22 +79,33 @@
                     this.newCommand.response = '';
                     this.originalCommand = false;
                     this.saving = false;
+                    this.disabled.command = false;
+                    this.disabled.level = false;
+                    this.disabled.response = false;
                 }, 500);
             });
         },
 
         events: {
-            openEditCommandModal(command, title) {
+            openEditCustomCommandModal(command, title) {
                 this.title = 'Edit Command';
                 this.open(command);
             },
 
-            openNewCommandModal() {
+            openNewCustomCommandModal() {
                 this.title = 'New Command';
                 this.open();
             },
 
-            closeEditCommandModal() {
+            openEditSystemCommandModal(command) {
+                this.title = 'Edit Command';
+
+                this.disabled.command = true;
+
+                this.open(command);
+            },
+
+            closeEditCustomCommandModal() {
                 this.close();
             }
         },
@@ -97,11 +113,19 @@
         methods: {
             save() {
                 let request,
-                    data = {
-                        command: this.newCommand.command,
-                        level: this.newCommand.level,
-                        response: this.newCommand.response
-                    };
+                    data = {};
+
+                if (! this.disabled.command) {
+                    data.command = this.newCommand.command;
+                }
+
+                if (! this.disabled.level) {
+                    data.level = this.newCommand.level;
+                }
+
+                if (! this.disabled.response) {
+                    data.response = this.newCommand.response;
+                }
 
                 if (this.originalCommand === false) {
                     request = this.$http.post('commands', data, {
@@ -118,7 +142,12 @@
                 }
 
                 request.then((response) => {
-                    this.$parent.updateOrAddToTable(response.data);
+                    if (response.data.type === 'custom') {
+                        this.$parent.updateOrAddToCustomCommandTable(response.data);
+                    } else if (response.data.type === 'system') {
+                        this.$parent.updateOrAddToSystemCommandTable(response.data);
+                    }
+
                     this.close();
                 }, (response) => {
                     this.saving = false;
