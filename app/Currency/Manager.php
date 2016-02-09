@@ -65,6 +65,8 @@ class Manager
             throw new UnknownHandleException(sprintf('%s is not a valid handle.', $handle));
         }
 
+        $handle = strtolower($handle);
+
         $chatter = $this->chatterRepo->findByHandle($channel, $handle);
 
         if (! $chatter) {
