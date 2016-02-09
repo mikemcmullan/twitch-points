@@ -59,13 +59,19 @@ class Command extends Model
      * Get all commands for a channel.
      *
      * @param Channel $channel
+     * @param boolean $disabled Should we get all disabled commands as well.
      *
      * @return Collection
      */
-    public static function allForChannel(Channel $channel)
+    public static function allForChannel(Channel $channel, $disabled = true)
     {
-        return (new static)
-            ->where('channel_id', $channel->id)
-            ->get();
+        $query = (new static)
+            ->where('channel_id', $channel->id);
+
+        if ($disabled === false) {
+            $query->where('disabled', false);
+        }
+
+        return $query->get();
     }
 }

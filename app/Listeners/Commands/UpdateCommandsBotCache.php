@@ -38,7 +38,7 @@ class UpdateCommandsBotCache
      */
     public function handle(CommandsWereUpdated $event)
     {
-        $commands = Command::allForChannel($event->channel);
+        $commands = Command::allForChannel($event->channel, false);
 
         $commands = $commands->map(function ($command) use ($event) {
             $this->redis->set(sprintf($this->commandKey, $event->channel->name, $command->id), $command);
