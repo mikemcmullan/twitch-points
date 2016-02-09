@@ -102,9 +102,17 @@ class Manager
             $command->description = array_get($data, 'description');
         }
 
+        if (array_get($data, 'disabled') !== null) {
+            $command->disabled = array_get($data, 'disabled', false);
+        }
+
         $command->save();
 
-        $this->events->fire(new \App\Events\Commands\CommandWasUpdated($channel, $command));
+        if ($command->disabled) {
+            $this->events->fire(new \App\Events\Commands\CommandWasDeleted($channel, $command));
+        } else {
+            $this->events->fire(new \App\Events\Commands\CommandWasUpdated($channel, $command));
+        }
 
         return $command;
     }

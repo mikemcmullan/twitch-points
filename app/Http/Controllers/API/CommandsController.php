@@ -65,13 +65,14 @@ class CommandsController extends Controller
     public function store(Request $request, Channel $channel)
     {
         // Pattern, level, response
-        $data = $request->only(['command', 'level', 'response']);
+        $data = $request->only(['command', 'level', 'response', 'disabled']);
 
         // Validate the request
         $validator = \Validator::make($data, [
             'command' => 'required|min:1|max:80',
             'level'   => 'required|in:everyone,mod,admin,owner',
-            'response'=> 'required|min:2|max:400'
+            'response'=> 'required|min:2|max:400',
+            'disabled'=> 'boolean'
         ]);
 
         if ($validator->fails()) {
@@ -91,14 +92,14 @@ class CommandsController extends Controller
     public function update(Request $request, Channel $channel, $id)
     {
         // Pattern, level, response
-        $data = $request->only(['command', 'level', 'response']);
-        $data = array_map('trim', $data);
+        $data = $request->only(['command', 'level', 'response', 'disabled']);
 
         // Validate the request
         $validator = \Validator::make($data, [
             'command' => 'min:2|max:80',
             'level'   => 'in:everyone,mod,admin,owner',
-            'response'=> 'min:2|max:400'
+            'response'=> 'min:2|max:400',
+            'disabled'=> 'boolean'
         ]);
 
         if ($validator->fails()) {

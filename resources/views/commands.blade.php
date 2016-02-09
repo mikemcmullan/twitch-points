@@ -28,13 +28,14 @@
                         </thead>
 
                         <tbody class="hide">
-                            <tr v-for="command in customCommands">
-                                <td>@{{ command.command }}</td>
+                            <tr v-for="command in customCommands" :class="{ 'command-disabled': command.disabled }">
+                                <td><span class="label label-danger" v-if="command.disabled">Disabled</span> @{{ command.command }}</td>
                                 <td>@{{ command.level.capitalize() }}</td>
                                 <td>@{{ command.response.substring(0, 100) }}<span v-if="command.response.length > 100">...</span></td>
                                 <td class="text-center">
-                                    <button type="button" @click="editCustomCommandModal($index)" class="btn btn-primary btn-xs" title="Edit"><i class="fa fa-pencil-square-o"></i></button>
-                                    <button type="button" @click="deleteCustomCommandModal($index)" class="btn btn-danger btn-xs" title="Delete"><i class="fa fa-trash-o"></i></button>
+                                    <button type="button" @click="editCustomCommandModal($index)" class="btn btn-primary btn-xs" title="Edit Command"><i class="fa fa-pencil-square-o"></i></button>
+                                    <button type="button" @click="disableCustomCommandModal($index)" class="btn btn-warning btn-xs" title="Disable Commnad"><i class="fa fa-ban"></i></button>
+                                    <button type="button" @click="deleteCustomCommandModal($index)" class="btn btn-danger btn-xs" title="Delete Command"><i class="fa fa-trash-o"></i></button>
                                 </td>
                             </tr>
                             <tr v-if="customCommands.length === 0">
@@ -64,8 +65,7 @@
                         <thead>
                             <th stlye="width: 25%">Command</th>
                             <th style="width: 15%">Level</th>
-                            <th style="width: 50%">Description</th>
-                            <th style="width: 10%" class="text-center">Actions</th>
+                            <th style="width: 60%">Description</th>
                         </thead>
 
                         <tbody class="hide">
@@ -73,12 +73,9 @@
                                 <td>@{{ command.usage }}</td>
                                 <td>@{{ command.level.capitalize() }}</td>
                                 <td>@{{{ command.description }}}</td>
-                                <td class="text-center">
-                                    <button type="button" @click="editSystemCommandModal($index)" class="btn btn-primary btn-xs" title="Edit"><i class="fa fa-pencil-square-o"></i></button>
-                                </td>
                             </tr>
                             <tr v-if="systemCommands.length === 0">
-                                <td colspan="4">No system commands available.</td>
+                                <td colspan="3">No system commands available.</td>
                             </tr>
                         </tbody>
                     </table><!-- .table -->

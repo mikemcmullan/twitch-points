@@ -94,19 +94,25 @@ if (document.querySelector('#commands')) {
                 this.$broadcast('openDeleteCustomCommandModal', this.customCommands[index]);
             },
 
+            disableCustomCommandModal(index) {
+                let command = this.customCommands[index];
+                console.log(!command.disabled);
+                this.$http.put(`commands/${command.id}`, { disabled: !command.disabled })
+                    .then((response) => {
+                        command.disabled = response.data.disabled;
+                    });
+            },
+
             editSystemCommandModal(index) {
                 this.$broadcast('openEditSystemCommandModal', this.systemCommands[index]);
             },
 
             deleteFromCustomCommandsTable(command) {
-                var index = null;
-                for (var i in this.customCommands) {
-                    if (this.customCommands[i].id == command.id) {
-                        index = i;
-                    }
-                }
+                let index = this.customCommands.findIndex((row) => {
+                    return row.id === command.id
+                });
 
-                if (index) {
+                if (index !== -1) {
                     this.customCommands.splice(index, 1);
                 }
             },

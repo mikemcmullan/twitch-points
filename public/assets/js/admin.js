@@ -13331,18 +13331,22 @@ if (document.querySelector('#commands')) {
             deleteCustomCommandModal: function deleteCustomCommandModal(index) {
                 this.$broadcast('openDeleteCustomCommandModal', this.customCommands[index]);
             },
+            disableCustomCommandModal: function disableCustomCommandModal(index) {
+                var command = this.customCommands[index];
+                console.log(!command.disabled);
+                this.$http.put('commands/' + command.id, { disabled: !command.disabled }).then(function (response) {
+                    command.disabled = response.data.disabled;
+                });
+            },
             editSystemCommandModal: function editSystemCommandModal(index) {
                 this.$broadcast('openEditSystemCommandModal', this.systemCommands[index]);
             },
             deleteFromCustomCommandsTable: function deleteFromCustomCommandsTable(command) {
-                var index = null;
-                for (var i in this.customCommands) {
-                    if (this.customCommands[i].id == command.id) {
-                        index = i;
-                    }
-                }
+                var index = this.customCommands.findIndex(function (row) {
+                    return row.id === command.id;
+                });
 
-                if (index) {
+                if (index !== -1) {
                     this.customCommands.splice(index, 1);
                 }
             },

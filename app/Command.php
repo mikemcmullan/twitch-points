@@ -27,7 +27,16 @@ class Command extends Model
      *
      * @var array
      */
-    protected $fillable = ['command', 'pattern', 'level', 'type', 'file', 'response', 'usage', 'description'];
+    protected $fillable = ['command', 'pattern', 'level', 'type', 'file', 'response', 'usage', 'description', 'disabled'];
+
+    /**
+     * The attributes that should be casted to native types.
+     *
+     * @var array
+     */
+    protected $casts = [
+        'disabled' => 'boolean'
+    ];
 
     /**
      * Get all commands of a particular type.
