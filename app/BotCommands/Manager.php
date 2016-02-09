@@ -60,6 +60,7 @@ class Manager
         $data['level']   = is_null($data['level']) ? 'everyone' : $data['level'];
         $data['usage']   = array_get($data, 'usage', '');
         $data['description'] = array_get($data, 'description', '');
+        $data['disabled'] = (bool) array_get($data, 'disabled', false);
 
         $created = $channel->commands()->create($data);
 
