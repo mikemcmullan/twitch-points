@@ -23,8 +23,8 @@ class CorsHeaders
 
         $headers = [
             'Access-Control-Allow-Origin' => '*',
-            'Access-Control-Allow-Methods' => 'POST, GET, OPTIONS, PUT, DELETE',
-            'Access-Control-Allow-Headers'=> 'Content-Type, Access-Token, Authorization, Origin'
+            'Access-Control-Allow-Methods' => 'POST, GET, PUT, DELETE',
+            'Access-Control-Allow-Headers'=> 'Content-Type, Authorization, Origin'
         ];
 
         if ($request->getMethod() == "OPTIONS") {
