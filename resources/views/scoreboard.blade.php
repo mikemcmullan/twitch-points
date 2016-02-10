@@ -70,9 +70,9 @@
                                 <div class="form-group" v-bind:class="{ 'has-error': !$settingsValidation.keyword.valid }">
                                     <label for="control-amount" class="col-sm-3 control-label">Keyword</label>
                                     <div class="col-sm-9">
-                                        {!! Form::text('keyword', $channel->getSetting('currency.keyword'), ['class' => 'form-control', 'id' => 'control-amount', 'v-model' => 'keyword', 'v-validate:keyword' => "{ minlength: 2, maxlength: 10, required: true }"]) !!}
+                                        {!! Form::text('keyword', $channel->getSetting('currency.keyword'), ['class' => 'form-control', 'id' => 'control-amount', 'v-model' => 'keyword', 'v-validate:keyword' => "{ minlength: 2, maxlength: 20, required: true }"]) !!}
 
-                                        <span class="help-block" v-show="!$settingsValidation.keyword.valid">Keyword requires a minimum of 2 characters and has a maximum 10 characters.</span>
+                                        <span class="help-block" v-show="!$settingsValidation.keyword.valid">Keyword requires a minimum of 2 characters and has a maximum 20 characters.</span>
                                         <span class="help-block">Viewers will enter this keyword to check how much {{ lcfirst($channel->getSetting('currency.name')) }} they have.</span>
                                     </div>
                                 </div><!-- .form-group -->
@@ -103,7 +103,7 @@
                                             <label>
                                                 {!! Form::checkbox('sync-status', 'yes', $channel->getSetting('currency.sync-status'), ['v-model' => 'syncStatus']) !!} Sync Status
                                             </label>
-                                            <p class="help-block">Should currency be awarded when the stream in offline?</p>
+                                            <p class="help-block">Shound the currency system sync with the status of the stream? This is useful if you want to award currency when the stream is offline.</p>
                                         </div>
                                     </div>
                                 </div><!-- .form-group -->
