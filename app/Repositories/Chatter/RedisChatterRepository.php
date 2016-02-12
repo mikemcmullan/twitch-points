@@ -34,6 +34,11 @@ class RedisChatterRepository implements ChatterRepository
     const MOD_INDEX_KEY_FORMAT = 'modsIndex:%s';
 
     /**
+     * Rankings Index Key Format
+     */
+    const RANKING_INDEX_KEY_FORMAT = 'rankingsIndex:%s';
+
+    /**
      * @var Database
      */
     private $redis;
@@ -148,7 +153,8 @@ class RedisChatterRepository implements ChatterRepository
             $end = $start + $this->perPage - 1;
         }
 
-        $chatters = $this->redis->zrevrange($this->makeChatIndexKey($channel['id']), $start, $end);
+        $chatters = $this->redis->zrevrange($this->makeChatIndexKey($channel['id']), $start, $end, 'WITHSCORES');
+
         $collection  = new Collection($this->mapUsers($chatters, $showHidden, $showMod));
 
         return $collection;
@@ -210,7 +216,9 @@ class RedisChatterRepository implements ChatterRepository
             return;
         }
 
-        return $this->mapUser($channel, $handle, $result);
+        $user = $this->mapUser($channel, $handle, $result);
+
+        return $user;
     }
 
     /**
@@ -266,8 +274,14 @@ class RedisChatterRepository implements ChatterRepository
             $pipe = $this->redis;
         }
 
-        $pipe->zincrby($this->makeChatIndexKey($channel['id']), $points, $key);
-        $pipe->hincrbyfloat($key, 'points', $points);
+        $user = $this->findByHandle($channel, $handle);
+        $newPointTotal = $this->calculatePointTotal($user['points'], $points);
+
+        $this->updateRank($channel, $user, $newPointTotal);
+
+        $pipe->hset($key, 'points', $newPointTotal);
+        $pipe->zadd($this->makeChatIndexKey($channel['id']), $newPointTotal, $key);
+
         $pipe->hincrby($key, 'minutes', $minutes);
         $pipe->hset($key, 'updated', Carbon::now());
     }
@@ -306,9 +320,15 @@ class RedisChatterRepository implements ChatterRepository
             $pipe = $this->redis;
         }
 
-        $pipe->zincrby($this->makeChatIndexKey($channel['id']), $points, $key);
+        $user = $this->findByHandle($channel, $handle);
+        $newPointTotal = $this->calculatePointTotal($user['points'], $points);
+
+        $pipe->hset($key, 'points', $newPointTotal);
+        $pipe->zadd($this->makeChatIndexKey($channel['id']), $newPointTotal, $key);
+
+        $this->updateRank($channel, $user, $newPointTotal);
+
         $pipe->sadd($this->makeModIndexKey($channel['id']), $key);
-        $pipe->hincrbyfloat($key, 'points', $points);
         $pipe->hincrby($key, 'minutes', $minutes);
         $pipe->hset($key, 'mod', true);
         $pipe->hset($key, 'updated', Carbon::now());
@@ -329,6 +349,31 @@ class RedisChatterRepository implements ChatterRepository
                 $this->updateModerator($channel, $chatter, $minutes, $points, $pipe);
             }
         });
+    }
+
+    /**
+     * Update the rank for a user.
+     *
+     * @param Channel $channel
+     * @param array $user
+     * @param int $newPointTotal
+     */
+    private function updateRank(Channel $channel, $user, $newPointTotal)
+    {
+        $key = $this->makeKey($channel['id'], $user['handle']);
+
+        $scoreCheck = collect($this->redis->zrangebyscore($this->makeChatIndexKey($channel['id']), $user['points'], $user['points']))
+            ->filter(function ($chatter) use ($key) {
+                return $key !== $chatter;
+            });
+
+        if ($scoreCheck->isEmpty()) {
+            $this->redis->zrem($this->makeRankingIndexKey($channel['id']), $user['points']);
+        }
+
+        if (! $user['hide']) {
+            $this->redis->zadd($this->makeRankingIndexKey($channel['id']), $newPointTotal, $newPointTotal);
+        }
     }
 
     /**
@@ -395,6 +440,17 @@ class RedisChatterRepository implements ChatterRepository
     }
 
     /**
+     * Make a redis key for the ranking index.
+     * @param $channel
+     *
+     * @return string
+     */
+    private function makeRankingIndexKey($channel)
+    {
+        return sprintf(self::RANKING_INDEX_KEY_FORMAT, $channel);
+    }
+
+    /**
      * Map over uses to make an associative array containing
      * the original key, handle, channel and start_time.
      *
@@ -407,16 +463,30 @@ class RedisChatterRepository implements ChatterRepository
     {
         $mappedUsers = [];
 
-        foreach ($chatters as $chatter) {
+        foreach ($chatters as $key => $value) {
+            if (is_string($key)) {
+                $chatter = $key;
+                $indexScore = $value;
+            } else {
+                $chatter = $value;
+                $indexScore = false;
+            }
+
             $key = $this->parseKey($chatter);
 
-            $data     = $this->redis->hgetall($chatter);
+            $data = $this->redis->hgetall($chatter);
 
             if (empty($data)) {
                 continue;
             }
 
-            $rank     = isset($data['rank']) ? $data['rank'] : 0;
+            $rank     = $this->redis->zrevrank($this->makeRankingIndexKey($key['channel']), $data['points']);
+
+            // Since redis rankings are 0 based add 1.
+            if ($rank !== null) {
+                $rank++;
+            }
+
             $mod      = (bool) array_get($data, 'mod');
             $hide     = (bool) array_get($data, 'hide');
             $admin    = (bool) array_get($data, 'admin');
@@ -452,8 +522,11 @@ class RedisChatterRepository implements ChatterRepository
      * @param array $user
      * @return array
      */
-    private function mapUser($channel, $handle, array $user)
+    private function mapUser(Channel $channel, $handle, array $user)
     {
+        $rank = $this->redis->zrevrank($this->makeRankingIndexKey($channel['id']), array_get($user, 'points', 0));
+
+        $user['rank']     = $rank === null ? null : ++$rank;
         $user['points']   = array_get($user, 'points', 0);
         $user['key']      = $this->makeKey($channel['id'], $handle);
         $user['channel']  = $channel;
@@ -497,5 +570,32 @@ class RedisChatterRepository implements ChatterRepository
             'channel' => $this->channel,
             'handle'  => substr($key, strlen($this->handlePrefix))
         ];
+    }
+
+    /**
+     * Calculate point total.
+     *
+     * @param int $currentPoints
+     * @param string|int $newPoints An addition or substraction sign will Indicate if we are
+     *                          adding or substracting points. If none is provided we will add.
+     *
+     * @return int|float
+     */
+    private function calculatePointTotal($currentPoints, $newPoints)
+    {
+        switch (substr($newPoints, 0, 1)) {
+            case '-':
+                $value = $currentPoints - (float) substr($newPoints, 1);
+                break;
+
+            case '+':
+                $newPoints = substr($newPoints, 1);
+
+            default:
+                $value = $currentPoints + (float) $newPoints;
+                break;
+        }
+
+        return round($value, 3);
     }
 }
