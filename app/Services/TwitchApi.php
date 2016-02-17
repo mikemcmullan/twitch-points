@@ -72,7 +72,7 @@ class TwitchApi
             try {
                 $this->logger->info(sprintf('Attempt: #%d', $attempts), ['channel' => $channel]);
                 $response = $this->httpClient->get(sprintf('https://tmi.twitch.tv/group/user/%s/chatters', $channel));
-                $this->logger->info(sprintf('Chat list of was obtained. Took %d attempts.', $attempts), ['channel' => $channel]);
+                $this->logger->info(sprintf('Chat list was obtained, took %d attempts.', $attempts), ['channel' => $channel]);
                 $stop = true;
             } catch (\GuzzleHttp\Exception\ServerException $e) {
                 if ($attempts > 5) {
