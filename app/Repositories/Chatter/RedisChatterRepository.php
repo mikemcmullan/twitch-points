@@ -161,34 +161,6 @@ class RedisChatterRepository implements ChatterRepository
     }
 
     /**
-     * Get all mods belonging to a channel.
-     *
-     * @param Channel $channel
-     * @return Collection
-     */
-    public function allModsForChannel(Channel $channel)
-    {
-        $mods = $this->redis->smembers($this->makeModIndexKey($channel['id']));
-        $collection = new Collection($this->mapUsers($mods, true, true));
-
-        return $collection;
-    }
-
-    /**
-     * Get all admins belonging to a channel.
-     *
-     * @param Channel $channel
-     * @return Collection
-     */
-    public function allAdminsForChannel(Channel $channel)
-    {
-        $admins = $this->redis->smembers($this->makeAdminIndexKey($channel['id']));
-        $collection = new Collection($this->mapUsers($admins, true, true));
-
-        return $collection;
-    }
-
-    /**
      * Get the number of chatters a channel has.
      *
      * @param Channel $channel
@@ -282,6 +254,11 @@ class RedisChatterRepository implements ChatterRepository
         $pipe->hset($key, 'points', $newPointTotal);
         $pipe->zadd($this->makeChatIndexKey($channel['id']), $newPointTotal, $key);
 
+        // if ($user['mod']) {
+        //     $this->noLongerMod[] = $key;
+        // //     // $pipe->hset($key, 'mod', false);
+        // }
+
         $pipe->hincrby($key, 'minutes', $minutes);
         $pipe->hset($key, 'updated', Carbon::now());
     }
@@ -314,24 +291,12 @@ class RedisChatterRepository implements ChatterRepository
      */
     public function updateModerator(Channel $channel, $handle, $minutes = 0, $points = 0, Pipeline $pipe = null)
     {
-        $key = $this->makeKey($channel['id'], $handle);
-
         if ($pipe === null) {
             $pipe = $this->redis;
         }
 
-        $user = $this->findByHandle($channel, $handle);
-        $newPointTotal = $this->calculatePointTotal($user['points'], $points);
-
-        $pipe->hset($key, 'points', $newPointTotal);
-        $pipe->zadd($this->makeChatIndexKey($channel['id']), $newPointTotal, $key);
-
-        $this->updateRank($channel, $user, $newPointTotal);
-
-        $pipe->sadd($this->makeModIndexKey($channel['id']), $key);
-        $pipe->hincrby($key, 'minutes', $minutes);
-        $pipe->hset($key, 'mod', true);
-        $pipe->hset($key, 'updated', Carbon::now());
+        $this->addMod($channel, $handle);
+        $this->updateChatter($channel, $handle, $minutes, $points, $pipe);
     }
 
     /**
@@ -349,6 +314,90 @@ class RedisChatterRepository implements ChatterRepository
                 $this->updateModerator($channel, $chatter, $minutes, $points, $pipe);
             }
         });
+    }
+
+    /**
+     * Get all mods belonging to a channel.
+     *
+     * @param Channel $channel
+     * @return Collection
+     */
+    public function allModsForChannel(Channel $channel)
+    {
+        $mods = $this->redis->smembers($this->makeModIndexKey($channel['id']));
+        $collection = new Collection($this->mapUsers($mods, true, true));
+
+        return $collection;
+    }
+
+    /**
+     * Remove a moderator from a channel.
+     *
+     * @param Channel $channel
+     * @param array $handle
+     */
+    public function removeMod(Channel $channel, $handle)
+    {
+        $key = $this->makeKey($channel['id'], $handle);
+
+        $this->redis->hset($key, 'mod', false);
+        $this->redis->srem($this->makeModIndexKey($channel['id']), $key);
+    }
+
+    /**
+     * Add a moderator to a channel.
+     *
+     * @param Channel $channel
+     * @param array $handle
+     */
+    public function addMod(Channel $channel, $handle)
+    {
+        $key = $this->makeKey($channel['id'], $handle);
+
+        $this->redis->hset($key, 'mod', true);
+        $this->redis->sadd($this->makeModIndexKey($channel['id']), $key);
+    }
+
+    /**
+     * Get all admins belonging to a channel.
+     *
+     * @param Channel $channel
+     * @return Collection
+     */
+    public function allAdminsForChannel(Channel $channel)
+    {
+        $admins = $this->redis->smembers($this->makeAdminIndexKey($channel['id']));
+        $collection = new Collection($this->mapUsers($admins, true, true));
+
+        return $collection;
+    }
+
+    /**
+     * Remove an admin from a channel.
+     *
+     * @param Channel $channel
+     * @param array $handle
+     */
+    public function removeAdmin(Channel $channel, $handle)
+    {
+        $key = $this->makeKey($channel['id'], $handle);
+
+        $this->redis->hset($key, 'admin', false);
+        $this->redis->srem($this->makeAdminIndexKey($channel['id']), $key);
+    }
+
+    /**
+     * Add an administor to a channel.
+     *
+     * @param Channel $channel
+     * @param array $handle
+     */
+    public function addAdmin(Channel $channel, $handle)
+    {
+        $key = $this->makeKey($channel['id'], $handle);
+
+        $this->redis->hset($key, 'admin', true);
+        $this->redis->sadd($this->makeAdminIndexKey($channel['id']), $key);
     }
 
     /**

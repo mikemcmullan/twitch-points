@@ -5,6 +5,8 @@ namespace App\Services;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;
 use Illuminate\Contracts\Cache\Repository as CacheRepository;
+use Illuminate\Log\Writer;
+use App\Exceptions\InvalidChannelException;
 
 class TwitchApi
 {
@@ -19,12 +21,18 @@ class TwitchApi
     private $cache;
 
     /**
+     * @var Writer
+     */
+    private $logger;
+
+    /**
      * @param CacheRepository $cache
      */
-    public function __construct(CacheRepository $cache)
+    public function __construct(CacheRepository $cache, Writer $logger)
     {
         $this->httpClient = $this->setupHttpClient();
         $this->cache = $cache;
+        $this->logger = $logger;
     }
 
     /**
@@ -51,21 +59,29 @@ class TwitchApi
      */
     public function chatList($channel)
     {
-        $attempts = 0;
+        $this->getStream($channel);
+
+        $attempts = 1;
         $stop = false;
 
         // Sometimes the tmi server returns an error, we'll try multiple times
-        // before  giving up.
+        // before giving up.
+        $this->logger->info('Trying to get chat list.', ['channel' => $channel]);
+
         while ($stop === false) {
             try {
+                $this->logger->info(sprintf('Attempt: #%d', $attempts), ['channel' => $channel]);
                 $response = $this->httpClient->get(sprintf('https://tmi.twitch.tv/group/user/%s/chatters', $channel));
+                $this->logger->info(sprintf('Chat list of was obtained. Took %d attempts.', $attempts), ['channel' => $channel]);
                 $stop = true;
-            } catch (\GuzzleHttp\Exception\BadResponseException $e) {
-                $attempts += 1;
-
-                if ($attempts > 3) {
+            } catch (\GuzzleHttp\Exception\ServerException $e) {
+                if ($attempts > 5) {
+                    $this->logger->error('Failed to get chat list.', ['channel' => $channel]);
                     $stop = true;
                 }
+
+                sleep(0.5);
+                $attempts += 1;
             }
         }
 
@@ -130,13 +146,12 @@ class TwitchApi
      */
     public function getStream($channel)
     {
-        return $this->cache->remember('valid:' . $channel, 1, function () use ($channel) {
-            try {
-                $response = $this->httpClient->get('https://api.twitch.tv/kraken/streams/' . $channel);
-                return json_decode((string) $response->getBody(), true);
-            } catch (ClientException $e) {
-                return false;
-            }
-        });
+        try {
+            $response = $this->httpClient->get('https://api.twitch.tv/kraken/streams/' . $channel);
+            return json_decode((string) $response->getBody(), true);
+        } catch (ClientException $e) {
+            $this->logger->error('Invalid channel.', ['channel' => $channel]);
+            throw new InvalidChannelException($channel);
+        }
     }
 }

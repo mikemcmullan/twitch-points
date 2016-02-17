@@ -54,12 +54,44 @@ interface ChatterRepository
     public function allModsForChannel(Channel $channel);
 
     /**
+     * Remove a moderator from a channel.
+     *
+     * @param Channel $channel
+     * @param array $handle
+     */
+    public function removeMod(Channel $channel, $handle);
+
+    /**
+     * Add a moderator to a channel.
+     *
+     * @param Channel $channel
+     * @param array $handle
+     */
+    public function addMod(Channel $channel, $handle);
+
+    /**
      * Get all admins belonging to a channel.
      *
      * @param Channel $channel
      * @return Collection
      */
     public function allAdminsForChannel(Channel $channel);
+
+    /**
+     * Remove an admin from a channel.
+     *
+     * @param Channel $channel
+     * @param array $handle
+     */
+    public function removeAdmin(Channel $channel, $handle);
+
+    /**
+     * Add an administor to a channel.
+     *
+     * @param Channel $channel
+     * @param array $handle
+     */
+    public function addAdmin(Channel $channel, $handle);
 
     /**
      * Get the number of chatters a channel has.

@@ -39,10 +39,6 @@ class DownloadChatListJob extends Job
       */
      public function handle(TwitchApi $twitchApi, Dispatcher $events)
      {
-         if (! $twitchApi->validChannel($this->channel['name'])) {
-             throw new InvalidChannelException($this->channel['name']);
-         }
-
          $status     = $twitchApi->channelOnline($this->channel['name']);
          $chatList   = $twitchApi->chatList($this->channel['name']);
 
