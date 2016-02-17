@@ -146,12 +146,4 @@ interface ChatterRepository
      * @param $points
      */
     public function updateModerators(Channel $channel, array $chatters, $minutes = 0, $points = 0);
-
-    /**
-     * Update rankings for chatters.
-     *
-     * @param Channel $channel
-     * @param array $chatters
-     */
-    public function updateRankings(Channel $channel, array $chatters);
 }

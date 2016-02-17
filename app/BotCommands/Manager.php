@@ -29,7 +29,7 @@ class Manager
      */
     public function all(Channel $channel)
     {
-        return Command::where('channel_id', $channel->id)->get();
+        return Command::where('channel_id', $channel->id)->orderBy('order')->get();
     }
 
     /**

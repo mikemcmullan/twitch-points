@@ -377,23 +377,6 @@ class RedisChatterRepository implements ChatterRepository
     }
 
     /**
-     * Update rankings for chatters.
-     *
-     * @param Channel $channel
-     * @param array $chatters
-     */
-    public function updateRankings(Channel $channel, array $chatters)
-    {
-        $this->redis->pipeline(function ($pipe) use ($channel,$chatters) {
-            foreach ($chatters as $chatter) {
-                $key = $this->makeKey($channel['id'], $chatter['handle']);
-
-                $pipe->hset($key, 'rank', $chatter['rank']);
-            }
-        });
-    }
-
-    /**
      * Make redis key for getting a chatter.
      *
      * @param $channel

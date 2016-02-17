@@ -14,7 +14,6 @@ class Kernel extends ConsoleKernel
      */
     protected $commands = [
         \App\Console\Commands\UpdatePoints::class,
-        \App\Console\Commands\RankChatters::class,
         \App\Console\Commands\SyncSystemStatus::class,
         \App\Console\Commands\RemoveChannel::class,
     ];
