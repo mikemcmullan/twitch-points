@@ -13280,6 +13280,32 @@ if (!Array.prototype.findIndex) {
     };
 }
 
+if (!Array.prototype.find) {
+    Array.prototype.find = function (predicate) {
+        if (this === null) {
+            throw new TypeError('Array.prototype.find called on null or undefined');
+        }
+
+        if (typeof predicate !== 'function') {
+            throw new TypeError('predicate must be a function');
+        }
+
+        var list = Object(this);
+        var length = list.length >>> 0;
+        var thisArg = arguments[1];
+        var value;
+
+        for (var i = 0; i < length; i++) {
+            value = list[i];
+            if (predicate.call(thisArg, value, i, list)) {
+                return value;
+            }
+        }
+
+        return undefined;
+    };
+}
+
 _vue2.default.transition('fade', {
     enterClass: 'fadeIn',
     leaveClass: 'fadeOut'
@@ -13295,26 +13321,27 @@ if (document.querySelector('#commands')) {
         },
 
         data: {
-            customCommands: [],
-            systemCommands: []
+            commands: []
+        },
+
+        computed: {
+            customCommands: function customCommands() {
+                return this.commands.filter(function (command) {
+                    return command.type === 'custom';
+                });
+            },
+            systemCommands: function systemCommands() {
+                return this.commands.filter(function (command) {
+                    return command.type === 'system';
+                });
+            }
         },
 
         ready: function ready() {
             var _this = this;
 
             this.$http.get('commands').then(function (response) {
-                var command = undefined;
-
-                for (command in response.data) {
-                    switch (response.data[command].type) {
-                        case 'system':
-                            _this.systemCommands.push(response.data[command]);
-                            break;
-                        case 'custom':
-                            _this.customCommands.push(response.data[command]);
-                            break;
-                    }
-                }
+                _this.commands = response.data;
 
                 document.querySelector('#custom-commands-table tbody').className = '';
                 document.querySelector('#system-commands-table tbody').className = '';
@@ -13322,61 +13349,47 @@ if (document.querySelector('#commands')) {
         },
 
         methods: {
+            _getCommand: function _getCommand(value) {
+                var key = arguments.length <= 1 || arguments[1] === undefined ? 'id' : arguments[1];
+
+                return this.commands.find(function (command) {
+                    return command[key] == value;
+                });
+            },
             newCustomCommandModal: function newCustomCommandModal() {
                 this.$broadcast('openNewCustomCommandModal', null, 'New Command');
             },
-            editCustomCommandModal: function editCustomCommandModal(index) {
-                this.$broadcast('openEditCustomCommandModal', this.customCommands[index]);
+            editCommandModal: function editCommandModal(id) {
+                this.$broadcast('openEditCustomCommandModal', this._getCommand(id));
             },
-            deleteCustomCommandModal: function deleteCustomCommandModal(index) {
-                this.$broadcast('openDeleteCustomCommandModal', this.customCommands[index]);
+            deleteCommandModal: function deleteCommandModal(id) {
+                this.$broadcast('openDeleteCustomCommandModal', this._getCommand(id));
             },
-            disableCustomCommand: function disableCustomCommand(index) {
-                var command = this.customCommands[index];
+            disableCommand: function disableCommand(id) {
+                var command = this._getCommand(id);
 
                 this.$http.put('commands/' + command.id, { disabled: !command.disabled }).then(function (response) {
                     command.disabled = response.data.disabled;
                 });
             },
-            disableSystemCommand: function disableSystemCommand(index) {
-                var command = this.systemCommands[index];
-
-                this.$http.put('commands/' + command.id, { disabled: !command.disabled }).then(function (response) {
-                    command.disabled = response.data.disabled;
-                });
-            },
-            editSystemCommandModal: function editSystemCommandModal(index) {
-                this.$broadcast('openEditSystemCommandModal', this.systemCommands[index]);
-            },
-            deleteFromCustomCommandsTable: function deleteFromCustomCommandsTable(command) {
-                var index = this.customCommands.findIndex(function (row) {
+            deleteFromCommandsTable: function deleteFromCommandsTable(command) {
+                var index = this.commands.findIndex(function (row) {
                     return row.id === command.id;
                 });
 
                 if (index !== -1) {
-                    this.customCommands.splice(index, 1);
+                    this.commands.splice(index, 1);
                 }
             },
-            updateOrAddToSystemCommandTable: function updateOrAddToSystemCommandTable(command) {
-                var index = this.systemCommands.findIndex(function (row) {
+            updateOrAddToCommandsTable: function updateOrAddToCommandsTable(command) {
+                var index = this.commands.findIndex(function (row) {
                     return row.id === command.id;
                 });
 
                 if (index !== -1) {
-                    this.systemCommands.splice(index, 1, command);
+                    this.commands.splice(index, 1, command);
                 } else {
-                    this.systemCommands.unshift(command);
-                }
-            },
-            updateOrAddToCustomCommandTable: function updateOrAddToCustomCommandTable(command) {
-                var index = this.customCommands.findIndex(function (row) {
-                    return row.id === command.id;
-                });
-
-                if (index !== -1) {
-                    this.customCommands.splice(index, 1, command);
-                } else {
-                    this.customCommands.unshift(command);
+                    this.commands.unshift(command);
                 }
             }
         }
@@ -13483,7 +13496,7 @@ exports.default = {
                     _this2.deleting = true;
                 }
             }).then(function (response) {
-                _this2.$parent.deleteFromCustomCommandsTable(_this2.command);
+                _this2.$parent.deleteFromCommandsTable(_this2.command);
                 _this2.close();
             }, function (response) {
                 _this2.deleting = false;
@@ -13613,11 +13626,7 @@ exports.default = {
             }
 
             request.then(function (response) {
-                if (response.data.type === 'custom') {
-                    _this2.$parent.updateOrAddToCustomCommandTable(response.data);
-                } else if (response.data.type === 'system') {
-                    _this2.$parent.updateOrAddToSystemCommandTable(response.data);
-                }
+                _this2.$parent.updateOrAddToCommandsTable(response.data);
 
                 _this2.close();
             }, function (response) {

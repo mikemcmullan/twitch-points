@@ -38,6 +38,32 @@ if (!Array.prototype.findIndex) {
     };
 }
 
+if (!Array.prototype.find) {
+    Array.prototype.find = function(predicate) {
+        if (this === null) {
+            throw new TypeError('Array.prototype.find called on null or undefined');
+        }
+
+        if (typeof predicate !== 'function') {
+            throw new TypeError('predicate must be a function');
+        }
+
+        var list = Object(this);
+        var length = list.length >>> 0;
+        var thisArg = arguments[1];
+        var value;
+
+        for (var i = 0; i < length; i++) {
+            value = list[i];
+            if (predicate.call(thisArg, value, i, list)) {
+                return value;
+            }
+        }
+
+        return undefined;
+    };
+}
+
 Vue.transition('fade', {
     enterClass: 'fadeIn',
     leaveClass: 'fadeOut'
@@ -56,25 +82,27 @@ if (document.querySelector('#commands')) {
         },
 
         data: {
-            customCommands: [],
-            systemCommands: []
+            commands: []
+        },
+
+        computed: {
+            customCommands() {
+                return this.commands.filter((command) => {
+                    return command.type === 'custom';
+                });
+            },
+
+            systemCommands() {
+                return this.commands.filter((command) => {
+                    return command.type === 'system';
+                });
+            }
         },
 
         ready() {
             this.$http.get('commands')
                 .then((response) => {
-                    let command;
-
-                    for (command in response.data) {
-                        switch (response.data[command].type) {
-                            case 'system':
-                                this.systemCommands.push(response.data[command]);
-                                break;
-                            case 'custom':
-                                this.customCommands.push(response.data[command]);
-                                break;
-                        }
-                    }
+                    this.commands = response.data;
 
                     document.querySelector('#custom-commands-table tbody').className = '';
                     document.querySelector('#system-commands-table tbody').className = '';
@@ -82,20 +110,26 @@ if (document.querySelector('#commands')) {
         },
 
         methods: {
+            _getCommand(value, key = 'id') {
+                return this.commands.find((command) => {
+                    return command[key] == value;
+                });
+            },
+
             newCustomCommandModal() {
                 this.$broadcast('openNewCustomCommandModal', null, 'New Command');
             },
 
-            editCustomCommandModal(index) {
-                this.$broadcast('openEditCustomCommandModal', this.customCommands[index]);
+            editCommandModal(id) {
+                this.$broadcast('openEditCustomCommandModal', this._getCommand(id));
             },
 
-            deleteCustomCommandModal(index) {
-                this.$broadcast('openDeleteCustomCommandModal', this.customCommands[index]);
+            deleteCommandModal(id) {
+                this.$broadcast('openDeleteCustomCommandModal', this._getCommand(id));
             },
 
-            disableCustomCommand(index) {
-                let command = this.customCommands[index];
+            disableCommand(id) {
+                let command = this._getCommand(id);
 
                 this.$http.put(`commands/${command.id}`, { disabled: !command.disabled })
                     .then((response) => {
@@ -103,50 +137,25 @@ if (document.querySelector('#commands')) {
                     });
             },
 
-            disableSystemCommand(index) {
-                let command = this.systemCommands[index];
-
-                this.$http.put(`commands/${command.id}`, { disabled: !command.disabled })
-                    .then((response) => {
-                        command.disabled = response.data.disabled;
-                    });
-            },
-
-            editSystemCommandModal(index) {
-                this.$broadcast('openEditSystemCommandModal', this.systemCommands[index]);
-            },
-
-            deleteFromCustomCommandsTable(command) {
-                let index = this.customCommands.findIndex((row) => {
+            deleteFromCommandsTable(command) {
+                let index = this.commands.findIndex((row) => {
                     return row.id === command.id
                 });
 
                 if (index !== -1) {
-                    this.customCommands.splice(index, 1);
+                    this.commands.splice(index, 1);
                 }
             },
 
-            updateOrAddToSystemCommandTable(command) {
-                let index = this.systemCommands.findIndex((row) => {
+            updateOrAddToCommandsTable(command) {
+                let index = this.commands.findIndex((row) => {
                     return row.id === command.id
                 });
 
                 if (index !== -1) {
-                    this.systemCommands.splice(index, 1, command);
+                    this.commands.splice(index, 1, command);
                 } else {
-                    this.systemCommands.unshift(command);
-                }
-            },
-
-            updateOrAddToCustomCommandTable(command) {
-                let index = this.customCommands.findIndex((row) => {
-                    return row.id === command.id
-                });
-
-                if (index !== -1) {
-                    this.customCommands.splice(index, 1, command);
-                } else {
-                    this.customCommands.unshift(command);
+                    this.commands.unshift(command);
                 }
             }
         }

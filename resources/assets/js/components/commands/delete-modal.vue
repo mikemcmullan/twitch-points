@@ -62,7 +62,7 @@
                     }
                 })
                     .then((response) => {
-                        this.$parent.deleteFromCustomCommandsTable(this.command);
+                        this.$parent.deleteFromCommandsTable(this.command);
                         this.close();
                     }, (response) => {
                         this.deleting = false;

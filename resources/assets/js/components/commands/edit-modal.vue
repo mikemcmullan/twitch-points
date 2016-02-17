@@ -142,11 +142,7 @@
                 }
 
                 request.then((response) => {
-                    if (response.data.type === 'custom') {
-                        this.$parent.updateOrAddToCustomCommandTable(response.data);
-                    } else if (response.data.type === 'system') {
-                        this.$parent.updateOrAddToSystemCommandTable(response.data);
-                    }
+                    this.$parent.updateOrAddToCommandsTable(response.data);
 
                     this.close();
                 }, (response) => {
