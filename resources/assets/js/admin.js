@@ -94,9 +94,18 @@ if (document.querySelector('#commands')) {
                 this.$broadcast('openDeleteCustomCommandModal', this.customCommands[index]);
             },
 
-            disableCustomCommandModal(index) {
+            disableCustomCommand(index) {
                 let command = this.customCommands[index];
-                console.log(!command.disabled);
+
+                this.$http.put(`commands/${command.id}`, { disabled: !command.disabled })
+                    .then((response) => {
+                        command.disabled = response.data.disabled;
+                    });
+            },
+
+            disableSystemCommand(index) {
+                let command = this.systemCommands[index];
+
                 this.$http.put(`commands/${command.id}`, { disabled: !command.disabled })
                     .then((response) => {
                         command.disabled = response.data.disabled;

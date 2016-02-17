@@ -13331,9 +13331,16 @@ if (document.querySelector('#commands')) {
             deleteCustomCommandModal: function deleteCustomCommandModal(index) {
                 this.$broadcast('openDeleteCustomCommandModal', this.customCommands[index]);
             },
-            disableCustomCommandModal: function disableCustomCommandModal(index) {
+            disableCustomCommand: function disableCustomCommand(index) {
                 var command = this.customCommands[index];
-                console.log(!command.disabled);
+
+                this.$http.put('commands/' + command.id, { disabled: !command.disabled }).then(function (response) {
+                    command.disabled = response.data.disabled;
+                });
+            },
+            disableSystemCommand: function disableSystemCommand(index) {
+                var command = this.systemCommands[index];
+
                 this.$http.put('commands/' + command.id, { disabled: !command.disabled }).then(function (response) {
                     command.disabled = response.data.disabled;
                 });
