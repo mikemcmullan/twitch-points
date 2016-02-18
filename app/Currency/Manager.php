@@ -163,8 +163,8 @@ class Manager
 
         return array_merge(array_only($chatter, ['handle', 'minutes']), [
             'channel' => $channel->name,
-            'points' => $pointTotal,
-            'amount' => $points
+            'points' => floor($pointTotal),
+            'amount' => floor($points)
         ]);
     }
 
