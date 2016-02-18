@@ -42,15 +42,8 @@ class GetViewerJob extends Job
         }
 
         $viewer = $manager->getViewer($this->channel, $this->handle);
+        $viewer['channel'] = $viewer['channel']->name;
 
-        return [
-            'channel'   => $viewer['channel']['name'],
-            'handle'    => $viewer['handle'],
-            'points'    => floor($viewer['points']),
-            'minutes'   => (int) $viewer['minutes'],
-            'rank'      => (int) array_get($viewer, 'rank'),
-            'mod'       => (bool) array_get($viewer, 'mod'),
-            'admin'     => (bool) array_get($viewer, 'admin')
-        ];
+        return array_only($viewer, ['channel', 'handle', 'points', 'minutes', 'rank', 'mod', 'admin']);
     }
 }

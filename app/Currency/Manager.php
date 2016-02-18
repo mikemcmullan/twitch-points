@@ -161,13 +161,11 @@ class Manager
 
         $this->chatterRepo->updateChatter($channel, $chatter['handle'], 0, $symbol . $points);
 
-        return [
-            'channel'=> $channel['name'],
-            'handle' => $chatter['handle'],
-            'points' => floor($pointTotal),
-            'minutes'=> (int) $chatter['minutes'],
-            'amount' => (int) $points
-        ];
+        return array_merge(array_only($chatter, ['handle', 'minutes']), [
+            'channel' => $channel->name,
+            'points' => $pointTotal,
+            'amount' => $points
+        ]);
     }
 
     /**
