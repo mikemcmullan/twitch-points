@@ -233,87 +233,45 @@ class RedisChatterRepository implements ChatterRepository
      * Update/Create a chatter.
      *
      * @param Channel $channel
-     * @param $handle
+     * @param string|array $handles
      * @param int $minutes
      * @param int $points
-     * @param Pipeline $pipe
      */
-    public function updateChatter(Channel $channel, $handle, $minutes = 0, $points = 0, Pipeline $pipe = null)
+    public function updateChatter(Channel $channel, $handles, $minutes = 0, $points = 0)
     {
-        $key = $this->makeKey($channel['id'], $handle);
+        foreach ((array) $handles as $handle) {
+            $key = $this->makeKey($channel['id'], $handle);
 
-        if ($pipe === null) {
-            $pipe = $this->redis;
+            $user = $this->findByHandle($channel, $handle);
+            $newPointTotal = $this->calculatePointTotal($user['points'], $points);
+
+            \Log::info($user['handle'].': '.$user['points'].' '.$newPointTotal);
+
+            $this->updateRank($channel, $user, $newPointTotal);
+
+            $this->redis->hset($key, 'points', $newPointTotal);
+            $this->redis->zadd($this->makeChatIndexKey($channel['id']), $newPointTotal, $key);
+
+            $this->redis->hincrby($key, 'minutes', $minutes);
+            $this->redis->hset($key, 'updated', Carbon::now());
         }
-
-        $user = $this->findByHandle($channel, $handle);
-        $newPointTotal = $this->calculatePointTotal($user['points'], $points);
-
-        $this->updateRank($channel, $user, $newPointTotal);
-
-        $pipe->hset($key, 'points', $newPointTotal);
-        $pipe->zadd($this->makeChatIndexKey($channel['id']), $newPointTotal, $key);
-
-        // if ($user['mod']) {
-        //     $this->noLongerMod[] = $key;
-        // //     // $pipe->hset($key, 'mod', false);
-        // }
-
-        $pipe->hincrby($key, 'minutes', $minutes);
-        $pipe->hset($key, 'updated', Carbon::now());
-    }
-
-    /**
-     * Update/Create a group of chatters.
-     *
-     * @param Channel $channel
-     * @param array $chatters
-     * @param $minutes
-     * @param $points
-     */
-    public function updateChatters(Channel $channel, array $chatters, $minutes = 0, $points = 0)
-    {
-        $this->redis->pipeline(function ($pipe) use ($channel, $chatters, $minutes,$points) {
-            foreach ($chatters as $chatter) {
-                $this->updateChatter($channel, $chatter, $minutes, $points, $pipe);
-            }
-        });
     }
 
     /**
      * Update/Create a moderator.
      *
      * @param Channel $channel
-     * @param $handle
+     * @param string|array $handles
      * @param int $minutes
      * @param int $points
      * @param Pipeline $pipe
      */
-    public function updateModerator(Channel $channel, $handle, $minutes = 0, $points = 0, Pipeline $pipe = null)
+    public function updateModerator(Channel $channel, $handles, $minutes = 0, $points = 0)
     {
-        if ($pipe === null) {
-            $pipe = $this->redis;
+        foreach ((array) $handles as $handle) {
+            $this->addMod($channel, $handle);
+            $this->updateChatter($channel, $handle, $minutes, $points);
         }
-
-        $this->addMod($channel, $handle);
-        $this->updateChatter($channel, $handle, $minutes, $points, $pipe);
-    }
-
-    /**
-     * Update/Create a group of moderators.
-     *
-     * @param Channel $channel
-     * @param array $chatters
-     * @param $minutes
-     * @param $points
-     */
-    public function updateModerators(Channel $channel, array $chatters, $minutes = 0, $points = 0)
-    {
-        $this->redis->pipeline(function ($pipe) use ($channel, $chatters, $minutes,$points) {
-            foreach ($chatters as $chatter) {
-                $this->updateModerator($channel, $chatter, $minutes, $points, $pipe);
-            }
-        });
     }
 
     /**
@@ -411,17 +369,17 @@ class RedisChatterRepository implements ChatterRepository
     {
         $key = $this->makeKey($channel['id'], $user['handle']);
 
-        $scoreCheck = collect($this->redis->zrangebyscore($this->makeChatIndexKey($channel['id']), $user['points'], $user['points']))
+        $scoreCheck = collect($this->redis->zrangebyscore($this->makeChatIndexKey($channel['id']), floor($user['points']), floor($user['points'])))
             ->filter(function ($chatter) use ($key) {
                 return $key !== $chatter;
             });
 
         if ($scoreCheck->isEmpty()) {
-            $this->redis->zrem($this->makeRankingIndexKey($channel['id']), $user['points']);
+            $this->redis->zrem($this->makeRankingIndexKey($channel['id']), floor($user['points']));
         }
 
         if (! $user['hide']) {
-            $this->redis->zadd($this->makeRankingIndexKey($channel['id']), $newPointTotal, $newPointTotal);
+            $this->redis->zadd($this->makeRankingIndexKey($channel['id']), floor($newPointTotal), floor($newPointTotal));
         }
     }
 
@@ -512,7 +470,7 @@ class RedisChatterRepository implements ChatterRepository
                 continue;
             }
 
-            $rank     = $this->redis->zrevrank($this->makeRankingIndexKey($key['channel']), $data['points']);
+            $rank     = $this->redis->zrevrank($this->makeRankingIndexKey($key['channel']), floor($data['points']));
 
             // Since redis rankings are 0 based add 1.
             if ($rank !== null) {
@@ -556,7 +514,7 @@ class RedisChatterRepository implements ChatterRepository
      */
     private function mapUser(Channel $channel, $handle, array $user)
     {
-        $rank = $this->redis->zrevrank($this->makeRankingIndexKey($channel['id']), array_get($user, 'points', 0));
+        $rank = $this->redis->zrevrank($this->makeRankingIndexKey($channel['id']), floor(array_get($user, 'points', 0)));
 
         $user['rank']     = $rank === null ? null : ++$rank;
         $user['points']   = array_get($user, 'points', 0);

@@ -141,41 +141,21 @@ interface ChatterRepository
      * Update/Create a chatter.
      *
      * @param Channel $channel
-     * @param $handle
+     * @param string|array $handles
      * @param int $minutes
      * @param int $points
      * @param Pipeline $pipe
      */
-    public function updateChatter(Channel $channel, $handle, $minutes = 0, $points = 0, Pipeline $pipe = null);
-
-    /**
-     * Update/Create a group of chatters.
-     *
-     * @param Channel $channel
-     * @param array $chatters
-     * @param $minutes
-     * @param $points
-     */
-    public function updateChatters(Channel $channel, array $chatters, $minutes = 0, $points = 0);
+    public function updateChatter(Channel $channel, $handle, $minutes = 0, $points = 0);
 
     /**
      * Update/Create a moderator.
      *
      * @param Channel $channel
-     * @param $handle
+     * @param string|array $handles
      * @param int $minutes
      * @param int $points
      * @param Pipeline $pipe
      */
-    public function updateModerator(Channel $channel, $handle, $minutes = 0, $points = 0, Pipeline $pipe = null);
-
-    /**
-     * Update/Create a group of moderators.
-     *
-     * @param Channel $channel
-     * @param array $chatters
-     * @param $minutes
-     * @param $points
-     */
-    public function updateModerators(Channel $channel, array $chatters, $minutes = 0, $points = 0);
+    public function updateModerator(Channel $channel, $handle, $minutes = 0, $points = 0);
 }

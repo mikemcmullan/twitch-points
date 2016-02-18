@@ -93,8 +93,8 @@ class ProcessChatList
         $chattersList = $event->chatList['chatters'];
         $modList      = $event->chatList['moderators'];
 
-        $this->chatterRepository->updateChatters($event->channel, $chattersList, $minutes, $points);
-        $this->chatterRepository->updateModerators($event->channel, $modList, $minutes, $points);
+        $this->chatterRepository->updateChatter($event->channel, $chattersList, $minutes, $points);
+        $this->chatterRepository->updateModerator($event->channel, $modList, $minutes, $points);
 
         $this->events->fire(new VIPsWereUpdated($event->channel));
     }
