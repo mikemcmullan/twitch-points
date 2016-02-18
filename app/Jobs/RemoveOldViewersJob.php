@@ -8,6 +8,7 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use App\Contracts\Repositories\ChatterRepository;
 use App\Channel;
+use Carbon\Carbon;
 
 class RemoveOldViewersJob extends Job
 {
@@ -44,19 +45,23 @@ class RemoveOldViewersJob extends Job
      * Execute the job.
      *
      * @param  RemoveOldViewersCommand  $command
-     * @return void
+     * @return int The amount of chatter that were deleted.
      */
     public function handle(ChatterRepository $chatterRepository)
     {
         $viewers = $chatterRepository->allForChannel($this->channel);
         $now = Carbon::now();
+        $deleteCount = 0;
 
         $toDelete = $viewers->filter(function ($viewer) use ($now) {
             return Carbon::parse($viewer['updated'])->diffInDays($now) >= (int) $this->days && $viewer['points'] <= (int) $this->points;
         });
 
-        $toDelete->each(function ($viewer){
+        $toDelete->each(function ($viewer) use ($chatterRepository, &$deleteCount) {
             $chatterRepository->deleteChatter($this->channel, $viewer['handle']);
+            $deleteCount++;
         });
+
+        return $deleteCount;
     }
 }
