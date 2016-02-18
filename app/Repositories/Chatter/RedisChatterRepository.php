@@ -225,6 +225,15 @@ class RedisChatterRepository implements ChatterRepository
             $this->redis->srem($this->makeAdminIndexKey($channel['id']), $viewer['key']);
             $this->redis->zrem($this->makeChatIndexKey($channel['id']), $viewer['key']);
 
+            $rankCheck = collect($this->redis->zrangebyscore($this->makeChatIndexKey($channel['id']), floor($viewer['points']), floor($viewer['points'])))
+                ->filter(function ($chatter) use ($viewer) {
+                    return $viewer['key'] !== $chatter;
+                });
+
+            if ($rankCheck->isEmpty()) {
+                $this->redis->zrem($this->makeRankingIndexKey($channel['id']), floor($viewer['points']));
+            }
+
             return true;
         }
     }

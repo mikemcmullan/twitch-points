@@ -16,6 +16,7 @@ class Kernel extends ConsoleKernel
         \App\Console\Commands\UpdatePoints::class,
         \App\Console\Commands\SyncSystemStatus::class,
         \App\Console\Commands\RemoveChannel::class,
+        \App\Console\Commands\RemoveOldViewers::class
     ];
 
     /**
