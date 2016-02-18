@@ -245,8 +245,6 @@ class RedisChatterRepository implements ChatterRepository
             $user = $this->findByHandle($channel, $handle);
             $newPointTotal = $this->calculatePointTotal($user['points'], $points);
 
-            \Log::info($user['handle'].': '.$user['points'].' '.$newPointTotal);
-
             $this->updateRank($channel, $user, $newPointTotal);
 
             $this->redis->hset($key, 'points', $newPointTotal);
