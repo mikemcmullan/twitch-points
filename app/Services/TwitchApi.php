@@ -5,6 +5,7 @@ namespace App\Services;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;
 use Illuminate\Contracts\Cache\Repository as CacheRepository;
+use Illuminate\Contracts\Config\Repository as ConfigRepository;
 use Illuminate\Log\Writer;
 use App\Exceptions\InvalidChannelException;
 
@@ -16,9 +17,14 @@ class TwitchApi
     private $httpClient;
 
     /**
-     * @var Repository
+     * @var CacheRepository
      */
     private $cache;
+
+    /**
+     * @var ConfigRepository
+     */
+    private $config;
 
     /**
      * @var Writer
@@ -28,10 +34,11 @@ class TwitchApi
     /**
      * @param CacheRepository $cache
      */
-    public function __construct(CacheRepository $cache, Writer $logger)
+    public function __construct(CacheRepository $cache, ConfigRepository $config, Writer $logger)
     {
         $this->httpClient = $this->setupHttpClient();
         $this->cache = $cache;
+        $this->config = $config;
         $this->logger = $logger;
     }
 
@@ -71,7 +78,7 @@ class TwitchApi
         while ($stop === false) {
             try {
                 $this->logger->info(sprintf('Attempt: #%d', $attempts), ['channel' => $channel]);
-                $response = $this->httpClient->get(sprintf('https://tmi.twitch.tv/group/user/%s/chatters', $channel));
+                $response = $this->httpClient->get(sprintf($this->config->get('twitch.chat_list_api'), $channel));
                 $this->logger->info(sprintf('Chat list was obtained, took %d attempts.', $attempts), ['channel' => $channel]);
                 $stop = true;
             } catch (\GuzzleHttp\Exception\ServerException $e) {
