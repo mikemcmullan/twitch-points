@@ -376,7 +376,7 @@ class RedisChatterRepository implements ChatterRepository
     {
         $key = $this->makeKey($channel['id'], $user['handle']);
 
-        $scoreCheck = collect($this->redis->zrangebyscore($this->makeChatIndexKey($channel['id']), floor($user['points']), floor($user['points'])))
+        $scoreCheck = collect($this->redis->zrangebyscore($this->makeChatIndexKey($channel['id']), floor($user['points']), ceil($user['points'])))
             ->filter(function ($chatter) use ($key) {
                 return $key !== $chatter;
             });
