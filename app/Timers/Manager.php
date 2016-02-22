@@ -59,7 +59,7 @@ class Manager extends BasicManager implements BasicManagerInterface
         $validator = app(Factory::class)->make($data, [
             'name'     => 'required|alpha_dash_space|min:1|max:30',
             'interval' => 'required|in:' . implode(',', $this->validIntervals),
-            'lines'    => 'required|numberic_size_between:0,100',
+            'lines'    => 'required|numeric_size_between:0,100',
             'message'  => 'required|min:1|max:400',
             'disabled' => 'sometimes|required|boolean',
         ]);
