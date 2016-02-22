@@ -3,12 +3,12 @@
 namespace App\Http\Controllers\API;
 
 use Illuminate\Http\Request;
+use Illuminate\Contracts\Validation\ValidationException;
 use App\Http\Controllers\Controller;
 use App\Http\Requests;
 use App\Channel;
 use App\Command;
 use App\Exceptions\UnauthorizedRequestException;
-use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 use \App\BotCommands\Manager as CommandManager;
 
@@ -64,22 +64,7 @@ class CommandsController extends Controller
      */
     public function store(Request $request, Channel $channel)
     {
-        // Pattern, level, response
-        $data = $request->only(['command', 'level', 'response', 'disabled']);
-
-        // Validate the request
-        $validator = \Validator::make($data, [
-            'command' => 'required|min:1|max:80',
-            'level'   => 'required|in:everyone,mod,admin,owner',
-            'response'=> 'required|min:2|max:400',
-            'disabled'=> 'boolean'
-        ]);
-
-        if ($validator->fails()) {
-            throw new BadRequestHttpException(json_encode(['validation_errors' => $validator->errors()->getMessages()]));
-        }
-
-        $response = $this->commandManager->create($channel, $data);
+        $response = $this->commandManager->create($channel, $request->only(['command', 'level', 'response', 'disabled', 'description', 'usage']));
 
         return response()->json($response);
     }
@@ -91,22 +76,7 @@ class CommandsController extends Controller
      */
     public function update(Request $request, Channel $channel, $id)
     {
-        // Pattern, level, response
-        $data = $request->only(['command', 'level', 'response', 'disabled']);
-
-        // Validate the request
-        $validator = \Validator::make($data, [
-            'command' => 'min:2|max:80',
-            'level'   => 'in:everyone,mod,admin,owner',
-            'response'=> 'min:2|max:400',
-            'disabled'=> 'boolean'
-        ]);
-
-        if ($validator->fails()) {
-            throw new BadRequestHttpException(json_encode(['validation_errors' => $validator->errors()->getMessages()]));
-        }
-
-        $response = $this->commandManager->update($channel, $id, $data);
+        $response = $this->commandManager->update($channel, $id, $request->only(['command', 'level', 'response', 'disabled', 'description', 'usage']));
 
         return response()->json($response);
     }

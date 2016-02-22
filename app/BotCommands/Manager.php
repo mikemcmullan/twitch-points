@@ -6,8 +6,11 @@ use App\Command;
 use App\Channel;
 use Illuminate\Events\Dispatcher;
 use Illuminate\Database\Eloquent\Collection;
+use App\Support\BasicManager;
+use App\Contracts\BasicManager as BasicManagerInterface;
+use Illuminate\Contracts\Validation\ValidationException;
 
-class Manager
+class Manager extends BasicManager implements BasicManagerInterface
 {
     /**
      * @var Dispatcher
@@ -15,11 +18,27 @@ class Manager
     private $events;
 
     /**
+     * @var Model
+     */
+    protected $model;
+
+    /**
      * @param Dispatcher $events
      */
-    public function __construct(Dispatcher $events)
+    public function __construct(Dispatcher $events, Command $model)
     {
         $this->events = $events;
+        $this->model = $model;
+    }
+
+    /**
+     * Return an instance of the model we will be working with.
+     *
+     * @return \Illuminate\Database\Eloquent\Model
+     */
+    public function getModel()
+    {
+        return $this->model;
     }
 
     /**
@@ -33,19 +52,6 @@ class Manager
     }
 
     /**
-     * Get a command.
-     *
-     * @param $id
-     * @return Command
-     *
-     * @throws \Illuminate\Database\Eloquent\ModelNotFoundException
-     */
-    public function get(Channel $channel, $id)
-    {
-        return Command::where('channel_id', $channel->id)->findOrFail($id);
-    }
-
-    /**
      * Create a new command.
      *
      * @param Channel $channel
@@ -55,12 +61,26 @@ class Manager
      */
     public function create(Channel $channel, array $data)
     {
+        $data = array_filter($data, function ($item) {
+            return $item !== null;
+        });
+
+        // Validate the request
+        $validator = \Validator::make($data, [
+            'command'       => 'required|max:80',
+            'level'         => 'required|in:everyone,mod,admin,owner',
+            'response'      => 'required|max:400',
+            'disabled'      => 'sometimes|required|boolean',
+            'usage'         => 'sometimes|required|max:50',
+            'description'   => 'sometimes|required|max:400'
+        ]);
+
+        if ($validator->fails()) {
+            throw new ValidationException($validator);
+        }
+
         $data['pattern'] = $this->makePattern($data['command']);
         $data['type']    = 'custom';
-        $data['level']   = is_null($data['level']) ? 'everyone' : $data['level'];
-        $data['usage']   = array_get($data, 'usage', '');
-        $data['description'] = array_get($data, 'description', '');
-        $data['disabled'] = (bool) array_get($data, 'disabled', false);
 
         $created = $channel->commands()->create($data);
 
@@ -78,35 +98,33 @@ class Manager
      *
      * @return Command
      */
-    public function update(Channel $channel, $id, $data)
+    public function update(Channel $channel, $id, array $data)
     {
         $command = $this->get($channel, $id);
 
+        $data = array_filter($data, function ($item) {
+            return $item !== null;
+        });
+
+        // Validate the request
+        $validator = \Validator::make($data, [
+            'command'       => 'sometimes|required|max:80',
+            'level'         => 'sometimes|required|in:everyone,mod,admin,owner',
+            'response'      => 'sometimes|required|max:400',
+            'disabled'      => 'sometimes|required|boolean',
+            'usage'         => 'sometimes|required|max:50',
+            'description'   => 'sometimes|required|max:400'
+        ]);
+
+        if ($validator->fails()) {
+            throw new ValidationException($validator);
+        }
+
         if (array_get($data, 'command')) {
-            $command->command = array_get($data, 'command');
-            $command->pattern = $this->makePattern(array_get($data, 'command'));
+            $data['pattern'] = $this->makePattern($data['command']);
         }
 
-        if (array_get($data, 'level')) {
-            $command->level = array_get($data, 'level');
-        }
-
-        if (array_get($data, 'response')) {
-            $command->response = array_get($data, 'response');
-        }
-
-        if (array_get($data, 'usage')) {
-            $command->usage = array_get($data, 'usage');
-        }
-
-        if (array_get($data, 'description')) {
-            $command->description = array_get($data, 'description');
-        }
-
-        if (array_get($data, 'disabled') !== null) {
-            $command->disabled = array_get($data, 'disabled', false);
-        }
-
+        $command->fill($data);
         $command->save();
 
         if ($command->disabled) {
