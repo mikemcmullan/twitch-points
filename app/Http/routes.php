@@ -141,9 +141,7 @@ Route::group(['domain' => config('app.api_domain'), 'prefix' => '{channel}', 'na
 
 Route::group(['domain' => '{channel}.' . config('app.root_domain'), 'middleware' => ['web']], function () {
     Route::get('/', [
-        'uses'  => function(\App\Channel $channel) {
-            return redirect()->route('scoreboard_path', [$channel->slug])->with('message', session('message'));
-        },
+        'uses'  => 'HomeController@index',
         'as' => 'home_path'
     ]);
 

@@ -3,20 +3,10 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use \App\Channel;
 
 class HomeController extends Controller
 {
-    /*
-    |--------------------------------------------------------------------------
-    | Home Controller
-    |--------------------------------------------------------------------------
-    |
-    | This controller renders your application's "dashboard" for users that
-    | are authenticated. Of course, you are free to change or remove the
-    | controller as you wish. It is just here to get your app started!
-    |
-    */
-
     /**
      * Create a new controller instance.
      */
@@ -28,7 +18,10 @@ class HomeController extends Controller
     /**
      * Show the application dashboard to the user.
      */
-    public function index()
+    public function index(Channel $channel)
     {
+        return redirect()
+            ->route('scoreboard_path', [$channel->slug])
+            ->with('message', session('message'));
     }
 }
