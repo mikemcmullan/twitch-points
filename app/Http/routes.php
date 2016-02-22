@@ -46,6 +46,34 @@ Route::group(['domain' => config('app.api_domain'), 'prefix' => '{channel}', 'na
         'as'   => 'api_commands_destroy_path'
     ]);
 
+    /**
+     * Timers Routes
+     */
+     Route::get('/timers', [
+         'uses' => 'TimersController@index',
+         'as'   => 'api_timers_path'
+     ]);
+
+     Route::get('/timers/{id}', [
+         'uses'  => 'TimersController@show',
+         'as'    => 'api_timers_show_path'
+     ]);
+
+     Route::post('/timers', [
+         'uses' => 'TimersController@store',
+         'as'   => 'api_timers_store_path'
+     ]);
+
+     Route::put('/timers/{id}', [
+         'uses' => 'TimersController@update',
+         'as'   => 'api_timers_update_path'
+     ]);
+
+     Route::delete('/timers/{id}', [
+         'uses' => 'TimersController@destroy',
+         'as'   => 'api_timers_destroy_path'
+     ]);
+
     /*
      * Settings Routes
      */
