@@ -8,11 +8,11 @@ use fXmlRpc\Exception\TransportException;
 use App\Exceptions\FileInaccessibleException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Illuminate\Contracts\Validation\ValidationException;
 
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Symfony\Component\HttpKernel\Exception\HttpException;
-use Illuminate\Foundation\Validation\ValidationException;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 use Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
@@ -81,18 +81,21 @@ class Handler extends ExceptionHandler
                 ], 401);
             }
 
-            if ($e instanceof BadRequestHttpException ||
-                $e instanceof \InvalidArgumentException) {
-                $message = json_decode($e->getMessage());
-
-                if (! $message) {
-                    $message = $e->getMessage();
-                }
-
+            if ($e instanceof ValidationException) {
                 return response()->json([
                     'error'   => 'Bad Request',
                     'code'    => 400,
-                    'message' => $message
+                    'message' => [
+                        'validation_errors' => $e->errors()
+                    ]
+                ], 400);
+            }
+
+            if ($e instanceof \InvalidArgumentException) {
+                return response()->json([
+                    'error'   => 'Bad Request',
+                    'code'    => 400,
+                    'message' => $e->getMessage()
                 ], 400);
             }
 
