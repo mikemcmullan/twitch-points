@@ -2,8 +2,8 @@
 
 return [
 
-    // 'chat_list_api' => 'https://tmi.twitch.tv/group/user/%s/chatters',
-    'chat_list_api' => 'http://mcsmike.twitch.dev/chatters',
+    'chat_list_api' => 'https://tmi.twitch.tv/group/user/%s/chatters',
+    // 'chat_list_api' => 'http://mcsmike.twitch.dev/chatters',
 
     /*
     |--------------------------------------------------------------------------
