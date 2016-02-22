@@ -40,6 +40,10 @@ class EventServiceProvider extends ServiceProvider
 
         \App\Events\Giveaway\GiveawayWasStopped::class => [
             \App\Listeners\PushToBot::class
+        ],
+
+        \App\Events\TimerWasExecuted::class => [
+            \App\Listeners\PushToBot::class
         ]
     ];
 

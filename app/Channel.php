@@ -9,6 +9,7 @@ use Illuminate\Auth\Passwords\CanResetPassword;
 use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
 use Illuminate\Contracts\Auth\CanResetPassword as CanResetPasswordContract;
 use App\TrackSession;
+use App\Timers\Timer;
 
 class Channel extends Model implements AuthenticatableContract, CanResetPasswordContract
 {
@@ -54,6 +55,14 @@ class Channel extends Model implements AuthenticatableContract, CanResetPassword
     public function users()
     {
         return $this->belongsToMany(User::class);
+    }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function timers()
+    {
+        return $this->hasMany(Timer::class);
     }
 
     /**

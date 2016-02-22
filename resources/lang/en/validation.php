@@ -74,6 +74,9 @@ return [
     "url"                  => "The :attribute format is invalid.",
     "timezone"             => "The :attribute must be a valid zone.",
 
+    "numeric_size_between" => "The :attribute must be between :min and :max.",
+    "alpha_dash_space"     => "The :attribute must only contain alpha numeric characters, dashes, underscores or spaces.",
+
     /*
     |--------------------------------------------------------------------------
     | Custom Validation Language Lines

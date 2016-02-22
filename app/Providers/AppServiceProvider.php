@@ -13,6 +13,21 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
+        // Validation rule to check if value is greater than param 1 and less than param 2.
+        \Validator::extend('numeric_size_between', function ($attribute, $value, $parameters, $validator) {
+            return ($value >= $parameters[0]) && ($value <= $parameters[1]);
+        });
+
+        \Validator::replacer('numeric_size_between', function ($message, $attribute, $rule, $parameters) {
+            return str_replace([':min', ':max'], $parameters, $message);
+        });
+
+        // Validation rule to check if value contains only alpha numeric characters,
+        // dashes, underscores or spaces.
+        \Validator::extend('alpha_dash_space', function ($attribute, $value, $parameters, $validator) {
+            return preg_match('/^[a-z-_\s0-9]+$/i', $value);
+        });
+
         view()->composer('*', function($view){
             $view->with('user', \Auth::user());
             $view->with('channel', request()->route()->getParameter('channel'));
