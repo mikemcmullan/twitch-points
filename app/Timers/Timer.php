@@ -13,7 +13,7 @@ class Timer extends Model
      *
      * @var array
      */
-    protected $fillable = ['disabled', 'name', 'minutes', 'lines', 'message'];
+    protected $fillable = ['disabled', 'name', 'minutes', 'interval', 'lines', 'message'];
 
     /**
      * The attributes excluded from the model's JSON form.

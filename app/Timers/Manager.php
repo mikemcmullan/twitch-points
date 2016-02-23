@@ -39,7 +39,7 @@ class Manager extends BasicManager implements BasicManagerInterface
      */
     public function getModel()
     {
-        return $this->model;
+        return $this->model->newQuery();
     }
 
     /**
@@ -150,10 +150,12 @@ class Manager extends BasicManager implements BasicManagerInterface
             }
         }
 
-        $this->timers($timers)->each(function ($timer) {
-            var_dump($timer->toArray());
-            $this->events->fire(new \App\Events\TimerWasExecuted($timer));
-        });
+        if (! empty($timers)) {
+            $this->timers($timers)->each(function ($timer) {
+                var_dump($timer->toArray());
+                $this->events->fire(new \App\Events\TimerWasExecuted($timer));
+            });
+        }
     }
 
     /**

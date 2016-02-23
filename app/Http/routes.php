@@ -145,9 +145,20 @@ Route::group(['domain' => '{channel}.' . config('app.root_domain'), 'middleware'
         'as' => 'home_path'
     ]);
 
+    /**
+     * Commands Routes
+     */
     Route::get('/commands', [
         'uses'  => 'CommandsController@index',
         'as'    => 'commands_path'
+    ]);
+
+    /**
+     * Timers Routes
+     */
+    Route::get('/timers', [
+        'uses'  => 'TimersController@index',
+        'as'    => 'timers_path'
     ]);
 
     /**

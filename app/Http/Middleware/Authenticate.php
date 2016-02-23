@@ -46,7 +46,9 @@ class Authenticate
         $paths = [
             'system-control'=> 'system-control',
             'commands'      => 'commands',
-            'giveaway'      => 'giveaway'
+            'giveaway'      => 'giveaway',
+            'timers'        => 'timers',
+            'vips'          => 'vips'
         ];
 
         foreach ($paths as $permission => $path) {

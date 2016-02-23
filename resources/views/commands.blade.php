@@ -27,7 +27,7 @@
                             <th style="width: 10%" class="text-center">Actions</th>
                         </thead>
 
-                        <tbody class="hide">
+                        <tbody class="hide" v-el:loop2>
                             <tr v-for="command in commands | filterBy 'custom' in 'type'" :class="{ 'command-disabled': command.disabled }">
                                 <td><span class="label label-danger" v-if="command.disabled">Disabled</span> @{{ command.command }}</td>
                                 <td>@{{ command.level.capitalize() }}</td>
@@ -40,6 +40,12 @@
                             </tr>
                             <tr v-if="customCommands.length === 0">
                                 <td colspan="4">No custom commands have been created.</td>
+                            </tr>
+                        </tbody>
+
+                        <tbody v-if="loading">
+                            <tr>
+                                <td colspan="4" class="text-center"><img src="/assets/img/loader.svg" width="32" height="32" alt="Loading..."></td>
                             </tr>
                         </tbody>
                     </table><!-- .table -->
@@ -68,7 +74,7 @@
                             <th style="width: 10%"> Actions</th>
                         </thead>
 
-                        <tbody class="hide">
+                        <tbody class="hide" v-el:loop>
                             <tr v-for="command in commands | filterBy 'system' in 'type'">
                                 <td><span class="label label-danger" v-if="command.disabled">Disabled</span> @{{ command.usage }}</td>
                                 <td>@{{ command.level.capitalize() }}</td>
@@ -80,6 +86,12 @@
 
                             <tr v-if="systemCommands.length === 0">
                                 <td colspan="3">No system commands available.</td>
+                            </tr>
+                        </tbody>
+
+                        <tbody v-if="loading">
+                            <tr>
+                                <td colspan="4" class="text-center"><img src="/assets/img/loader.svg" width="32" height="32" alt="Loading..."></td>
                             </tr>
                         </tbody>
                     </table><!-- .table -->
@@ -109,6 +121,6 @@
 
         <script src="//js.pusher.com/3.0/pusher.min.js"></script>
         <script src="//cdnjs.cloudflare.com/ajax/libs/jQuery-slimScroll/1.3.7/jquery.slimscroll.min.js"></script>
-        <script src="/assets/js/admin.js"></script>
+        <script src="/assets/js/bundle.js"></script>
     @endsection
 @endif

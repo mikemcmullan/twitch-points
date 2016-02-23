@@ -1,74 +1,21 @@
 import Vue from 'vue';
 
-if (! String.prototype.capitalize) {
-    String.prototype.capitalize = function() {
-        return this.charAt(0).toUpperCase() + this.slice(1);
-    }
-}
-
 Vue.use(require('vue-resource'));
 Vue.use(require('vue-validator'));
 
 Vue.http.options.root = options.api.root;
 Vue.http.headers.common['Authorization'] = `Bearer ${options.api.token}`;
 
-if (!Array.prototype.findIndex) {
-    Array.prototype.findIndex = function(predicate) {
-        if (this === null) {
-            throw new TypeError('Array.prototype.findIndex called on null or undefined');
-        }
-
-        if (typeof predicate !== 'function') {
-            throw new TypeError('predicate must be a function');
-        }
-
-        var list = Object(this);
-        var length = list.length >>> 0;
-        var thisArg = arguments[1];
-        var value;
-
-        for (var i = 0; i < length; i++) {
-            value = list[i];
-            if (predicate.call(thisArg, value, i, list)) {
-                return i;
-            }
-        }
-
-        return -1;
-    };
-}
-
-if (!Array.prototype.find) {
-    Array.prototype.find = function(predicate) {
-        if (this === null) {
-            throw new TypeError('Array.prototype.find called on null or undefined');
-        }
-
-        if (typeof predicate !== 'function') {
-            throw new TypeError('predicate must be a function');
-        }
-
-        var list = Object(this);
-        var length = list.length >>> 0;
-        var thisArg = arguments[1];
-        var value;
-
-        for (var i = 0; i < length; i++) {
-            value = list[i];
-            if (predicate.call(thisArg, value, i, list)) {
-                return value;
-            }
-        }
-
-        return undefined;
-    };
-}
-
 Vue.transition('fade', {
     enterClass: 'fadeIn',
     leaveClass: 'fadeOut'
 });
 
+// Vue.config.debug = true;
+
+//------------------------------------------------------------------------------
+// Commands
+//------------------------------------------------------------------------------
 import editCommandModal from './components/commands/edit-modal.vue'
 import deleteCommandModal from './components/commands/delete-modal.vue'
 
@@ -82,7 +29,8 @@ if (document.querySelector('#commands')) {
         },
 
         data: {
-            commands: []
+            commands: [],
+            loading: true
         },
 
         computed: {
@@ -103,9 +51,10 @@ if (document.querySelector('#commands')) {
             this.$http.get('commands')
                 .then((response) => {
                     this.commands = response.data;
+                    this.loading = false;
 
-                    document.querySelector('#custom-commands-table tbody').className = '';
-                    document.querySelector('#system-commands-table tbody').className = '';
+                    this.$els.loop.className = '';
+                    this.$els.loop2.className = '';
                 })
         },
 
@@ -162,6 +111,9 @@ if (document.querySelector('#commands')) {
     });
 }
 
+//------------------------------------------------------------------------------
+// Giveaways
+//------------------------------------------------------------------------------
 import giveawayEntries from './components/giveaway/entries.vue';
 import giveawaySettings from './components/giveaway/settings.vue';
 import giveawayControlPanel from './components/giveaway/control-panel.vue';
@@ -206,6 +158,9 @@ if (document.querySelector('#giveaway')) {
     });
 }
 
+//------------------------------------------------------------------------------
+// Currency
+//------------------------------------------------------------------------------
 import currencySettings from './components/currency/settings.vue';
 
 if (document.querySelector('#currency')) {
@@ -214,6 +169,89 @@ if (document.querySelector('#currency')) {
 
         components: {
             'currency-settings': currencySettings
+        }
+    });
+}
+
+//------------------------------------------------------------------------------
+// Timers
+//------------------------------------------------------------------------------
+import editTimerModal from './components/timers/edit-modal.vue'
+import deleteTimerModal from './components/timers/delete-modal.vue'
+
+if (document.querySelector('#timers')) {
+    new Vue({
+        el: '#timers',
+
+        components: {
+            'edit-timer-modal': editTimerModal,
+            'delete-time-modal': deleteTimerModal
+        },
+
+        data: {
+            timers: [],
+            loading: true
+        },
+
+        ready() {
+            this.$http.get('timers')
+                .then((response) => {
+                    this.timers = response.data;
+                    this.loading = false;
+
+                    this.$els.loop.className = '';
+                })
+        },
+
+        methods: {
+            _getTimer(value, key = 'id') {
+                return this.timers.find((timer) => {
+                    return timer[key] == value;
+                });
+            },
+
+            editModal(id) {
+                this.$broadcast('openEditModal', this._getTimer(id));
+            },
+
+            newModal() {
+                this.$broadcast('openNewModal');
+            },
+
+            disable(id) {
+                let timer = this._getTimer(id);
+
+                this.$http.put(`timers/${timer.id}`, { disabled: !timer.disabled })
+                    .then((response) => {
+                        timer.disabled = response.data.disabled;
+                    });
+            },
+
+            deleteModal(id) {
+                this.$broadcast('openDeleteModal', this._getTimer(id));
+            },
+
+            updateOrAddToTable(timer) {
+                let index = this.timers.findIndex((row) => {
+                    return row.id === timer.id
+                });
+
+                if (index !== -1) {
+                    this.timers.splice(index, 1, timer);
+                } else {
+                    this.timers.unshift(timer);
+                }
+            },
+
+            deleteFromTable(timer) {
+                let index = this.timers.findIndex((row) => {
+                    return row.id === timer.id
+                });
+
+                if (index !== -1) {
+                    this.timers.splice(index, 1);
+                }
+            }
         }
     });
 }

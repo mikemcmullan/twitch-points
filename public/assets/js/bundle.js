@@ -13240,13 +13240,15 @@ var _settings3 = require('./components/currency/settings.vue');
 
 var _settings4 = _interopRequireDefault(_settings3);
 
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+var _editModal3 = require('./components/timers/edit-modal.vue');
 
-if (!String.prototype.capitalize) {
-    String.prototype.capitalize = function () {
-        return this.charAt(0).toUpperCase() + this.slice(1);
-    };
-}
+var _editModal4 = _interopRequireDefault(_editModal3);
+
+var _deleteModal3 = require('./components/timers/delete-modal.vue');
+
+var _deleteModal4 = _interopRequireDefault(_deleteModal3);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 _vue2.default.use(require('vue-resource'));
 _vue2.default.use(require('vue-validator'));
@@ -13254,62 +13256,16 @@ _vue2.default.use(require('vue-validator'));
 _vue2.default.http.options.root = options.api.root;
 _vue2.default.http.headers.common['Authorization'] = 'Bearer ' + options.api.token;
 
-if (!Array.prototype.findIndex) {
-    Array.prototype.findIndex = function (predicate) {
-        if (this === null) {
-            throw new TypeError('Array.prototype.findIndex called on null or undefined');
-        }
-
-        if (typeof predicate !== 'function') {
-            throw new TypeError('predicate must be a function');
-        }
-
-        var list = Object(this);
-        var length = list.length >>> 0;
-        var thisArg = arguments[1];
-        var value;
-
-        for (var i = 0; i < length; i++) {
-            value = list[i];
-            if (predicate.call(thisArg, value, i, list)) {
-                return i;
-            }
-        }
-
-        return -1;
-    };
-}
-
-if (!Array.prototype.find) {
-    Array.prototype.find = function (predicate) {
-        if (this === null) {
-            throw new TypeError('Array.prototype.find called on null or undefined');
-        }
-
-        if (typeof predicate !== 'function') {
-            throw new TypeError('predicate must be a function');
-        }
-
-        var list = Object(this);
-        var length = list.length >>> 0;
-        var thisArg = arguments[1];
-        var value;
-
-        for (var i = 0; i < length; i++) {
-            value = list[i];
-            if (predicate.call(thisArg, value, i, list)) {
-                return value;
-            }
-        }
-
-        return undefined;
-    };
-}
-
 _vue2.default.transition('fade', {
     enterClass: 'fadeIn',
     leaveClass: 'fadeOut'
 });
+
+// Vue.config.debug = true;
+
+//------------------------------------------------------------------------------
+// Commands
+//------------------------------------------------------------------------------
 
 if (document.querySelector('#commands')) {
     new _vue2.default({
@@ -13321,7 +13277,8 @@ if (document.querySelector('#commands')) {
         },
 
         data: {
-            commands: []
+            commands: [],
+            loading: true
         },
 
         computed: {
@@ -13342,9 +13299,10 @@ if (document.querySelector('#commands')) {
 
             this.$http.get('commands').then(function (response) {
                 _this.commands = response.data;
+                _this.loading = false;
 
-                document.querySelector('#custom-commands-table tbody').className = '';
-                document.querySelector('#system-commands-table tbody').className = '';
+                _this.$els.loop.className = '';
+                _this.$els.loop2.className = '';
             });
         },
 
@@ -13396,6 +13354,10 @@ if (document.querySelector('#commands')) {
     });
 }
 
+//------------------------------------------------------------------------------
+// Giveaways
+//------------------------------------------------------------------------------
+
 if (document.querySelector('#giveaway')) {
     (function () {
         var pusher = new Pusher(options.pusher.key, {
@@ -13439,6 +13401,10 @@ if (document.querySelector('#giveaway')) {
     })();
 }
 
+//------------------------------------------------------------------------------
+// Currency
+//------------------------------------------------------------------------------
+
 if (document.querySelector('#currency')) {
     new _vue2.default({
         el: '#currency',
@@ -13449,7 +13415,84 @@ if (document.querySelector('#currency')) {
     });
 }
 
-},{"./components/commands/delete-modal.vue":30,"./components/commands/edit-modal.vue":31,"./components/currency/settings.vue":32,"./components/giveaway/control-panel.vue":33,"./components/giveaway/entries.vue":34,"./components/giveaway/settings.vue":35,"vue":28,"vue-resource":16,"vue-validator":27}],30:[function(require,module,exports){
+//------------------------------------------------------------------------------
+// Timers
+//------------------------------------------------------------------------------
+
+if (document.querySelector('#timers')) {
+    new _vue2.default({
+        el: '#timers',
+
+        components: {
+            'edit-timer-modal': _editModal4.default,
+            'delete-time-modal': _deleteModal4.default
+        },
+
+        data: {
+            timers: [],
+            loading: true
+        },
+
+        ready: function ready() {
+            var _this3 = this;
+
+            this.$http.get('timers').then(function (response) {
+                _this3.timers = response.data;
+                _this3.loading = false;
+
+                _this3.$els.loop.className = '';
+            });
+        },
+
+        methods: {
+            _getTimer: function _getTimer(value) {
+                var key = arguments.length <= 1 || arguments[1] === undefined ? 'id' : arguments[1];
+
+                return this.timers.find(function (timer) {
+                    return timer[key] == value;
+                });
+            },
+            editModal: function editModal(id) {
+                this.$broadcast('openEditModal', this._getTimer(id));
+            },
+            newModal: function newModal() {
+                this.$broadcast('openNewModal');
+            },
+            disable: function disable(id) {
+                var timer = this._getTimer(id);
+
+                this.$http.put('timers/' + timer.id, { disabled: !timer.disabled }).then(function (response) {
+                    timer.disabled = response.data.disabled;
+                });
+            },
+            deleteModal: function deleteModal(id) {
+                this.$broadcast('openDeleteModal', this._getTimer(id));
+            },
+            updateOrAddToTable: function updateOrAddToTable(timer) {
+                var index = this.timers.findIndex(function (row) {
+                    return row.id === timer.id;
+                });
+
+                if (index !== -1) {
+                    this.timers.splice(index, 1, timer);
+                } else {
+                    this.timers.unshift(timer);
+                }
+            },
+            deleteFromTable: function deleteFromTable(timer) {
+                var index = this.timers.findIndex(function (row) {
+                    return row.id === timer.id;
+                });
+
+                if (index !== -1) {
+                    this.timers.splice(index, 1);
+                }
+            }
+        }
+    });
+}
+
+},{"./components/commands/delete-modal.vue":30,"./components/commands/edit-modal.vue":31,"./components/currency/settings.vue":32,"./components/giveaway/control-panel.vue":33,"./components/giveaway/entries.vue":34,"./components/giveaway/settings.vue":35,"./components/timers/delete-modal.vue":36,"./components/timers/edit-modal.vue":37,"vue":28,"vue-resource":16,"vue-validator":27}],30:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -14008,6 +14051,274 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update(id, module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"vue":28,"vue-hot-reload-api":2}]},{},[29]);
+},{"vue":28,"vue-hot-reload-api":2}],36:[function(require,module,exports){
+'use strict';
 
-//# sourceMappingURL=admin.js.map
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+exports.default = {
+
+    props: {},
+
+    data: function data() {
+        return {
+            title: 'Delete Timer',
+            modal: false,
+            timer: false,
+            deleting: false
+        };
+    },
+
+    ready: function ready() {
+        var _this = this;
+
+        this.$set('modal', $(this.$els.modal));
+
+        this.modal.on('hide.bs.modal', function () {
+            setTimeout(function () {
+                _this.timer = false;
+                _this.deleting = false;
+            }, 500);
+        });
+    },
+
+    events: {
+        openDeleteModal: function openDeleteModal(timer) {
+            console.log(timer);
+            this.open(timer);
+        }
+    },
+
+    methods: {
+        delete: function _delete() {
+            var _this2 = this;
+
+            this.$http.delete('timers/' + this.timer.id, {}, {
+                beforeSend: function beforeSend(request) {
+                    _this2.deleting = true;
+                }
+            }).then(function (response) {
+                _this2.$parent.deleteFromTable(_this2.timer);
+                _this2.close();
+            }, function (response) {
+                _this2.deleting = false;
+            });
+        },
+        open: function open(timer) {
+            this.timer = timer;
+            this.modal.modal('toggle');
+        },
+        close: function close() {
+            this.modal.modal('toggle');
+        }
+    }
+};
+if (module.exports.__esModule) module.exports = module.exports.default
+;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n<div class=\"modal fade\" v-el:modal=\"\">\n    <div class=\"modal-dialog\" role=\"document\">\n        <div class=\"modal-content\">\n            <div class=\"modal-header\">\n                <button type=\"button\" class=\"close\" @click=\"close\" aria-label=\"Close\"><span aria-hidden=\"true\">×</span></button>\n                <h4 class=\"modal-title\">{{ title }}</h4>\n            </div><!-- .modal-header -->\n\n            <form @submit.prevent=\"\" @submit=\"delete\">\n                <div class=\"modal-body\">\n                    Are you sure you want to delete the timer <code>{{ timer.name }}</code> ?\n                </div><!-- .modal-body -->\n\n                <div class=\"modal-footer\">\n                    <button type=\"button\" class=\"btn btn-default\" @click=\"close\">Cancel</button>\n                    <button type=\"submit\" class=\"btn btn-primary\" v-if=\"!deleting\">Yes, Delete</button>\n                    <button type=\"submit\" class=\"btn btn-primary\" disabled=\"disabled\" v-if=\"deleting\">Deleting...</button>\n                </div><!-- .modal-footer -->\n            </form><!-- form -->\n        </div><!-- .modal-content -->\n    </div><!-- .modal-dialog -->\n</div><!-- .modal -->\n"
+if (module.hot) {(function () {  module.hot.accept()
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), true)
+  if (!hotAPI.compatible) return
+  var id = "/home/vagrant/Code/twitch-points/resources/assets/js/components/timers/delete-modal.vue"
+  if (!module.hot.data) {
+    hotAPI.createRecord(id, module.exports)
+  } else {
+    hotAPI.update(id, module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
+  }
+})()}
+},{"vue":28,"vue-hot-reload-api":2}],37:[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+exports.default = {
+    props: {},
+
+    data: function data() {
+        return {
+            title: false,
+            modal: false,
+            saving: false,
+            id: null,
+            name: false,
+            message: false,
+            lines: 30,
+            interval: 10
+        };
+    },
+
+    validators: {
+        alpha_dash_space: {
+            message: '',
+            check: function check(value) {
+                if (value.length !== 0) {
+                    return (/^[a-z-_\s0-9]+$/i.test(value)
+                    );
+                }
+
+                return true;
+            }
+        }
+    },
+
+    ready: function ready() {
+        var _this = this;
+
+        this.$set('modal', $(this.$els.modal));
+
+        this.modal.on('hide.bs.modal', function () {
+            setTimeout(function () {
+                _this.id = null;
+                _this.name = null;
+                _this.interval = 30;
+                _this.lines = 10;
+                _this.saving = false;
+            }, 500);
+        });
+    },
+
+    events: {
+        openEditModal: function openEditModal(timer) {
+            this.title = 'Edit Timer';
+            this.open(timer);
+        },
+        openNewModal: function openNewModal() {
+            this.title = 'New Timer';
+            this.open();
+        }
+    },
+
+    methods: {
+        getErrorMessage: function getErrorMessage($validator, field, property) {
+            return $validator.messages[field] && $validator.messages[field][property];
+        },
+        save: function save() {
+            var _this2 = this;
+
+            var request = undefined,
+                data = {
+                name: this.name,
+                lines: this.lines,
+                interval: this.interval,
+                message: this.message
+            };
+
+            if (this.id === null) {
+                request = this.$http.post('timers', data, {
+                    beforeSend: function beforeSend() {
+                        _this2.saving = true;
+                    }
+                });
+            } else {
+                request = this.$http.put('timers/' + this.id, data, {
+                    beforeSend: function beforeSend() {
+                        _this2.saving = true;
+                    }
+                });
+
+                console.log('sdfsd');
+            }
+
+            request.then(function (response) {
+                _this2.$parent.updateOrAddToTable(response.data);
+
+                _this2.close();
+            }, function (response) {
+                _this2.saving = false;
+            });
+        },
+        open: function open(timer) {
+            if (timer) {
+                this.id = timer.id;
+                this.name = timer.name;
+                this.message = timer.message;
+                this.interval = timer.interval;
+                this.lines = timer.lines;
+            }
+
+            this.modal.modal('toggle');
+        },
+        close: function close() {
+            this.modal.modal('toggle');
+        }
+    }
+};
+if (module.exports.__esModule) module.exports = module.exports.default
+;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n<div class=\"modal fade\" v-el:modal=\"\">\n    <div class=\"modal-dialog\" role=\"document\">\n        <div class=\"modal-content\">\n            <div class=\"modal-header\">\n                <button type=\"button\" class=\"close\" @click=\"close\" aria-label=\"Close\"><span aria-hidden=\"true\">×</span></button>\n                <h4 class=\"modal-title\">{{ title }}</h4>\n            </div><!-- .modal-header -->\n\n            <validator name=\"editValidation\">\n                <form @submit.prevent=\"\" @submit=\"save\">\n                    <div class=\"modal-body\">\n                        <div class=\"form-group\" v-bind:class=\"{ 'has-error': !$editValidation.name.valid }\">\n                            <label for=\"name-input\">Name:</label>\n                            <input type=\"text\" class=\"form-control\" id=\"name-input\" name=\"name\" v-model=\"name\" v-bind:disabled=\"\" v-validate:name=\"{ alpha_dash_space: true, maxlength: 30, required: true }\">\n\n                            <span class=\"help-block\" v-if=\"$editValidation.name.required\">Name is required.</span>\n                            <span class=\"help-block\" v-if=\"$editValidation.name.maxlength\">Name cannot be longer than 30 characters.</span>\n                            <span class=\"help-block\" v-if=\"$editValidation.name.alpha_dash_space\">Name may only contain apha numeric characters, dashes, underscores and spaces.</span>\n                        </div><!-- .form-group -->\n\n                        <div class=\"form-group\">\n                            <label for=\"\">Lines</label>\n\n                            <input type=\"range\" min=\"0\" max=\"100\" v-model=\"lines\">\n\n                            <p class=\"help-block\">\n                                The timer will only execute if {{ lines }} messages have been sent in chat in the past five minutes.\n                            </p>\n                        </div><!-- .form-group -->\n\n                        <div class=\"form-group\">\n                            <label for=\"\">Interval</label>\n\n                            <input type=\"range\" min=\"10\" max=\"100\" step=\"5\" v-model=\"interval\">\n\n                            <p class=\"help-block\">\n                                The timer will execute every {{ interval }} minutes.\n                            </p>\n                        </div><!-- .form-group -->\n\n                        <div class=\"form-group\" v-bind:class=\"{ 'has-error': !$editValidation.message.valid }\">\n                            <label for=\"message-input\">Message:</label>\n                            <textarea class=\"form-control\" id=\"message-input\" name=\"command\" v-model=\"message\" v-bind:disabled=\"\" placeholder=\"This is a message output by the bot when the timer is executed.\" v-validate:message=\"{ maxlength: 400, required: true }\"></textarea>\n\n                            <span class=\"help-block\" v-if=\"$editValidation.message.required\">Message is required.</span>\n                            <span class=\"help-block\" v-if=\"$editValidation.message.maxlength\">Message cannot be longer than 400 characters.</span>\n                        </div><!-- .form-group -->\n                    </div><!-- .modal-body -->\n\n                    <div class=\"modal-footer\">\n                        <button type=\"button\" class=\"btn btn-default\" @click=\"close\">Close</button>\n                        <button type=\"submit\" class=\"btn btn-primary\" v-bind:disabled=\"saving || !$editValidation.valid\">Save</button>\n                    </div><!-- .modal-footer -->\n                </form><!-- form -->\n            </validator>\n        </div><!-- .modal-content -->\n    </div><!-- .modal-dialog -->\n</div><!-- .modal -->\n"
+if (module.hot) {(function () {  module.hot.accept()
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), true)
+  if (!hotAPI.compatible) return
+  var id = "/home/vagrant/Code/twitch-points/resources/assets/js/components/timers/edit-modal.vue"
+  if (!module.hot.data) {
+    hotAPI.createRecord(id, module.exports)
+  } else {
+    hotAPI.update(id, module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
+  }
+})()}
+},{"vue":28,"vue-hot-reload-api":2}],38:[function(require,module,exports){
+'use strict';
+
+if (!String.prototype.capitalize) {
+    String.prototype.capitalize = function () {
+        return this.charAt(0).toUpperCase() + this.slice(1);
+    };
+}
+
+if (!Array.prototype.findIndex) {
+    Array.prototype.findIndex = function (predicate) {
+        if (this === null) {
+            throw new TypeError('Array.prototype.findIndex called on null or undefined');
+        }
+
+        if (typeof predicate !== 'function') {
+            throw new TypeError('predicate must be a function');
+        }
+
+        var list = Object(this);
+        var length = list.length >>> 0;
+        var thisArg = arguments[1];
+        var value;
+
+        for (var i = 0; i < length; i++) {
+            value = list[i];
+            if (predicate.call(thisArg, value, i, list)) {
+                return i;
+            }
+        }
+
+        return -1;
+    };
+}
+
+if (!Array.prototype.find) {
+    Array.prototype.find = function (predicate) {
+        if (this === null) {
+            throw new TypeError('Array.prototype.find called on null or undefined');
+        }
+
+        if (typeof predicate !== 'function') {
+            throw new TypeError('predicate must be a function');
+        }
+
+        var list = Object(this);
+        var length = list.length >>> 0;
+        var thisArg = arguments[1];
+        var value;
+
+        for (var i = 0; i < length; i++) {
+            value = list[i];
+            if (predicate.call(thisArg, value, i, list)) {
+                return value;
+            }
+        }
+
+        return undefined;
+    };
+}
+
+},{}]},{},[38,29]);
+
+//# sourceMappingURL=bundle.js.map
