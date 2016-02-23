@@ -16,7 +16,8 @@ class Kernel extends ConsoleKernel
         \App\Console\Commands\UpdatePoints::class,
         \App\Console\Commands\SyncSystemStatus::class,
         \App\Console\Commands\RemoveChannel::class,
-        \App\Console\Commands\RemoveOldViewers::class
+        \App\Console\Commands\RemoveOldViewers::class,
+        \App\Console\Commands\RunTimer::class
     ];
 
     /**
@@ -29,5 +30,6 @@ class Kernel extends ConsoleKernel
     {
         $schedule->command('points:update')->everyMinute();
         $schedule->command('points:sync-status')->everyFiveMinutes();
+        $schedule->command('bot:run-timer')->everyFiveMinutes();
     }
 }

@@ -14,6 +14,9 @@ class InvalidIntervalException extends \Exception {}
 
 class Manager extends BasicManager implements BasicManagerInterface
 {
+    /**
+     * @var array
+     */
     private $validIntervals = [10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60];
 
     /**
@@ -106,6 +109,13 @@ class Manager extends BasicManager implements BasicManagerInterface
         return $timer;
     }
 
+    /**
+     * Get timers.
+     *
+     * @param $interval int\array A single interval or an array of intervals you want to get.
+     *
+     * @param \Illuminte\Database\Eloquent\Collection|null
+     */
     public function timers($interval = null)
     {
         $where = [];
@@ -126,6 +136,13 @@ class Manager extends BasicManager implements BasicManagerInterface
         return $query->get();
     }
 
+    /**
+     * Find and execute all timers.
+     *
+     * @param Carbon $currentTime
+     *
+     * @return void
+     */
     public function execute(Carbon $currentTime)
     {
         // Get the time to the closest 5 minutes.
@@ -152,7 +169,6 @@ class Manager extends BasicManager implements BasicManagerInterface
 
         if (! empty($timers)) {
             $this->timers($timers)->each(function ($timer) {
-                var_dump($timer->toArray());
                 $this->events->fire(new \App\Events\TimerWasExecuted($timer));
             });
         }
