@@ -10,7 +10,7 @@
                 <validator name="editValidation">
                     <form @submit.prevent @submit="save">
                         <div class="modal-body">
-                            <div class="form-group" v-bind:class="{ 'has-error': !$editValidation.name.valid }">
+                            <div class="form-group" v-bind:class="{ 'has-error': !$editValidation.name.valid && $editValidation.name.modified }">
                                 <label for="name-input">Name:</label>
                                 <input
                                     type="text"
@@ -22,7 +22,7 @@
                                     v-validate:name="{ alpha_dash_space: true, maxlength: 30, required: true }"
                                 >
 
-                                <span class="help-block" v-if="$editValidation.name.required">Name is required.</span>
+                                <span class="help-block" v-if="$editValidation.name.required && $editValidation.name.modified">Name is required.</span>
                                 <span class="help-block" v-if="$editValidation.name.maxlength">Name cannot be longer than 30 characters.</span>
                                 <span class="help-block" v-if="$editValidation.name.alpha_dash_space">Name may only contain apha numeric characters, dashes, underscores and spaces.</span>
                             </div><!-- .form-group -->
@@ -47,11 +47,19 @@
                                 </p>
                             </div><!-- .form-group -->
 
-                            <div class="form-group" v-bind:class="{ 'has-error': !$editValidation.message.valid }">
+                            <div class="form-group" v-bind:class="{ 'has-error': !$editValidation.message.valid && $editValidation.message.modified }">
                                 <label for="message-input">Message:</label>
-                                <textarea class="form-control" id="message-input" name="command" v-model="message" v-bind:disabled="" placeholder="This is a message output by the bot when the timer is executed." v-validate:message="{ maxlength: 400, required: true }"></textarea>
+                                <textarea
+                                    class="form-control"
+                                    id="message-input"
+                                    name="command"
+                                    v-model="message"
+                                    v-bind:disabled=""
+                                    placeholder="This is a message output by the bot when the timer is executed."
+                                    v-validate:message="{ maxlength: 400, required: true }"
+                                ></textarea>
 
-                                <span class="help-block" v-if="$editValidation.message.required">Message is required.</span>
+                                <span class="help-block" v-if="$editValidation.message.required && $editValidation.message.modified">Message is required.</span>
                                 <span class="help-block" v-if="$editValidation.message.maxlength">Message cannot be longer than 400 characters.</span>
                             </div><!-- .form-group -->
                         </div><!-- .modal-body -->
@@ -120,6 +128,7 @@
             openNewModal() {
                 this.title = 'New Timer';
                 this.open();
+                // this.$validatorReset();
             },
         },
 
