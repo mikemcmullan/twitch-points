@@ -13278,7 +13278,8 @@ if (document.querySelector('#commands')) {
 
         data: {
             commands: [],
-            loading: true
+            loading: true,
+            disableDisableBtn: false
         },
 
         computed: {
@@ -13324,10 +13325,18 @@ if (document.querySelector('#commands')) {
                 this.$broadcast('openDeleteCustomCommandModal', this._getCommand(id));
             },
             disableCommand: function disableCommand(id) {
+                var _this2 = this;
+
+                if (this.disableDisableBtn) {
+                    return;
+                }
+
+                this.disableDisableBtn = true;
                 var command = this._getCommand(id);
 
                 this.$http.put('commands/' + command.id, { disabled: !command.disabled }).then(function (response) {
                     command.disabled = response.data.disabled;
+                    _this2.disableDisableBtn = false;
                 });
             },
             deleteFromCommandsTable: function deleteFromCommandsTable(command) {
@@ -13389,12 +13398,12 @@ if (document.querySelector('#giveaway')) {
             },
 
             ready: function ready() {
-                var _this2 = this;
+                var _this3 = this;
 
                 var channel = pusher.subscribe('private-' + options.channel);
 
                 channel.bind('giveaway.was-entered', function (data) {
-                    _this2.$broadcast('newEntry', { handle: data.handle, tickets: data.tickets });
+                    _this3.$broadcast('newEntry', { handle: data.handle, tickets: data.tickets });
                 });
             }
         });
@@ -13430,17 +13439,18 @@ if (document.querySelector('#timers')) {
 
         data: {
             timers: [],
-            loading: true
+            loading: true,
+            disableDisableBtn: false
         },
 
         ready: function ready() {
-            var _this3 = this;
+            var _this4 = this;
 
             this.$http.get('timers').then(function (response) {
-                _this3.timers = response.data;
-                _this3.loading = false;
+                _this4.timers = response.data;
+                _this4.loading = false;
 
-                _this3.$els.loop.className = '';
+                _this4.$els.loop.className = '';
             });
         },
 
@@ -13459,10 +13469,18 @@ if (document.querySelector('#timers')) {
                 this.$broadcast('openNewModal');
             },
             disable: function disable(id) {
+                var _this5 = this;
+
+                if (this.disableDisableBtn) {
+                    return;
+                }
+
+                this.disableDisableBtn = true;
                 var timer = this._getTimer(id);
 
                 this.$http.put('timers/' + timer.id, { disabled: !timer.disabled }).then(function (response) {
                     timer.disabled = response.data.disabled;
+                    _this5.disableDisableBtn = false;
                 });
             },
             deleteModal: function deleteModal(id) {
@@ -14175,6 +14193,7 @@ exports.default = {
                 _this.interval = 30;
                 _this.lines = 10;
                 _this.saving = false;
+                _this.$validatorReset();
             }, 500);
         });
     },
@@ -14187,7 +14206,6 @@ exports.default = {
         openNewModal: function openNewModal() {
             this.title = 'New Timer';
             this.open();
-            // this.$validatorReset();
         }
     },
 

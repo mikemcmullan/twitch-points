@@ -30,7 +30,8 @@ if (document.querySelector('#commands')) {
 
         data: {
             commands: [],
-            loading: true
+            loading: true,
+            disableDisableBtn: false
         },
 
         computed: {
@@ -78,11 +79,17 @@ if (document.querySelector('#commands')) {
             },
 
             disableCommand(id) {
+                if (this.disableDisableBtn) {
+                    return;
+                }
+
+                this.disableDisableBtn = true;
                 let command = this._getCommand(id);
 
                 this.$http.put(`commands/${command.id}`, { disabled: !command.disabled })
                     .then((response) => {
                         command.disabled = response.data.disabled;
+                        this.disableDisableBtn = false;
                     });
             },
 
@@ -190,7 +197,8 @@ if (document.querySelector('#timers')) {
 
         data: {
             timers: [],
-            loading: true
+            loading: true,
+            disableDisableBtn: false
         },
 
         ready() {
@@ -219,11 +227,17 @@ if (document.querySelector('#timers')) {
             },
 
             disable(id) {
+                if (this.disableDisableBtn) {
+                    return;
+                }
+
+                this.disableDisableBtn = true;
                 let timer = this._getTimer(id);
 
                 this.$http.put(`timers/${timer.id}`, { disabled: !timer.disabled })
                     .then((response) => {
                         timer.disabled = response.data.disabled;
+                        this.disableDisableBtn = false;
                     });
             },
 

@@ -32,7 +32,7 @@
                                 <td>@{{ timer.interval }} mins, @{{ timer.lines }} lines</td>
                                 <td class="text-center">
                                     <button type="button" @click="editModal(timer.id)" class="btn btn-primary btn-xs" title="Edit Timer"><i class="fa fa-pencil-square-o"></i></button>
-                                    <button type="button" @click="disable(timer.id)" class="btn btn-warning btn-xs" title="Disable Timer"><i class="fa fa-ban"></i></button>
+                                    <button type="button" @click="disable(timer.id)" class="btn btn-warning btn-xs" :disabled="disableDisableBtn" title="Disable Timer"><i class="fa fa-ban"></i></button>
                                     <button type="button" @click="deleteModal(timer.id)" class="btn btn-danger btn-xs" title="Delete Timer"><i class="fa fa-trash-o"></i></button>
                                 </td>
                             </tr>

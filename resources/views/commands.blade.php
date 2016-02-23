@@ -34,7 +34,7 @@
                                 <td>@{{ command.response.substring(0, 100) }}<span v-if="command.response.length > 100">...</span></td>
                                 <td class="text-center">
                                     <button type="button" @click="editCommandModal(command.id)" class="btn btn-primary btn-xs" title="Edit Command"><i class="fa fa-pencil-square-o"></i></button>
-                                    <button type="button" @click="disableCommand(command.id)" class="btn btn-warning btn-xs" title="Disable Command"><i class="fa fa-ban"></i></button>
+                                    <button type="button" @click="disableCommand(command.id)" class="btn btn-warning btn-xs" :disabled="disableDisableBtn" title="Disable Command"><i class="fa fa-ban"></i></button>
                                     <button type="button" @click="deleteCommandModal(command.id)" class="btn btn-danger btn-xs" title="Delete Command"><i class="fa fa-trash-o"></i></button>
                                 </td>
                             </tr>
@@ -80,7 +80,7 @@
                                 <td>@{{ command.level.capitalize() }}</td>
                                 <td>@{{{ command.description }}}</td>
                                 <td class="text-center">
-                                    <button type="button" @click="disableCommand(command.id)" class="btn btn-warning btn-xs" title="Disable Commnad"><i class="fa fa-ban"></i></button>
+                                    <button type="button" @click="disableCommand(command.id)" class="btn btn-warning btn-xs"  :disabled="disableDisableBtn" title="Disable Commnad"><i class="fa fa-ban"></i></button>
                                 </td>
                             </tr>
 

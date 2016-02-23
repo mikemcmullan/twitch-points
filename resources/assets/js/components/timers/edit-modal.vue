@@ -115,6 +115,7 @@
                     this.interval = 30;
                     this.lines = 10;
                     this.saving = false;
+                    this.$validatorReset();
                 }, 500);
             });
         },
@@ -128,7 +129,6 @@
             openNewModal() {
                 this.title = 'New Timer';
                 this.open();
-                // this.$validatorReset();
             },
         },
 
