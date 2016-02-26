@@ -155,7 +155,8 @@ return [
         App\Providers\RepositoryServiceProvider::class,
         App\Providers\TwitchServiceProvider::class,
         App\Providers\SupervisorServiceProvider::class,
-        Tymon\JWTAuth\Providers\JWTAuthServiceProvider::class
+        Tymon\JWTAuth\Providers\JWTAuthServiceProvider::class,
+        Bschmitt\Amqp\AmqpServiceProvider::class
     ],
 
     /*
@@ -208,7 +209,8 @@ return [
         'Form'      => Collective\Html\FormFacade::class,
         'Html'      => Collective\Html\HtmlFacade::class,
         'JWTAuth'   => Tymon\JWTAuth\Facades\JWTAuth::class,
-        'JWTFactory'=> Tymon\JWTAuth\Facades\JWTFactory::class
+        'JWTFactory'=> Tymon\JWTAuth\Facades\JWTFactory::class,
+        'Amqp'      => Bschmitt\Amqp\Facades\Amqp::class,
 
     ],
 

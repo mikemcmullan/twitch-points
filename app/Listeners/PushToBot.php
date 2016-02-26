@@ -50,11 +50,11 @@ class PushToBot
     public function handle($event)
     {
         $outEvent = [
-            'channel'=> "#{$event->channel->name}",
-            'command'=> $this->getCommand($event),
-            'data' => $this->getData($event)
+            'source'    => 'web',
+            'channel'   => "#{$event->channel->name}",
+            'data'      => $this->getData($event)
         ];
 
-        $this->redis->publish('bot', json_encode($outEvent));
+        \Amqp::publish("commands.{$event->channel->name}", json_encode($outEvent), ['exchange' => "irc-messages"]);
     }
 }

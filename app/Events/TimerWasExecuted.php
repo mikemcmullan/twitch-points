@@ -41,20 +41,11 @@ class TimerWasExecuted extends Event
     public function broadcastWith()
     {
         return [
-            'message'   => $this->timer->message,
+            'file'      => 'Timer',
+            'message'  => $this->timer->message,
             'interval'  => $this->timer->interval,
             'lines'     => $this->timer->lines
         ];
-    }
-
-    /**
-     * Get the broadcast event name.
-     *
-     * @return string
-     */
-    public function broadcastAs()
-    {
-        return 'bot.timer';
     }
 
     /**
