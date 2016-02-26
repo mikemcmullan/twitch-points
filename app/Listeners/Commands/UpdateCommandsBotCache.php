@@ -13,12 +13,12 @@ class UpdateCommandsBotCache
     /**
      * @var string
      */
-    private $commandsKey = 'cacheman:#%s:commands';
+    private $commandsKey = '#%s:commands';
 
     /**
      * @var string
      */
-    private $commandKey = 'cacheman:#%s:commands:%d';
+    private $commandKey = '#%s:commands:%d';
 
     /**
      * Create the event listener.

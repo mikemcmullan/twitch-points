@@ -13,7 +13,7 @@ class UpdateVIPsBotCache
     /**
      * @var string
      */
-    private $vipsKey = 'cacheman:#%s:vips';
+    private $vipsKey = '#%s:vips';
 
     /*
      * @var ChatterRepository
