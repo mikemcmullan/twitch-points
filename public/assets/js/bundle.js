@@ -13306,7 +13306,7 @@ if (document.querySelector('#commands')) {
                 _this.$els.loop.className = '';
             });
 
-            this.$http.get('commands?type=system&orderBy=order').then(function (response) {
+            this.$http.get('commands?type=system&orderBy=order&orderDirection=ASC').then(function (response) {
                 _this.commands = _this.commands.concat(response.data);
                 _this.loading2 = false;
 

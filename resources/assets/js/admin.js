@@ -58,7 +58,7 @@ if (document.querySelector('#commands')) {
                     this.$els.loop.className = '';
                 })
 
-                this.$http.get('commands?type=system&orderBy=order')
+                this.$http.get('commands?type=system&orderBy=order&orderDirection=ASC')
                     .then((response) => {
                         this.commands = this.commands.concat(response.data);
                         this.loading2 = false;

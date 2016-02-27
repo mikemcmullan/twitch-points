@@ -42,7 +42,7 @@ class CommandsController extends Controller
     {
         $type = $request->get('type', 'custom');
         $orderBy = $request->get('orderBy', 'created_at');
-        $orderDirection = $request->get('orderDirection', 'ASC');
+        $orderDirection = $request->get('orderDirection', 'DESC');
 
         $commands = $this->commandManager->all($channel, $type, $orderBy, $orderDirection);
 
