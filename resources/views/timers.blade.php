@@ -21,14 +21,19 @@
 
                     <table class="table table-bordered" id="timers-table">
                         <thead>
-                            <th stlye="width: 70%">Name</th>
+                            <th style="width: 7%">Status</th>
+                            <th stlye="width: 63%">Name</th>
                             <th style="width: 15%">Interval</th>
                             <th style="width: 15%" class="text-center">Actions</th>
                         </thead>
 
                         <tbody class="hide" v-el:loop>
                             <tr v-for="timer in timers">
-                                <td><span class="label label-danger" v-if="timer.disabled">Disabled</span> @{{ timer.name }}</td>
+                                <td>
+                                    <span class="label label-danger" v-if="timer.disabled">Disabled</span>
+                                    <span class="label label-primary" v-if="!timer.disabled">Enabled</span>
+                                </td>
+                                <td>@{{ timer.name }}</td>
                                 <td>@{{ timer.interval }} mins, @{{ timer.lines }} lines</td>
                                 <td class="text-center">
                                     <button type="button" @click="editModal(timer.id)" class="btn btn-primary btn-xs" title="Edit Timer"><i class="fa fa-pencil-square-o"></i></button>
