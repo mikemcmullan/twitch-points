@@ -13224,6 +13224,10 @@ var _deleteModal = require('./components/commands/delete-modal.vue');
 
 var _deleteModal2 = _interopRequireDefault(_deleteModal);
 
+var _paginator = require('./components/paginator.vue');
+
+var _paginator2 = _interopRequireDefault(_paginator);
+
 var _entries = require('./components/giveaway/entries.vue');
 
 var _entries2 = _interopRequireDefault(_entries);
@@ -13273,14 +13277,17 @@ if (document.querySelector('#commands')) {
 
         components: {
             'edit-command-modal': _editModal2.default,
-            'delete-command-modal': _deleteModal2.default
+            'delete-command-modal': _deleteModal2.default,
+            'paginator': _paginator2.default
         },
 
         data: {
             commands: [],
             loading: true,
             loading2: true,
-            disableDisableBtn: false
+            disableDisableBtn: false,
+            itemsPerPage: 10,
+            itemsIndex: 0
         },
 
         computed: {
@@ -13517,7 +13524,7 @@ if (document.querySelector('#timers')) {
     });
 }
 
-},{"./components/commands/delete-modal.vue":30,"./components/commands/edit-modal.vue":31,"./components/currency/settings.vue":32,"./components/giveaway/control-panel.vue":33,"./components/giveaway/entries.vue":34,"./components/giveaway/settings.vue":35,"./components/timers/delete-modal.vue":36,"./components/timers/edit-modal.vue":37,"vue":28,"vue-resource":16,"vue-validator":27}],30:[function(require,module,exports){
+},{"./components/commands/delete-modal.vue":30,"./components/commands/edit-modal.vue":31,"./components/currency/settings.vue":32,"./components/giveaway/control-panel.vue":33,"./components/giveaway/entries.vue":34,"./components/giveaway/settings.vue":35,"./components/paginator.vue":36,"./components/timers/delete-modal.vue":37,"./components/timers/edit-modal.vue":38,"vue":28,"vue-resource":16,"vue-validator":27}],30:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -14083,6 +14090,85 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 exports.default = {
+    props: {
+        itemsPerPage: {
+            required: false,
+            default: 10
+        },
+
+        itemsIndex: {
+            required: true,
+            twoWay: true
+        },
+
+        data: {
+            type: Array,
+            required: true
+        }
+    },
+
+    computed: {
+        numberOfPages: function numberOfPages() {
+            return Math.ceil(this.data.length / this.itemsPerPage);
+        }
+    },
+
+    data: function data() {
+        return {
+            currentPage: 1
+        };
+    },
+    ready: function ready() {
+        var _this = this;
+
+        this.$watch('itemsPerPage', function (newVal, oldVal) {
+            _this.itemsIndex = 0;
+        });
+    },
+
+    methods: {
+        previousPage: function previousPage() {
+            if (this.currentPage === 1) {
+                return;
+            }
+
+            this.currentPage -= 1;
+            this.itemsIndex = (this.currentPage - 1) * this.itemsPerPage;
+        },
+        nextPage: function nextPage() {
+            if (this.currentPage === this.numberOfPages) {
+                return;
+            }
+
+            this.currentPage += 1;
+            this.itemsIndex = (this.currentPage - 1) * this.itemsPerPage;
+        },
+        goToPage: function goToPage(page) {
+            this.currentPage = page;
+            this.itemsIndex = (this.currentPage - 1) * this.itemsPerPage;
+        }
+    }
+};
+if (module.exports.__esModule) module.exports = module.exports.default
+;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n<div class=\"pagination\">\n    <li :class=\"{'disabled': currentPage === 1}\">\n        <a aria-label=\"Previous\" @prevent=\"\" @click=\"previousPage()\"><span aria-hidden=\"true\">«</span></a>\n    </li>\n    <li :class=\"{'active': n+1 === currentPage }\" v-for=\"n in numberOfPages\"><a @prevent=\"\" @click=\"goToPage(n+1)\">{{ n+1 }}</a></li>\n    <li :class=\"{'disabled': currentPage === numberOfPages}\">\n        <a aria-label=\"Next\" @prevent=\"\" @click=\"nextPage()\"><span aria-hidden=\"true\">»</span></a>\n    </li>\n</div>\n"
+if (module.hot) {(function () {  module.hot.accept()
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), true)
+  if (!hotAPI.compatible) return
+  var id = "/home/vagrant/Code/twitch-points/resources/assets/js/components/paginator.vue"
+  if (!module.hot.data) {
+    hotAPI.createRecord(id, module.exports)
+  } else {
+    hotAPI.update(id, module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
+  }
+})()}
+},{"vue":28,"vue-hot-reload-api":2}],37:[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+exports.default = {
 
     props: {},
 
@@ -14152,7 +14238,7 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update(id, module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"vue":28,"vue-hot-reload-api":2}],37:[function(require,module,exports){
+},{"vue":28,"vue-hot-reload-api":2}],38:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -14287,7 +14373,7 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update(id, module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"vue":28,"vue-hot-reload-api":2}],38:[function(require,module,exports){
+},{"vue":28,"vue-hot-reload-api":2}],39:[function(require,module,exports){
 'use strict';
 
 if (!String.prototype.capitalize) {
@@ -14348,6 +14434,6 @@ if (!Array.prototype.find) {
     };
 }
 
-},{}]},{},[38,29]);
+},{}]},{},[39,29]);
 
 //# sourceMappingURL=bundle.js.map

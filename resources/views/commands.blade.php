@@ -19,24 +19,34 @@
                     <edit-command-modal></edit-command-modal>
                     <delete-command-modal></delete-command-modal>
 
-                    <table class="table table-bordered" id="custom-commands-table">
+                    <p class="text-right">
+                        <button class="btn btn-primary" @click="newCustomCommandModal()">Create Command</button>
+                        <select class="form-control" v-model="itemsPerPage" style="width: 130px; display: inline-block;">
+                            <option value="10" default>10 per page</option>
+                            <option value="25">25 per page</option>
+                            <option value="50">50 per page</option>
+                            <option value="100">100 per page</option>
+                        </select>
+                    </p>
+
+                    <table class="table table-bordered table-striped" id="custom-commands-table">
                         <thead>
                             <th style="width: 7%">Status</th>
                             <th stlye="width: 15%">Command</th>
-                            <th style="width: 15%">Level</th>
-                            <th style="width: 53%">Response</th>
-                            <th style="width: 10%" class="text-center">Actions</th>
+                            <th style="width: 15%" class="hidden-sm hidden-xs">Level</th>
+                            <th style="width: 53%" class="hidden-sm hidden-xs">Response</th>
+                            <th class="text-center">Actions</th>
                         </thead>
 
                         <tbody class="hide" v-el:loop>
-                            <tr v-for="command in commands | filterBy 'custom' in 'type'" :class="{ 'command-disabled': command.disabled }">
+                            <tr v-for="command in commands | filterBy 'custom' in 'type' | limitBy itemsPerPage itemsIndex" :class="{ 'command-disabled': command.disabled }">
                                 <td>
                                     <span class="label label-danger" v-if="command.disabled">Disabled</span>
                                     <span class="label label-primary" v-if="!command.disabled">Enabled</span>
                                 </td>
                                 <td>@{{ command.command }}</td>
-                                <td>@{{ command.level.capitalize() }}</td>
-                                <td>@{{ command.response.substring(0, 100) }}<span v-if="command.response.length > 100">...</span></td>
+                                <td class="hidden-sm hidden-xs">@{{ command.level.capitalize() }}</td>
+                                <td class="hidden-sm hidden-xs">@{{ command.response.substring(0, 100) }}<span v-if="command.response.length > 100">...</span></td>
                                 <td class="text-center">
                                     <button type="button" @click="editCommandModal(command.id)" class="btn btn-primary btn-xs" title="Edit Command"><i class="fa fa-pencil-square-o"></i></button>
                                     <button type="button" @click="disableCommand(command.id)" class="btn btn-warning btn-xs" :disabled="disableDisableBtn" title="Disable Command"><i class="fa fa-ban"></i></button>
@@ -55,9 +65,9 @@
                         </tbody>
                     </table><!-- .table -->
 
-                    <br>
-
-                    <button class="btn btn-primary" @click="newCustomCommandModal()">Create Command</button>
+                    <div class="text-center">
+                        <paginator :items-index.sync="itemsIndex" :items-per-page.sync="itemsPerPage" :data.sync="customCommands"></paginator>
+                    </div>
                 </div><!-- .box-body -->
             </div><!-- .box -->
         </div><!-- .col -->
@@ -71,13 +81,13 @@
                 </div><!-- .box-header -->
 
                 <div class="box-body">
-                    <table class="table table-bordered" id="system-commands-table">
+                    <table class="table table-bordered table-striped" id="system-commands-table">
                         <thead>
                             <th style="width: 7%">Status</th>
                             <th stlye="width: 25%">Command</th>
-                            <th style="width: 10%">Level</th>
-                            <th style="width: 48%">Description</th>
-                            <th style="width: 10%"> Actions</th>
+                            <th style="width: 10%" class="hidden-sm hidden-xs">Level</th>
+                            <th style="width: 48%" class="hidden-sm hidden-xs">Description</th>
+                            <th> Actions</th>
                         </thead>
 
                         <tbody class="hide" v-el:loop2>
@@ -87,8 +97,8 @@
                                     <span class="label label-primary" v-if="!command.disabled">Enabled</span>
                                 </td>
                                 <td>@{{ command.usage }}</td>
-                                <td>@{{ command.level.capitalize() }}</td>
-                                <td>@{{{ command.description }}}</td>
+                                <td class="hidden-sm hidden-xs">@{{ command.level.capitalize() }}</td>
+                                <td class="hidden-sm hidden-xs">@{{{ command.description }}}</td>
                                 <td class="text-center">
                                     <button type="button" @click="disableCommand(command.id)" class="btn btn-warning btn-xs"  :disabled="disableDisableBtn" title="Disable Commnad"><i class="fa fa-ban"></i></button>
                                 </td>

@@ -19,7 +19,7 @@
                     <delete-timer-modal></delete-timer-modal>
                     <edit-timer-modal></edit-timer-modal>
 
-                    <table class="table table-bordered" id="timers-table">
+                    <table class="table table-bordered table-striped" id="timers-table">
                         <thead>
                             <th style="width: 7%">Status</th>
                             <th stlye="width: 63%">Name</th>

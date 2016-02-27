@@ -16,8 +16,9 @@ Vue.transition('fade', {
 //------------------------------------------------------------------------------
 // Commands
 //------------------------------------------------------------------------------
-import editCommandModal from './components/commands/edit-modal.vue'
-import deleteCommandModal from './components/commands/delete-modal.vue'
+import editCommandModal from './components/commands/edit-modal.vue';
+import deleteCommandModal from './components/commands/delete-modal.vue';
+import paginator from './components/paginator.vue';
 
 if (document.querySelector('#commands')) {
     new Vue({
@@ -25,14 +26,17 @@ if (document.querySelector('#commands')) {
 
         components: {
             'edit-command-modal': editCommandModal,
-            'delete-command-modal': deleteCommandModal
+            'delete-command-modal': deleteCommandModal,
+            'paginator': paginator
         },
 
         data: {
             commands: [],
             loading: true,
             loading2: true,
-            disableDisableBtn: false
+            disableDisableBtn: false,
+            itemsPerPage: 10,
+            itemsIndex: 0
         },
 
         computed: {
