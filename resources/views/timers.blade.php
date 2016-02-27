@@ -16,7 +16,7 @@
 
                 <div class="box-body">
 
-                    <delete-time-modal></delete-time-modal>
+                    <delete-timer-modal></delete-timer-modal>
                     <edit-timer-modal></edit-timer-modal>
 
                     <table class="table table-bordered" id="timers-table">

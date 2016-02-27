@@ -52,7 +52,7 @@
                                 <textarea
                                     class="form-control"
                                     id="message-input"
-                                    name="command"
+                                    name="message"
                                     v-model="message"
                                     v-bind:disabled=""
                                     placeholder="This is a message output by the bot when the timer is executed."
@@ -85,8 +85,8 @@
                 modal: false,
                 saving: false,
                 id: null,
-                name: false,
-                message: false,
+                name: null,
+                message: null,
                 lines: 30,
                 interval: 10
             }
@@ -115,6 +115,7 @@
                     this.interval = 30;
                     this.lines = 10;
                     this.saving = false;
+                    this.message = null;
                     this.$validatorReset();
                 }, 500);
             });
@@ -179,6 +180,8 @@
                     this.interval = timer.interval;
                     this.lines = timer.lines;
                 }
+
+                this.$validatorReset();
 
                 this.modal.modal('toggle');
             },

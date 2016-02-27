@@ -192,7 +192,7 @@ if (document.querySelector('#timers')) {
 
         components: {
             'edit-timer-modal': editTimerModal,
-            'delete-time-modal': deleteTimerModal
+            'delete-timer-modal': deleteTimerModal
         },
 
         data: {
