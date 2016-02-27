@@ -46,9 +46,9 @@ class Manager extends BasicManager implements BasicManagerInterface
      *
      * @return Collection
      */
-    public function all(Channel $channel)
+    public function all(Channel $channel, $type = 'custom', $orderBy = 'order', $orderDirection = 'ASC')
     {
-        return Command::where('channel_id', $channel->id)->orderBy('order')->get();
+        return Command::where(['channel_id' => $channel->id, 'type' => $type])->orderBy($orderBy, $orderDirection)->get();
     }
 
     /**

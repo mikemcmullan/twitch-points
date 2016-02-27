@@ -11,9 +11,9 @@ abstract class BasicManager
      *
      * @return Collection
      */
-    public function all(Channel $channel)
+    public function all(Channel $channel, $orderBy = 'created_at', $orderDirection = 'ASC')
     {
-        return $this->getModel()->where('channel_id', $channel->id)->get();
+        return $this->getModel()->where('channel_id', $channel->id)->orderBy($orderBy, $orderDirection)->get();
     }
 
     /**

@@ -38,9 +38,13 @@ class CommandsController extends Controller
      *
      * @return \Symfony\Component\HttpFoundation\Response
      */
-    public function index(Channel $channel)
+    public function index(Request $request, Channel $channel)
     {
-        $commands = $this->commandManager->all($channel);
+        $type = $request->get('type', 'custom');
+        $orderBy = $request->get('orderBy', 'created_at');
+        $orderDirection = $request->get('orderDirection', 'ASC');
+
+        $commands = $this->commandManager->all($channel, $type, $orderBy, $orderDirection);
 
         return response()->json($commands);
     }
