@@ -22,7 +22,7 @@
                     <p class="text-right">
                         <button class="btn btn-primary" @click="newCustomCommandModal()">Create Command</button>
                         <select class="form-control" v-model="itemsPerPage" style="width: 130px; display: inline-block;">
-                            <option value="10" default>10 per page</option>
+                            <option value="10" selected="selected">10 per page</option>
                             <option value="25">25 per page</option>
                             <option value="50">50 per page</option>
                             <option value="100">100 per page</option>
@@ -54,13 +54,13 @@
                                 </td>
                             </tr>
                             <tr v-if="customCommands.length === 0">
-                                <td colspan="4">No custom commands have been created.</td>
+                                <td colspan="5">No custom commands have been created.</td>
                             </tr>
                         </tbody>
 
                         <tbody v-if="loading">
                             <tr>
-                                <td colspan="4" class="text-center"><img src="/assets/img/loader.svg" width="32" height="32" alt="Loading..."></td>
+                                <td colspan="5" class="text-center"><img src="/assets/img/loader.svg" width="32" height="32" alt="Loading..."></td>
                             </tr>
                         </tbody>
                     </table><!-- .table -->
@@ -105,13 +105,13 @@
                             </tr>
 
                             <tr v-if="systemCommands.length === 0">
-                                <td colspan="3">No system commands available.</td>
+                                <td colspan="5">No system commands available.</td>
                             </tr>
                         </tbody>
 
                         <tbody v-if="loading2">
                             <tr>
-                                <td colspan="4" class="text-center"><img src="/assets/img/loader.svg" width="32" height="32" alt="Loading..."></td>
+                                <td colspan="5" class="text-center"><img src="/assets/img/loader.svg" width="32" height="32" alt="Loading..."></td>
                             </tr>
                         </tbody>
                     </table><!-- .table -->
