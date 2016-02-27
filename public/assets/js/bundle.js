@@ -13279,6 +13279,7 @@ if (document.querySelector('#commands')) {
         data: {
             commands: [],
             loading: true,
+            loading2: true,
             disableDisableBtn: false
         },
 
@@ -13298,11 +13299,17 @@ if (document.querySelector('#commands')) {
         ready: function ready() {
             var _this = this;
 
-            this.$http.get('commands').then(function (response) {
-                _this.commands = response.data;
+            this.$http.get('commands?type=custom').then(function (response) {
+                _this.commands = _this.commands.concat(response.data);
                 _this.loading = false;
 
                 _this.$els.loop.className = '';
+            });
+
+            this.$http.get('commands?type=system&orderBy=order').then(function (response) {
+                _this.commands = _this.commands.concat(response.data);
+                _this.loading2 = false;
+
                 _this.$els.loop2.className = '';
             });
         },

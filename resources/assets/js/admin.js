@@ -31,6 +31,7 @@ if (document.querySelector('#commands')) {
         data: {
             commands: [],
             loading: true,
+            loading2: true,
             disableDisableBtn: false
         },
 
@@ -49,14 +50,21 @@ if (document.querySelector('#commands')) {
         },
 
         ready() {
-            this.$http.get('commands')
+            this.$http.get('commands?type=custom')
                 .then((response) => {
-                    this.commands = response.data;
+                    this.commands = this.commands.concat(response.data);
                     this.loading = false;
 
                     this.$els.loop.className = '';
-                    this.$els.loop2.className = '';
                 })
+
+                this.$http.get('commands?type=system&orderBy=order')
+                    .then((response) => {
+                        this.commands = this.commands.concat(response.data);
+                        this.loading2 = false;
+
+                        this.$els.loop2.className = '';
+                    })
         },
 
         methods: {

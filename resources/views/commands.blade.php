@@ -28,7 +28,7 @@
                             <th style="width: 10%" class="text-center">Actions</th>
                         </thead>
 
-                        <tbody class="hide" v-el:loop2>
+                        <tbody class="hide" v-el:loop>
                             <tr v-for="command in commands | filterBy 'custom' in 'type'" :class="{ 'command-disabled': command.disabled }">
                                 <td>
                                     <span class="label label-danger" v-if="command.disabled">Disabled</span>
@@ -80,7 +80,7 @@
                             <th style="width: 10%"> Actions</th>
                         </thead>
 
-                        <tbody class="hide" v-el:loop>
+                        <tbody class="hide" v-el:loop2>
                             <tr v-for="command in commands | filterBy 'system' in 'type'">
                                 <td>
                                     <span class="label label-danger" v-if="command.disabled">Disabled</span>
@@ -99,7 +99,7 @@
                             </tr>
                         </tbody>
 
-                        <tbody v-if="loading">
+                        <tbody v-if="loading2">
                             <tr>
                                 <td colspan="4" class="text-center"><img src="/assets/img/loader.svg" width="32" height="32" alt="Loading..."></td>
                             </tr>
@@ -110,6 +110,7 @@
             </div><!-- .box -->
         </div><!-- .col -->
     </div><!-- .row -->
+
 </section>
 @endsection
 
