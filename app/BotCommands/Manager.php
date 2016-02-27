@@ -84,7 +84,9 @@ class Manager extends BasicManager implements BasicManagerInterface
 
         $created = $channel->commands()->create($data);
 
-        $this->events->fire(new \App\Events\Commands\CommandWasUpdated($channel, $created));
+        if (! $created->disabled) {
+            $this->events->fire(new \App\Events\Commands\CommandWasUpdated($channel, $created));
+        }
 
         return $created;
     }
