@@ -13,7 +13,7 @@ class AddOrderColumnToCommandsTable extends Migration
     public function up()
     {
         Schema::table('commands', function (Blueprint $table) {
-            $table->boolean('order')->default(0)->after('disabled');
+            $table->integer('order')->default(0)->after('disabled');
         });
     }
 
@@ -25,7 +25,7 @@ class AddOrderColumnToCommandsTable extends Migration
     public function down()
     {
         Schema::table('commands', function (Blueprint $table) {
-            $table->drop('order');
+            $table->dropColumn('order');
         });
     }
 }
