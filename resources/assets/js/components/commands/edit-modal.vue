@@ -29,7 +29,7 @@
 
                             <div class="form-group" v-bind:class="{ 'has-error': !$editValidation.response.valid && $editValidation.response.modified }">
                                 <label for="response-input">Response:</label>
-                                <textarea class="form-control" id="response-input" name="command" v-model="newCommand.response" v-bind:disabled="disabled.response" placeholder="This is a response output by the bot when the command is executed." v-validate:response="{ minlength: 2, maxlength: 400, required: true }"></textarea>
+                                <textarea class="form-control" id="response-input" name="command" rows="4" v-model="newCommand.response" v-bind:disabled="disabled.response" placeholder="This is a response output by the bot when the command is executed." v-validate:response="{ minlength: 2, maxlength: 400, required: true }"></textarea>
 
                                 <span class="help-block" v-if="!$editValidation.response.valid && $editValidation.response.modified">Response requires a minimum of 2 characters and has a maximum 400 characters.</span>
                             </div><!-- .form-group -->

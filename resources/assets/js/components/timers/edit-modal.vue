@@ -40,7 +40,7 @@
                             <div class="form-group">
                                 <label for="">Interval</label>
 
-                                <input type="range" min="10" max="100" step="5" v-model="interval">
+                                <input type="range" min="10" max="60" step="5" v-model="interval">
 
                                 <p class="help-block">
                                     The timer will execute every {{ interval }} minutes.
@@ -53,6 +53,7 @@
                                     class="form-control"
                                     id="message-input"
                                     name="message"
+                                    rows="4"
                                     v-model="message"
                                     v-bind:disabled=""
                                     placeholder="This is a message output by the bot when the timer is executed."
