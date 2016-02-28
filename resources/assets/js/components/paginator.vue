@@ -1,5 +1,5 @@
 <template>
-    <div class="pagination">
+    <div class="pagination" v-if="data.length > itemsPerPage">
         <li :class="{'disabled': currentPage === 1}">
             <a aria-label="Previous" @prevent @click="previousPage()"><span aria-hidden="true">&laquo;</span></a>
         </li>
