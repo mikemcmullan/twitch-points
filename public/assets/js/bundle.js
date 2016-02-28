@@ -13349,7 +13349,7 @@ if (document.querySelector('#commands')) {
                 var command = this._getCommand(id);
 
                 this.$http.put('commands/' + command.id, { disabled: !command.disabled }).then(function (response) {
-                    command.disabled = response.data.disabled;
+                    _this2.updateOrAddToCommandsTable(response.data);
                     _this2.disableDisableBtn = false;
                 });
             },
@@ -13493,7 +13493,7 @@ if (document.querySelector('#timers')) {
                 var timer = this._getTimer(id);
 
                 this.$http.put('timers/' + timer.id, { disabled: !timer.disabled }).then(function (response) {
-                    timer.disabled = response.data.disabled;
+                    _this5.updateOrAddToTable(response.data);
                     _this5.disableDisableBtn = false;
                 });
             },
@@ -14150,7 +14150,7 @@ exports.default = {
     }
 };
 if (module.exports.__esModule) module.exports = module.exports.default
-;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n<div class=\"pagination\">\n    <li :class=\"{'disabled': currentPage === 1}\">\n        <a aria-label=\"Previous\" @prevent=\"\" @click=\"previousPage()\"><span aria-hidden=\"true\">«</span></a>\n    </li>\n    <li :class=\"{'active': n+1 === currentPage }\" v-for=\"n in numberOfPages\"><a @prevent=\"\" @click=\"goToPage(n+1)\">{{ n+1 }}</a></li>\n    <li :class=\"{'disabled': currentPage === numberOfPages}\">\n        <a aria-label=\"Next\" @prevent=\"\" @click=\"nextPage()\"><span aria-hidden=\"true\">»</span></a>\n    </li>\n</div>\n"
+;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n<div class=\"pagination\" v-if=\"data.length > itemsPerPage\">\n    <li :class=\"{'disabled': currentPage === 1}\">\n        <a aria-label=\"Previous\" @prevent=\"\" @click=\"previousPage()\"><span aria-hidden=\"true\">«</span></a>\n    </li>\n    <li :class=\"{'active': n+1 === currentPage }\" v-for=\"n in numberOfPages\"><a @prevent=\"\" @click=\"goToPage(n+1)\">{{ n+1 }}</a></li>\n    <li :class=\"{'disabled': currentPage === numberOfPages}\">\n        <a aria-label=\"Next\" @prevent=\"\" @click=\"nextPage()\"><span aria-hidden=\"true\">»</span></a>\n    </li>\n</div>\n"
 if (module.hot) {(function () {  module.hot.accept()
   var hotAPI = require("vue-hot-reload-api")
   hotAPI.install(require("vue"), true)

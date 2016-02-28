@@ -100,7 +100,7 @@ if (document.querySelector('#commands')) {
 
                 this.$http.put(`commands/${command.id}`, { disabled: !command.disabled })
                     .then((response) => {
-                        command.disabled = response.data.disabled;
+                        this.updateOrAddToCommandsTable(response.data);
                         this.disableDisableBtn = false;
                     });
             },
@@ -248,7 +248,7 @@ if (document.querySelector('#timers')) {
 
                 this.$http.put(`timers/${timer.id}`, { disabled: !timer.disabled })
                     .then((response) => {
-                        timer.disabled = response.data.disabled;
+                        this.updateOrAddToTable(response.data);
                         this.disableDisableBtn = false;
                     });
             },
