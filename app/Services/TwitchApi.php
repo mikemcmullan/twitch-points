@@ -4,6 +4,7 @@ namespace App\Services;
 
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;
+use GuzzleHttp\Exception\ServerException;
 use Illuminate\Contracts\Cache\Repository as CacheRepository;
 use Illuminate\Contracts\Config\Repository as ConfigRepository;
 use Illuminate\Log\Writer;
@@ -159,6 +160,9 @@ class TwitchApi
         } catch (ClientException $e) {
             $this->logger->error('Invalid channel.', ['channel' => $channel]);
             throw new InvalidChannelException($channel);
+        } catch (ServerException $e) {
+            $this->logger->error('Unable to get stream, twitch api error.');
+            throw new \Exception('Unable to get stream, twitch api error.');
         }
     }
 }

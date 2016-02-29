@@ -39,10 +39,10 @@ class DownloadChatListJob extends Job
       */
      public function handle(TwitchApi $twitchApi, Dispatcher $events)
      {
-         $status     = $twitchApi->channelOnline($this->channel['name']);
+        //  $status     = $twitchApi->channelOnline($this->channel['name']);
          $chatList   = $twitchApi->chatList($this->channel['name']);
 
-         $events->fire(new ChatListWasDownloaded($this->channel, $chatList, $status));
+         $events->fire(new ChatListWasDownloaded($this->channel, $chatList));
 
          return $chatList;
      }
