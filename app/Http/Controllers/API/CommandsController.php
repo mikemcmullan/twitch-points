@@ -68,7 +68,7 @@ class CommandsController extends Controller
      */
     public function store(Request $request, Channel $channel)
     {
-        $response = $this->commandManager->create($channel, $request->only(['command', 'level', 'response', 'disabled', 'description', 'usage']));
+        $response = $this->commandManager->create($channel, $request->only(['command', 'level', 'response', 'disabled', 'description', 'usage', 'cool_down']));
 
         return response()->json($response);
     }
@@ -80,7 +80,7 @@ class CommandsController extends Controller
      */
     public function update(Request $request, Channel $channel, $id)
     {
-        $response = $this->commandManager->update($channel, $id, $request->only(['command', 'level', 'response', 'disabled', 'description', 'usage']));
+        $response = $this->commandManager->update($channel, $id, $request->only(['command', 'level', 'response', 'disabled', 'description', 'usage', 'cool_down']));
 
         return response()->json($response);
     }

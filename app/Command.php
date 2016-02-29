@@ -27,7 +27,7 @@ class Command extends Model
      *
      * @var array
      */
-    protected $fillable = ['command', 'pattern', 'level', 'type', 'file', 'response', 'usage', 'description', 'disabled'];
+    protected $fillable = ['command', 'pattern', 'level', 'type', 'file', 'response', 'usage', 'description', 'disabled', 'cool_down', 'count'];
 
     /**
      * The attributes that should be casted to native types.
@@ -35,7 +35,9 @@ class Command extends Model
      * @var array
      */
     protected $casts = [
-        'disabled' => 'boolean'
+        'disabled'  => 'boolean',
+        'cool_down' => 'integer',
+        'count'     => 'integer'
     ];
 
     /**

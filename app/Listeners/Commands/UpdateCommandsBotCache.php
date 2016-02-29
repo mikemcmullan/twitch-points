@@ -43,7 +43,7 @@ class UpdateCommandsBotCache
         $commands = $commands->map(function ($command) use ($event) {
             $this->redis->set(sprintf($this->commandKey, $event->channel->name, $command->id), $command);
 
-            return array_only($command->toArray(), ['id', 'pattern', 'level']);
+            return array_only($command->toArray(), ['id', 'pattern', 'level', 'cool_down']);
         });
 
         $this->redis->set(sprintf($this->commandsKey, $event->channel->name), $commands);

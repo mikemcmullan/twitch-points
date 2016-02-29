@@ -46,6 +46,7 @@ class UpdateCommandBotCache
                 'id' => $event->command->id,
                 'pattern' => $event->command->pattern,
                 'level' => $event->command->level,
+                'cool_down' => $event->command->cool_down
             ]);
         } else {
             $key = $existing->keys()->first();
@@ -54,6 +55,7 @@ class UpdateCommandBotCache
                 'id' => $event->command->id,
                 'pattern' => $event->command->pattern,
                 'level' => $event->command->level,
+                'cool_down' => $event->command->cool_down
             ]]);
         }
 
