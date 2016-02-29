@@ -33,7 +33,8 @@ class Handler extends ExceptionHandler
         HttpException::class,
         ModelNotFoundException::class,
         ValidationException::class,
-        InvalidChannelException::class
+        InvalidChannelException::class,
+        UnknownHandleException::class
     ];
 
     /**
