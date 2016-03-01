@@ -43,8 +43,9 @@ class CommandsController extends Controller
         $type = $request->get('type', 'custom');
         $orderBy = $request->get('orderBy', 'created_at');
         $orderDirection = $request->get('orderDirection', 'DESC');
+        $disabled = $request->get('disabled', null);
 
-        $commands = $this->commandManager->all($channel, $type, $orderBy, $orderDirection);
+        $commands = $this->commandManager->all($channel, $type, $orderBy, $orderDirection, $disabled);
 
         return response()->json($commands);
     }
