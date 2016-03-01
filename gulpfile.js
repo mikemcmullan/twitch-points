@@ -9,5 +9,6 @@ elixir.config.js.browserify.watchify.options.poll = true;
 elixir(function(mix) {
     mix.sass('style.scss', 'public/assets/css')
         .less('AdminLTE.less', 'public/assets/css')
-        .browserify(['polyfills.js', 'admin.js']);
+        .browserify(['polyfills.js', 'admin.js'], 'public/assets/js/admin.js')
+        .browserify(['polyfills.js', 'public.js'], 'public/assets/js/public.js');
 });

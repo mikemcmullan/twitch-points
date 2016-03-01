@@ -12,13 +12,15 @@ class CommandsController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('auth');
+        // $this->middleware('auth');
     }
 
     public function index(Channel $channel)
     {
-        $data['commands'] = \App\Command::findByType($channel, 'custom');
+        if (\Auth::user()) {
+            return view('commands');
+        }
 
-        return view('commands', $data);
+        return view('commands-public');
     }
 }

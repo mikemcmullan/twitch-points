@@ -45,7 +45,7 @@ class Authenticate
         // permission name => url
         $paths = [
             'system-control'=> 'system-control',
-            'commands'      => 'commands',
+            // 'commands'      => 'commands',
             'giveaway'      => 'giveaway',
             'timers'        => 'timers',
             'vips'          => 'vips'
