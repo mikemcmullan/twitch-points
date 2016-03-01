@@ -19,8 +19,7 @@
                     <edit-command-modal></edit-command-modal>
                     <delete-command-modal></delete-command-modal>
 
-                    <p class="text-right">
-                        <button class="btn btn-primary" @click="newCustomCommandModal()">Create Command</button>
+                    <p>
                         <select class="form-control" v-model="itemsPerPage" style="width: 130px; display: inline-block;">
                             <option value="10" selected="selected">10 per page</option>
                             <option value="25">25 per page</option>
@@ -68,6 +67,10 @@
                     <div class="text-center">
                         <paginator :items-index.sync="itemsIndex" :items-per-page.sync="itemsPerPage" :data.sync="customCommands"></paginator>
                     </div>
+
+                    <br>
+
+                    <button class="btn btn-primary" @click="newCustomCommandModal()">Create Command</button>
                 </div><!-- .box-body -->
             </div><!-- .box -->
         </div><!-- .col -->
