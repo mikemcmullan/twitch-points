@@ -5,6 +5,7 @@ namespace App\Listeners;
 use Illuminate\Contracts\Redis\Database;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use Bschmitt\Amqp\Message;
 
 class PushToBot
 {
@@ -54,6 +55,24 @@ class PushToBot
             'channel'   => "#{$event->channel->name}",
             'data'      => $this->getData($event)
         ];
+
+        if (array_get($outEvent, 'data.delay') >= 0) {
+            config(['amqp.properties.production.exchange_type' => 'x-delayed-message']);
+
+            $msg = new Message(json_encode($outEvent), [
+                'content_type' => 'application/json',
+                'delivery_mode' => 2,
+                'application_headers' => [
+                    'x-delay' => ['I', array_get($outEvent, 'data.delay')]
+                ]
+            ]);
+
+            \Amqp::publish("commands.mcsmike", $msg, ['exchange' => 'irc-messages-delayed']);
+
+            config(['amqp.properties.production.exchange_type' => 'topic']);
+
+            return;
+        }
 
         \Amqp::publish("commands.{$event->channel->name}", json_encode($outEvent), ['exchange' => "irc-messages"]);
     }

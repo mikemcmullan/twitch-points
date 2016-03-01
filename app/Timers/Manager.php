@@ -168,8 +168,12 @@ class Manager extends BasicManager implements BasicManagerInterface
         }
 
         if (! empty($timers)) {
-            $this->timers($timers)->each(function ($timer) {
-                $this->events->fire(new \App\Events\TimerWasExecuted($timer));
+            $timers = $this->timers($timers);
+            $delay = 0;
+
+            $timers->each(function ($timer) use (&$delay) {
+                $this->events->fire(new \App\Events\TimerWasExecuted($timer, $delay));
+                $delay++;
             });
         }
     }
