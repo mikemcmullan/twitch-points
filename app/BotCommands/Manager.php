@@ -82,7 +82,7 @@ class Manager extends BasicManager implements BasicManagerInterface
             'disabled'      => 'sometimes|required|boolean',
             'usage'         => 'sometimes|required|max:50',
             'description'   => 'sometimes|required|max:400',
-            'cool_down'     => 'sometimes|required|numeric_size_between:0,86400'
+            'cool_down'     => 'required|numeric_size_between:0,86400'
         ]);
 
         if ($validator->fails()) {

@@ -13615,16 +13615,39 @@ exports.default = {
             newCommand: {
                 command: '',
                 level: 'everyone',
-                response: ''
+                response: '',
+                cool_down: 3
             },
             modal: false,
             saving: false,
             disabled: {
                 command: false,
                 level: false,
-                response: false
+                response: false,
+                cool_down: false
             }
         };
+    },
+
+    validators: {
+        numeric_betwen: {
+            message: '',
+            check: function check(value) {
+                return !isNaN(value) && value >= 0 && value <= 86400;
+            }
+        },
+
+        alpha_dash_space: {
+            message: '',
+            check: function check(value) {
+                if (value.length !== 0) {
+                    return (/^[a-z-_\s0-9]+$/i.test(value)
+                    );
+                }
+
+                return true;
+            }
+        }
     },
 
     ready: function ready() {
@@ -13637,6 +13660,7 @@ exports.default = {
                 _this.newCommand.command = '';
                 _this.newCommand.level = 'everyone';
                 _this.newCommand.response = '';
+                _this.newCommand.cool_down = 3;
                 _this.originalCommand = false;
                 _this.saving = false;
                 _this.disabled.command = false;
@@ -13686,6 +13710,10 @@ exports.default = {
                 data.response = this.newCommand.response;
             }
 
+            if (!this.disabled.cool_down) {
+                data.cool_down = this.newCommand.cool_down;
+            }
+
             if (this.originalCommand === false) {
                 request = this.$http.post('commands', data, {
                     beforeSend: function beforeSend() {
@@ -13724,7 +13752,7 @@ exports.default = {
     }
 };
 if (module.exports.__esModule) module.exports = module.exports.default
-;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n<div class=\"modal fade\" v-el:modal=\"\">\n    <div class=\"modal-dialog\" role=\"document\">\n        <div class=\"modal-content\">\n            <div class=\"modal-header\">\n                <button type=\"button\" class=\"close\" @click=\"close\" aria-label=\"Close\"><span aria-hidden=\"true\">×</span></button>\n                <h4 class=\"modal-title\">{{ title }}</h4>\n            </div><!-- .modal-header -->\n\n            <validator name=\"editValidation\">\n                <form @submit.prevent=\"\" @submit=\"save\">\n                    <div class=\"modal-body\">\n                        <div class=\"form-group\" v-bind:class=\"{ 'has-error': !$editValidation.command.valid &amp;&amp; $editValidation.command.modified }\">\n                            <label for=\"command-input\">Command:</label>\n                            <input type=\"text\" class=\"form-control\" id=\"command-input\" name=\"command\" placeholder=\"!command\" v-model=\"newCommand.command\" v-bind:disabled=\"disabled.command\" v-validate:command=\"{ minlength: 1, maxlength: 80, required: true }\">\n\n                            <span class=\"help-block\" v-if=\"!$editValidation.command.valid &amp;&amp; $editValidation.command.modified\">Command requires a minimum of 1 characters and has a maximum 80 characters.</span>\n                        </div><!-- .form-group -->\n\n                        <div class=\"form-group\">\n                            <label for=\"level-input\">Level:</label>\n                            <select class=\"form-control\" id=\"level-input\" name=\"level\" v-model=\"newCommand.level\" v-bind:disabled=\"disabled.level\">\n                                <option value=\"owner\">Owner</option>\n                                <option value=\"admin\">Admin</option>\n                                <option value=\"mod\">Mod</option>\n                                <option value=\"everyone\" selected=\"selected\">Everyone</option>\n                            </select>\n                        </div><!-- .form-group -->\n\n                        <div class=\"form-group\" v-bind:class=\"{ 'has-error': !$editValidation.response.valid &amp;&amp; $editValidation.response.modified }\">\n                            <label for=\"response-input\">Response:</label>\n                            <textarea class=\"form-control\" id=\"response-input\" name=\"command\" rows=\"4\" v-model=\"newCommand.response\" v-bind:disabled=\"disabled.response\" placeholder=\"This is a response output by the bot when the command is executed.\" v-validate:response=\"{ minlength: 2, maxlength: 400, required: true }\"></textarea>\n\n                            <span class=\"help-block\" v-if=\"!$editValidation.response.valid &amp;&amp; $editValidation.response.modified\">Response requires a minimum of 2 characters and has a maximum 400 characters.</span>\n                        </div><!-- .form-group -->\n                    </div><!-- .modal-body -->\n\n                    <div class=\"modal-footer\">\n                        <button type=\"button\" class=\"btn btn-default\" @click=\"close\">Close</button>\n                        <button type=\"submit\" class=\"btn btn-primary\" v-bind:disabled=\"saving || !$editValidation.valid\">Save</button>\n                    </div><!-- .modal-footer -->\n                </form><!-- form -->\n            </validator>\n        </div><!-- .modal-content -->\n    </div><!-- .modal-dialog -->\n</div><!-- .modal -->\n"
+;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n<div class=\"modal fade\" v-el:modal=\"\">\n    <div class=\"modal-dialog\" role=\"document\">\n        <div class=\"modal-content\">\n            <div class=\"modal-header\">\n                <button type=\"button\" class=\"close\" @click=\"close\" aria-label=\"Close\"><span aria-hidden=\"true\">×</span></button>\n                <h4 class=\"modal-title\">{{ title }}</h4>\n            </div><!-- .modal-header -->\n\n            <validator name=\"editValidation\">\n                <form @submit.prevent=\"\" @submit=\"save\">\n                    <div class=\"modal-body\">\n                        <div class=\"form-group\" v-bind:class=\"{ 'has-error': !$editValidation.command.valid &amp;&amp; $editValidation.command.modified }\">\n                            <label for=\"command-input\">Command:</label>\n                            <input type=\"text\" class=\"form-control\" id=\"command-input\" name=\"command\" placeholder=\"!command\" v-model=\"newCommand.command\" v-bind:disabled=\"disabled.command\" v-validate:command=\"{ minlength: 1, maxlength: 80, required: true }\">\n\n                            <span class=\"help-block\" v-if=\"!$editValidation.command.valid &amp;&amp; $editValidation.command.modified\">Command requires a minimum of 1 characters and has a maximum 80 characters.</span>\n                        </div><!-- .form-group -->\n\n                        <div class=\"form-group\">\n                            <label for=\"level-input\">Level:</label>\n                            <select class=\"form-control\" id=\"level-input\" name=\"level\" v-model=\"newCommand.level\" v-bind:disabled=\"disabled.level\">\n                                <option value=\"owner\">Owner</option>\n                                <option value=\"admin\">Admin</option>\n                                <option value=\"mod\">Mod</option>\n                                <option value=\"everyone\" selected=\"selected\">Everyone</option>\n                            </select>\n                        </div><!-- .form-group -->\n\n                        <div class=\"form-group\" v-bind:class=\"{ 'has-error': !$editValidation.cool_down.valid &amp;&amp; $editValidation.cool_down.modified }\">\n                            <label for=\"command-cool\">Cool Down:</label>\n                            <input type=\"number\" class=\"form-control\" id=\"command-cool\" name=\"cool_down\" placeholder=\"3\" v-model=\"newCommand.cool_down\" v-validate:cool_down=\"{ numeric_betwen: true, required: true }\">\n\n                            <span class=\"help-block\" v-if=\"!$editValidation.cool_down.valid &amp;&amp; $editValidation.cool_down.modified\">Cool down must be a number between 0 and 86400.</span>\n                            <span class=\"help-block\">The amount of time in seconds before the command can be used again.</span>\n                        </div>\n\n                        <div class=\"form-group\" v-bind:class=\"{ 'has-error': !$editValidation.response.valid &amp;&amp; $editValidation.response.modified }\">\n                            <label for=\"response-input\">Response:</label>\n                            <textarea class=\"form-control\" id=\"response-input\" name=\"command\" rows=\"4\" v-model=\"newCommand.response\" v-bind:disabled=\"disabled.response\" placeholder=\"This is a response output by the bot when the command is executed.\" v-validate:response=\"{ minlength: 2, maxlength: 400, required: true }\"></textarea>\n\n                            <span class=\"help-block\" v-if=\"!$editValidation.response.valid &amp;&amp; $editValidation.response.modified\">Response requires a minimum of 2 characters and has a maximum 400 characters.</span>\n                        </div><!-- .form-group -->\n                    </div><!-- .modal-body -->\n\n                    <div class=\"modal-footer\">\n                        <button type=\"button\" class=\"btn btn-default\" @click=\"close\">Close</button>\n                        <button type=\"submit\" class=\"btn btn-primary\" v-bind:disabled=\"saving || !$editValidation.valid\">Save</button>\n                    </div><!-- .modal-footer -->\n                </form><!-- form -->\n            </validator>\n        </div><!-- .modal-content -->\n    </div><!-- .modal-dialog -->\n</div><!-- .modal -->\n"
 if (module.hot) {(function () {  module.hot.accept()
   var hotAPI = require("vue-hot-reload-api")
   hotAPI.install(require("vue"), true)

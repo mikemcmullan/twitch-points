@@ -27,6 +27,14 @@
                                 </select>
                             </div><!-- .form-group -->
 
+                            <div class="form-group" v-bind:class="{ 'has-error': !$editValidation.cool_down.valid && $editValidation.cool_down.modified }">
+                                <label for="command-cool">Cool Down:</label>
+                                <input type="number" class="form-control" id="command-cool" name="cool_down" placeholder="3" v-model="newCommand.cool_down" v-validate:cool_down="{ numeric_betwen: true, required: true }">
+
+                                <span class="help-block" v-if="!$editValidation.cool_down.valid && $editValidation.cool_down.modified">Cool down must be a number between 0 and 86400.</span>
+                                <span class="help-block">The amount of time in seconds before the command can be used again.</span>
+                            </div>
+
                             <div class="form-group" v-bind:class="{ 'has-error': !$editValidation.response.valid && $editValidation.response.modified }">
                                 <label for="response-input">Response:</label>
                                 <textarea class="form-control" id="response-input" name="command" rows="4" v-model="newCommand.response" v-bind:disabled="disabled.response" placeholder="This is a response output by the bot when the command is executed." v-validate:response="{ minlength: 2, maxlength: 400, required: true }"></textarea>
@@ -57,14 +65,36 @@
                 newCommand: {
                     command: '',
                     level: 'everyone',
-                    response: ''
+                    response: '',
+                    cool_down: 3
                 },
                 modal: false,
                 saving: false,
                 disabled: {
                     command: false,
                     level: false,
-                    response: false
+                    response: false,
+                    cool_down: false
+                }
+            }
+        },
+
+        validators: {
+            numeric_betwen: {
+                message: '',
+                check: (value) => {
+                    return (! isNaN(value)) && value >= 0 && value <= 86400;
+                }
+            },
+
+            alpha_dash_space: {
+                message: '',
+                check: (value) => {
+                    if (value.length !== 0) {
+                        return /^[a-z-_\s0-9]+$/i.test(value);
+                    }
+
+                    return true;
                 }
             }
         },
@@ -77,6 +107,7 @@
                     this.newCommand.command = '';
                     this.newCommand.level = 'everyone';
                     this.newCommand.response = '';
+                    this.newCommand.cool_down = 3;
                     this.originalCommand = false;
                     this.saving = false;
                     this.disabled.command = false;
@@ -125,6 +156,10 @@
 
                 if (! this.disabled.response) {
                     data.response = this.newCommand.response;
+                }
+
+                if (! this.disabled.cool_down) {
+                    data.cool_down = this.newCommand.cool_down;
                 }
 
                 if (this.originalCommand === false) {
