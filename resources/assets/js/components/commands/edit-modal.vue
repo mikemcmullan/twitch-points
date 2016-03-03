@@ -45,7 +45,7 @@
 
                         <div class="modal-footer">
                             <button type="button" class="btn btn-default" @click="close">Close</button>
-                            <button type="submit" class="btn btn-primary" v-bind:disabled="saving || !$editValidation.valid">Save</button>
+                            <button type="submit" class="btn btn-primary" v-bind:disabled="saving || !$editValidation.valid">{{ saving ? 'Saving...' : 'Save' }}</button>
                         </div><!-- .modal-footer -->
                     </form><!-- form -->
                 </validator>

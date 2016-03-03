@@ -14,8 +14,7 @@
 
                     <div class="modal-footer">
                         <button type="button" class="btn btn-default" @click="close">Cancel</button>
-                        <button type="submit" class="btn btn-primary" v-if="!deleting">Yes, Delete</button>
-                        <button type="submit" class="btn btn-primary" disabled="disabled" v-if="deleting">Deleting...</button>
+                        <button type="submit" class="btn btn-primary" v-bind:disabled="deleting">{{ deleting ? 'Deleting...' : 'Yes, Delete' }}</button>
                     </div><!-- .modal-footer -->
                 </form><!-- form -->
             </div><!-- .modal-content -->
