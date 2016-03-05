@@ -189,6 +189,7 @@
                 if (command) {
                     this.originalCommand = command
                     this.newCommand.command = command.command;
+                    this.newCommand.cool_down = command.cool_down;
                     this.newCommand.level = command.level;
                     this.newCommand.response = command.response;
                 }
