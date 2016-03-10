@@ -56,7 +56,7 @@ class PushToBot
             'data'      => $this->getData($event)
         ];
 
-        if (array_get($outEvent, 'data.delay') >= 0) {
+        if (array_get($outEvent, 'data.delay') !== null) {
             config(['amqp.properties.production.exchange_type' => 'x-delayed-message']);
 
             $msg = new Message(json_encode($outEvent), [
