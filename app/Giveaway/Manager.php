@@ -68,7 +68,7 @@ class Manager
     {
         $this->events->fire(new GiveawayWasStarted($channel));
 
-        return $this->redis->set(sprintf('giveaway:%d:started', $channel['id']), 1);
+        return $this->redis->set("#{$channel->id}:giveaway:started", 1);
     }
 
     /**
@@ -80,7 +80,7 @@ class Manager
     {
         $this->events->fire(new GiveawayWasStopped($channel));
 
-        return $this->redis->set(sprintf('giveaway:%d:started', $channel['id']), 0);
+        return $this->redis->set("#{$channel->id}:giveaway:started", 0);
     }
 
     /**
@@ -92,12 +92,8 @@ class Manager
     {
         $entries = $this->entries($channel, true);
 
-        foreach ($entries as $entry) {
-            $this->chatterRepo->setGiveAwayStatus($channel, $entry['handle'], false);
-        }
-
         $this->stop($channel);
-        $this->redis->del(sprintf('giveaway:%d', $channel['id']));
+        $this->redis->del("#{$channel->name}:giveaway:entries");
 
         $this->events->fire(new GiveawayWasReset($channel));
 
@@ -113,7 +109,7 @@ class Manager
      */
     public function entries(Channel $channel, $grouped = false)
     {
-        $entries = $this->redis->lrange(sprintf('giveaway:%d', $channel['id']), 0, -1);
+        $entries = $this->redis->smembers("#{$channel->name}:giveaway:entries");
 
         if ($grouped === false) {
             return $entries;
@@ -158,8 +154,7 @@ class Manager
         $winner = $entries[array_rand($entries)];
 
         if ($removeWinner) {
-            $this->redis->lrem("giveaway:{$channel->id}", 0, $winner);
-            $this->chatterRepo->setGiveAwayStatus($channel, $winner, false);
+            $this->redis->srem("#{$channel->name}:giveaway:entries", $winner);
         }
 
         return $winner;
@@ -171,17 +166,17 @@ class Manager
      */
     public function isGiveAwayRunning(Channel $channel)
     {
-        return (bool) $this->redis->get(sprintf('giveaway:%d:started', $channel['id']));
+        return (bool) $this->redis->get("#{$channel->id}:giveaway:started");
     }
 
     /**
      * @param Channel $channel
-     * @param $handle
+     * @param $entry
      * @return bool
      */
-    public function checkIfEntered($viewer)
+    public function checkIfEntered($entry)
     {
-        return $viewer['giveaway'];
+        return (bool) $this->redis->sismember("#{$entry->getChannel()->name}:giveaway:entries", $entry->getHandle());
     }
 
     /**
@@ -218,7 +213,7 @@ class Manager
 
         $viewer = $this->currencyManager->getViewer($entry->getChannel(), $entry->getHandle());
 
-        if ($this->checkIfEntered($viewer)) {
+        if ($this->checkIfEntered($entry)) {
             throw new GiveAwayException(sprintf('%s has already entered the giveaway.', $viewer['handle']));
         }
 
@@ -229,10 +224,9 @@ class Manager
         }
 
         $this->currencyManager->remove($entry->getChannel(), $entry->getHandle(), $cost);
-        $this->chatterRepo->setGiveAwayStatus($entry->getChannel(), $entry->getHandle(), true);
 
         for ($i = 0; $i < $entry->getTickets(); $i++) {
-            $this->redis->lpush("giveaway:{$entry->getChannel()->id}", $entry->getHandle());
+            $this->redis->sadd("#{$entry->getChannel()->name}:giveaway:entries", $entry->getHandle());
         }
 
         $this->events->fire(new GiveawayWasEntered($entry->getChannel(), $entry->getHandle(), $entry->getTickets()));

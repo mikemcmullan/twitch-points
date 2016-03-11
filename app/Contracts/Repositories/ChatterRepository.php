@@ -10,32 +10,6 @@ use Predis\Pipeline\Pipeline;
 interface ChatterRepository
 {
     /**
-     * Set the giveaway status for a user.
-     *
-     * @param $status
-     * @return mixed
-     */
-    public function setGiveAwayStatus(Channel $channel, $handle, $status);
-
-    /**
-     * Get the time the points system was last updated for a channel.
-     *
-     * Channel $channel
-     * @return string
-     */
-    public function lastUpdate(Channel $channel);
-
-    /**
-     * Set the time the points system for a channel was last updated.
-     *
-     * @param Channel $channel
-     * @param Carbon $time
-     *
-     * @return mixed
-     */
-    public function setLastUpdate(Channel $channel, Carbon $time);
-
-    /**
      * Get all chatters belonging to a channel.
      *
      * @param Channel $channel
@@ -92,14 +66,6 @@ interface ChatterRepository
      * @param array $handle
      */
     public function addAdmin(Channel $channel, $handle);
-
-    /**
-     * Get the number of chatters a channel has.
-     *
-     * @param Channel $channel
-     * @return int
-     */
-    public function getCountForChannel(Channel $channel);
 
     /**
      * Find a single chatter by their handle and which users owns them.

@@ -78,48 +78,6 @@ class RedisChatterRepository implements ChatterRepository
     }
 
     /**
-     * Set the giveaway status for a user.
-     *
-     * @param $status
-     * @return mixed
-     */
-    public function setGiveAwayStatus(Channel $channel, $handle, $status)
-    {
-        $key = $this->makeKey($channel['id'], $handle);
-
-        return $this->redis->hset($key, 'giveaway', (bool) $status);
-    }
-
-    /**
-     * Get the time the points system was last updated for a channel.
-     *
-     * @return string
-     */
-    public function lastUpdate(Channel $channel)
-    {
-        $key    = 'last_update:' . $channel['id'];
-        $value  = $this->redis->get($key);
-
-        if ($value) {
-            return Carbon::parse($value);
-        }
-    }
-
-    /**
-     * Set the time the points system for a channel was last updated.
-     *
-     * @param Carbon $time
-     *
-     * @return mixed
-     */
-    public function setLastUpdate(Channel $channel, Carbon $time)
-    {
-        $key = 'last_update:' . $channel['id'];
-
-        return $this->redis->set($key, $time->second(0)->toDateTimeString());
-    }
-
-    /**
      * Setup pagination for results.
      *
      * @param int $page

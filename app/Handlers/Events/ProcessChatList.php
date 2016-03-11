@@ -41,6 +41,34 @@ class ProcessChatList
     }
 
     /**
+     * Set the time the points system for a channel was last updated.
+     *
+     * @param Channel $channel
+     * @param Carbon $time
+     *
+     * @return mixed
+     */
+    private function setLastUpdate(Channel $channel, Carbon $time)
+    {
+        return \Cache::forever("#{$channel->name}:lastUpdate", $time->second(0)->toDateTimeString());
+    }
+
+    /**
+     * Get the time the points system was last updated for a channel.
+     *
+     * Channel $channel
+     * @return string
+     */
+    private function getLastUpdate(Channel $channel)
+    {
+        $lastUpdate = \Cache::get("#{$channel->name}:lastUpdate");
+
+        if ($lastUpdate) {
+            return Carbon::parse($lastUpdate);
+        }
+    }
+
+    /**
      * Calculate how many minutes have gone by since the system
      * last run.
      *
@@ -48,8 +76,8 @@ class ProcessChatList
      */
     private function calculateMinutes(Channel $channel)
     {
-        $lastUpdate = $this->chatterRepository->lastUpdate($channel);
-        $this->chatterRepository->setLastUpdate($channel, Carbon::now());
+        $lastUpdate = $this->getLastUpdate($channel);
+        $this->setLastUpdate($channel, Carbon::now());
 
         if ($lastUpdate instanceof Carbon) {
             return Carbon::now()->diffInMinutes($lastUpdate);
