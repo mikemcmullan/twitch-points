@@ -26,7 +26,7 @@ class RepositoryServiceProvider extends ServiceProvider
     {
         $this->app->bind(
             'App\Contracts\Repositories\ChatterRepository',
-            'App\Repositories\Chatter\RedisChatterRepository'
+            'App\Repositories\Chatter\MySQLChatterRepository'
         );
 
 //        $this->app->bind(
