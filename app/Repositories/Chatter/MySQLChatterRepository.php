@@ -6,17 +6,11 @@ use DB;
 use App\Channel;
 use App\Chatter;
 use Carbon\Carbon;
-use Illuminate\Redis\Database;
 use Illuminate\Support\Collection;
 use App\Contracts\Repositories\ChatterRepository;
 
 class MySQLChatterRepository implements ChatterRepository
 {
-    /**
-     * @var Database
-     */
-    private $redis;
-
     /**
      * @var Chatter
      */
@@ -36,9 +30,8 @@ class MySQLChatterRepository implements ChatterRepository
      */
     private $perPage = 0;
 
-    public function __construct(Database $redis, Chatter $model)
+    public function __construct(Chatter $model)
     {
-        $this->redis = $redis;
         $this->model = $model;
     }
 
