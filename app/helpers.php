@@ -42,3 +42,31 @@ function presentTimeOnline($minutes)
 
     return $minutes . ' minutes';
 }
+
+/**
+ * Set the time the points system for a channel was last updated.
+ *
+ * @param Channel $channel
+ * @param Carbon $time
+ *
+ * @return mixed
+ */
+function setLastUpdate(App\Channel $channel, Carbon\Carbon $time)
+{
+    return Cache::forever("#{$channel->name}:lastUpdate", $time->second(0)->toDateTimeString());
+}
+
+/**
+ * Get the time the points system was last updated for a channel.
+ *
+ * Channel $channel
+ * @return string
+ */
+function getLastUpdate(App\Channel $channel)
+{
+    $lastUpdate = Cache::get("#{$channel->name}:lastUpdate");
+
+    if ($lastUpdate) {
+        return Carbon\Carbon::parse($lastUpdate);
+    }
+}

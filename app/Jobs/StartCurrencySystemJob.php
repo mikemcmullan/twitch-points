@@ -39,7 +39,7 @@ class StartCurrencySystemJob extends Job
         $session = $trackSessionRepository->findIncompletedSession($this->channel);
 
         if (! $session) {
-            $chatterRepository->setLastUpdate($this->channel, Carbon::now());
+            setLastUpdate($this->channel, Carbon::now());
             return $trackSessionRepository->create($this->channel);
         }
     }
