@@ -147,19 +147,23 @@
                                 </thead>
 
                                 <tbody>
-                                @foreach ($chatters as $chatter)
+                                @forelse ($chatters as $chatter)
                                     <tr>
                                         <td>{{ $chatter['rank'] or '--'}}</td>
-                                        <td>{{ $chatter['handle'] }} {!! $chatter['mod'] ? '<span class="label label-primary">MOD</span>' : '' !!}</td>
+                                        <td>{{ $chatter['handle'] }} {!! $chatter['moderator'] ? '<span class="label label-primary">MOD</span>' : '' !!}</td>
                                         <td>{{ presentTimeOnline($chatter['minutes']) }}</td>
                                         <td>{{ floor($chatter['points']) }}</td>
                                     </tr>
-                                @endforeach
+                                @empty
+                                    <tr>
+                                        <td colspan="4">No data available.</td>
+                                    </tr>
+                                @endforelse
                                 </tbody>
                             </table><!-- .body -->
 
                             <div class="text-center">
-                                {!! $paginator !!}
+                                {!! $chatters->links() !!}
                             </div>
                         </div><!-- .col -->
                     </div><!-- .row -->
