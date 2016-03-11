@@ -46,8 +46,7 @@ class CurrencyController extends Controller
 
         $data['page'] = $request->get('page', 1);
         $data['chatters'] = $this->chatterRepository->paginate($data['page'], 100)->allForChannel($channel, false, $channel->getSetting('rank-mods', false));
-        $data['count'] = $this->chatterRepository->getCountForChannel($channel);
-        $data['paginator'] = new Paginator($data['count'], 100, $request->get('page', 1), route('scoreboard_path', [$channel->slug]) . '?page=(:num)');
+        $data['count'] = $data['chatters']->total();
         $data['status'] = (bool) $trackPointsSession->findIncompletedSession($channel);
 
         return view('scoreboard', $data);
