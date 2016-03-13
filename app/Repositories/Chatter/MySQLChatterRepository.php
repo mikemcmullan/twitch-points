@@ -61,6 +61,7 @@ class MySQLChatterRepository implements ChatterRepository
     public function findByHandle(Channel $channel, $handle)
     {
         $sub = $this->chattersQuery($channel);
+        $sub->where('hidden', '!=', true);
 
         $query = DB::table(DB::raw("({$sub->toSql()}) as sub"))
             ->mergeBindings($sub)
