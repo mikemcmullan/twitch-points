@@ -4,7 +4,8 @@ namespace App\Http\Controllers\API;
 
 use Illuminate\Http\Request;
 use Illuminate\Events\Dispatcher;
-
+use Illuminate\Support\MessageBag;
+use Illuminate\Contracts\Validation\ValidationException;
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
@@ -27,16 +28,16 @@ class SettingsController extends Controller
     public function update(Request $request, Dispatcher $events, Channel $channel)
     {
         $newSettings = $request->except("/{$channel->slug}/settings");
-        $errors = [];
+        $errorBag = new MessageBag();
 
         foreach ($newSettings as $setting => $value) {
-            if ($this->channel->getSetting($setting) === null) {
-                $errors[$setting] = ['invalid_setting'];
+            if ($channel->getSetting($setting) === null) {
+                $errorBag->add($setting, 'invalid_setting');
             }
         }
 
-        if (! empty($errors)) {
-            throw new BadRequestHttpException(json_encode(['validation_errors' => $errors]));
+        if (! $errorBag->isEmpty()) {
+            throw new ValidationException($errorBag);
         }
 
         foreach ($newSettings as $setting => $value) {
