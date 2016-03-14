@@ -16,6 +16,10 @@ class TimersController extends Controller
 
     public function index()
     {
+        if (\Gate::denies('access-page', 'timers')) {
+            return $this->redirectHomeWithMessage();
+        }
+
         return view('timers');
     }
 }

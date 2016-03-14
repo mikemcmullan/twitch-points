@@ -26,6 +26,10 @@ class AuthServiceProvider extends ServiceProvider
     {
         parent::registerPolicies($gate);
 
+        $gate->define('access-page', function ($user, $page) {
+            return $user->hasPermission($page);
+        });
+
         \Auth::provider('custom', function ($app) {
             return $app->make(\App\Providers\Auth\CustomUserProvider::class, ['model' => $app['config']['auth']['providers']['users']['model']]);
         });

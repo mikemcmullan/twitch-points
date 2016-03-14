@@ -30,30 +30,16 @@ class Authenticate
      *
      * @param  \Illuminate\Http\Request  $request
      * @param  \Closure  $next
+     * @param string|null $guard
      * @return mixed
      */
-    public function handle($request, Closure $next)
+    public function handle($request, Closure $next, $guard = null)
     {
-        if ($this->auth->guest()) {
-            if ($request->ajax()) {
+        if (\Auth::guard($guard)->guest()) {
+            if ($request->ajax() || $request->wantsJson()) {
                 return response('Unauthorized.', 401);
             } else {
                 return redirect()->guest(route('login_path', $request->route()->getParameter('channel')->slug));
-            }
-        }
-
-        // permission name => url
-        $paths = [
-            'system-control'=> 'system-control',
-            // 'commands'      => 'commands',
-            'giveaway'      => 'giveaway',
-            'timers'        => 'timers',
-            'vips'          => 'vips'
-        ];
-
-        foreach ($paths as $permission => $path) {
-            if ($request->is($path) && ! $this->auth->user()->hasPermission($permission)) {
-                return redirect()->route('home_path', $request->route()->getParameter('channel')->slug)->with('message', 'You\'re not allowed to use this feature.');
             }
         }
 

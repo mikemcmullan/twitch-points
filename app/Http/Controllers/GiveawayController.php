@@ -31,6 +31,10 @@ class GiveawayController extends Controller
      */
     public function index(Channel $channel)
     {
+        if (\Gate::denies('access-page', 'giveaway')) {
+            return $this->redirectHomeWithMessage();
+        }
+
         $data['status'] = $this->giveawayManager->isGiveAwayRunning($channel) ? 'Running' : 'Stopped';
 
         return view('giveaways', $data);

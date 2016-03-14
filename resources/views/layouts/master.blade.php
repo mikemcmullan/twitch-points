@@ -49,14 +49,13 @@
                     <li{!! Route::currentRouteName() === 'commands_path' ? ' class="active"' : '' !!}><a href="{!! route('commands_path', [$channel->slug]) !!}"><i class="fa fa-list"></i> <span>Commands</span></a></li>
 
                     @if ($user)
-                        @if ($user->hasPermission('giveaway'))
+                        @can('access-page', 'giveaway')
                             <li{!! Route::currentRouteName() === 'giveaway_path' ? ' class="active"' : '' !!}><a href="{!! route('giveaway_path', [$channel->slug]) !!}"><i class="fa fa-gift"></i> <span>Giveaways</span></a></li>
-                        @endif
+                        @endcan
 
-
-                        @if ($user->hasPermission('timers'))
+                        @can('access-page', 'timers')
                             <li{!! Route::currentRouteName() === 'timers_path' ? ' class="active"' : '' !!}><a href="{!! route('timers_path', [$channel->slug]) !!}"><i class="fa fa-clock-o"></i> <span>Timers</span></a></li>
-                        @endif
+                        @endcan
                     @endif
                 </ul>
             </section><!-- .sidebar -->
