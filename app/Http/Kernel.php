@@ -31,7 +31,6 @@ class Kernel extends HttpKernel
         ],
         'api' => [
             // 'throttle:60,1'
-            \App\Http\Middleware\ApiResponseHeaders::class
         ],
     ];
 
@@ -42,7 +41,6 @@ class Kernel extends HttpKernel
      */
     protected $routeMiddleware = [
         'auth' => \App\Http\Middleware\Authenticate::class,
-        'auth.twitch' => \App\Http\Middleware\TwitchAuthenticate::class,
         'auth.basic' => \Illuminate\Auth\Middleware\AuthenticateWithBasicAuth::class,
         'guest' => \App\Http\Middleware\RedirectIfAuthenticated::class,
         'jwt.auth' => \Tymon\JWTAuth\Middleware\GetUserFromToken::class,
