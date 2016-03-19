@@ -33,12 +33,14 @@ class SettingsEventListener
      */
     public function currencyKeywordUpdated(Channel $channel, $oldSetting, $newSetting)
     {
-        $command = Command::where(['channel_id' => $channel->id, 'file' => 'GetCurrency'])->first();
+        $commands = Command::where(['channel_id' => $channel->id, 'file' => 'GetCurrency'])->get();
 
-        $this->commandsManager->update($channel, $command->id, [
-            'command' => str_replace($oldSetting, $newSetting, $command->command),
-            'usage' => str_replace($oldSetting, $newSetting, $command->usage)
-        ]);
+        $commands->each(function ($command) use ($channel, $oldSetting, $newSetting) {
+            $this->commandsManager->update($channel, $command->id, [
+                'command' => str_replace($oldSetting, $newSetting, $command->command),
+                'usage' => str_replace($oldSetting, $newSetting, $command->usage)
+            ]);
+        });
     }
 
     /**
@@ -54,10 +56,12 @@ class SettingsEventListener
     {
         $command = \App\Command::where(['channel_id' => $channel->id, 'file' => 'Giveaway'])->first();
 
-        $this->commandsManager->update($channel, $command->id, [
-            'command' => str_replace($oldSetting, $newSetting, $command->command),
-            'usage' => str_replace($oldSetting, $newSetting, $command->usage)
-        ]);
+        if ($command) {
+            $this->commandsManager->update($channel, $command->id, [
+                'command' => str_replace($oldSetting, $newSetting, $command->command),
+                'usage' => str_replace($oldSetting, $newSetting, $command->usage)
+            ]);
+        }
     }
 
     /**
