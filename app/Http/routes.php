@@ -75,6 +75,39 @@ Route::group(['domain' => config('app.api_domain'), 'prefix' => '{channel}', 'na
      ]);
 
     /*
+     * Quotes Routes
+     */
+     Route::get('/quotes', [
+         'uses' => 'QuotesController@index',
+         'as'   => 'api_quotes_path'
+     ]);
+
+     Route::get('/quotes/random', [
+         'uses' => 'QuotesController@random',
+         'as'   => 'api_quotes_random_path'
+     ]);
+
+     Route::get('/quotes/{id}', [
+         'uses'  => 'QuotesController@show',
+         'as'    => 'api_quotes_show_path'
+     ]);
+
+     Route::post('/quotes', [
+         'uses' => 'QuotesController@store',
+         'as'   => 'api_quotes_store_path'
+     ]);
+
+     Route::put('/quotes/{id}', [
+         'uses' => 'QuotesController@update',
+         'as'   => 'api_quotes_update_path'
+     ]);
+
+     Route::delete('/quotes/{id}', [
+         'uses' => 'QuotesController@destroy',
+         'as'   => 'api_quotes_destroy_path'
+     ]);
+
+    /*
      * Settings Routes
      */
     Route::put('/settings', [
@@ -159,6 +192,14 @@ Route::group(['domain' => '{channel}.' . config('app.root_domain'), 'middleware'
     Route::get('/timers', [
         'uses'  => 'TimersController@index',
         'as'    => 'timers_path'
+    ]);
+
+    /**
+     * Quotes Routes
+     */
+    Route::get('/quotes', [
+        'uses'  => 'QuotesController@index',
+        'as'    => 'quotes_path'
     ]);
 
     /**

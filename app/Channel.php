@@ -10,6 +10,7 @@ use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
 use Illuminate\Contracts\Auth\CanResetPassword as CanResetPasswordContract;
 use App\TrackSession;
 use App\Timers\Timer;
+use App\Quotes\Quote;
 
 class Channel extends Model implements AuthenticatableContract, CanResetPasswordContract
 {
@@ -63,6 +64,14 @@ class Channel extends Model implements AuthenticatableContract, CanResetPassword
     public function timers()
     {
         return $this->hasMany(Timer::class);
+    }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function quotes()
+    {
+        return $this->hasMany(Quote::class);
     }
 
     /**

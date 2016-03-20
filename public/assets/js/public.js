@@ -11652,6 +11652,31 @@ if (document.querySelector('#commands')) {
     });
 }
 
+//------------------------------------------------------------------------------
+// Quotes
+//------------------------------------------------------------------------------
+if (document.querySelector('#quotes')) {
+    new _vue2.default({
+        el: '#quotes',
+
+        data: {
+            quotes: [],
+            loading: true
+        },
+
+        ready: function ready() {
+            var _this2 = this;
+
+            this.$http.get('quotes').then(function (response) {
+                _this2.quotes = response.data;
+                _this2.loading = false;
+
+                _this2.$els.loop.className = '';
+            });
+        }
+    });
+}
+
 },{"./components/paginator.vue":28,"vue":27,"vue-resource":16}]},{},[29,30]);
 
 //# sourceMappingURL=public.js.map

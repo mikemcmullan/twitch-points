@@ -47,6 +47,7 @@
                 <ul class="sidebar-menu">
                     <li{!! in_array(Route::currentRouteName(), ['scoreboard_path', 'home_path']) ? ' class="active"' : '' !!}><a href="{!! route('scoreboard_path', [$channel->slug]) !!}"><i class="fa fa-money"></i> <span>Scoreboard</span></a></li>
                     <li{!! Route::currentRouteName() === 'commands_path' ? ' class="active"' : '' !!}><a href="{!! route('commands_path', [$channel->slug]) !!}"><i class="fa fa-list"></i> <span>Commands</span></a></li>
+                    <li{!! Route::currentRouteName() === 'quotes_path' ? ' class="active"' : '' !!}><a href="{!! route('quotes_path', [$channel->slug]) !!}"><i class="fa fa-quote-left"></i> <span>Quotes</span></a></li>
 
                     @if ($user)
                         @can('access-page', 'giveaway')

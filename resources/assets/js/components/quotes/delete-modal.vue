@@ -9,7 +9,7 @@
 
                 <form @submit.prevent @submit="delete">
                     <div class="modal-body">
-                        Are you sure you want to delete the timer <code>{{ timer.name }}</code> ?
+                        Are you sure you want to delete the quote <code>#{{ quote.id }}</code> ?
                     </div><!-- .modal-body -->
 
                     <div class="modal-footer">
@@ -29,9 +29,9 @@
 
         data: () => {
             return {
-                title: 'Delete Timer',
+                title: 'Delete Quote',
                 modal: false,
-                timer: false,
+                quote: false,
                 deleting: false
             }
         },
@@ -41,35 +41,35 @@
 
             this.modal.on('hide.bs.modal', () => {
                 setTimeout(() => {
-                    this.timer = false;
+                    this.quote = false;
                     this.deleting = false;
                 }, 500);
             });
         },
 
         events: {
-            openDeleteModal(timer) {
-                this.open(timer);
+            openDeleteModal(quote) {
+                this.open(quote);
             }
         },
 
         methods: {
             delete() {
-                this.$http.delete(`timers/${this.timer.id}`, {}, {
+                this.$http.delete(`quotes/${this.quote.id}`, {}, {
                     beforeSend: (request) => {
                         this.deleting = true;
                     }
                 })
                     .then((response) => {
-                        this.$parent.deleteFromTable(this.timer);
+                        this.$parent.deleteFromTable(this.quote);
                         this.close();
                     }, (response) => {
                         this.deleting = false;
                     });
             },
 
-            open(timer) {
-                this.timer = timer;
+            open(quote) {
+                this.quote = quote;
                 this.modal.modal('toggle');
             },
 

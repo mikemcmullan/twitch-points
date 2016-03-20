@@ -58,3 +58,27 @@ if (document.querySelector('#commands')) {
         }
     });
 }
+
+//------------------------------------------------------------------------------
+// Quotes
+//------------------------------------------------------------------------------
+if (document.querySelector('#quotes')) {
+    new Vue({
+        el: '#quotes',
+
+        data: {
+            quotes: [],
+            loading: true
+        },
+
+        ready() {
+            this.$http.get('quotes')
+                .then((response) => {
+                    this.quotes = response.data;
+                    this.loading = false;
+
+                    this.$els.loop.className = '';
+                })
+        }
+    });
+}

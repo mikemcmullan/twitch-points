@@ -13252,6 +13252,14 @@ var _deleteModal3 = require('./components/timers/delete-modal.vue');
 
 var _deleteModal4 = _interopRequireDefault(_deleteModal3);
 
+var _editModal5 = require('./components/quotes/edit-modal.vue');
+
+var _editModal6 = _interopRequireDefault(_editModal5);
+
+var _deleteModal5 = require('./components/quotes/delete-modal.vue');
+
+var _deleteModal6 = _interopRequireDefault(_deleteModal5);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 _vue2.default.use(require('vue-resource'));
@@ -13524,7 +13532,93 @@ if (document.querySelector('#timers')) {
     });
 }
 
-},{"./components/commands/delete-modal.vue":30,"./components/commands/edit-modal.vue":31,"./components/currency/settings.vue":32,"./components/giveaway/control-panel.vue":33,"./components/giveaway/entries.vue":34,"./components/giveaway/settings.vue":35,"./components/paginator.vue":36,"./components/timers/delete-modal.vue":37,"./components/timers/edit-modal.vue":38,"vue":28,"vue-resource":16,"vue-validator":27}],30:[function(require,module,exports){
+//------------------------------------------------------------------------------
+// Quotes
+//------------------------------------------------------------------------------
+
+if (document.querySelector('#quotes')) {
+    new _vue2.default({
+        el: '#quotes',
+
+        components: {
+            'edit-quote-modal': _editModal6.default,
+            'delete-quote-modal': _deleteModal6.default
+        },
+
+        data: {
+            quotes: [],
+            loading: true
+        },
+
+        ready: function ready() {
+            var _this6 = this;
+
+            this.$http.get('quotes').then(function (response) {
+                _this6.quotes = response.data;
+                _this6.loading = false;
+
+                _this6.$els.loop.className = '';
+            });
+        },
+
+        methods: {
+            _getQuote: function _getQuote(value) {
+                var key = arguments.length <= 1 || arguments[1] === undefined ? 'id' : arguments[1];
+
+                return this.quotes.find(function (quote) {
+                    return quote[key] == value;
+                });
+            },
+            editModal: function editModal(id) {
+                this.$broadcast('openEditModal', this._getQuote(id));
+            },
+            newModal: function newModal() {
+                this.$broadcast('openNewModal');
+            },
+
+            // disable(id) {
+            //     if (this.disableDisableBtn) {
+            //         return;
+            //     }
+            //
+            //     this.disableDisableBtn = true;
+            //     let timer = this._getQuote(id);
+            //
+            //     this.$http.put(`timers/${timer.id}`, { disabled: !timer.disabled })
+            //         .then((response) => {
+            //             this.updateOrAddToTable(response.data);
+            //             this.disableDisableBtn = false;
+            //         });
+            // },
+
+            deleteModal: function deleteModal(id) {
+                this.$broadcast('openDeleteModal', this._getQuote(id));
+            },
+            updateOrAddToTable: function updateOrAddToTable(quote) {
+                var index = this.quotes.findIndex(function (row) {
+                    return row.id === quote.id;
+                });
+
+                if (index !== -1) {
+                    this.quotes.splice(index, 1, quote);
+                } else {
+                    this.quotes.unshift(quote);
+                }
+            },
+            deleteFromTable: function deleteFromTable(quote) {
+                var index = this.quotes.findIndex(function (row) {
+                    return row.id === quote.id;
+                });
+
+                if (index !== -1) {
+                    this.quotes.splice(index, 1);
+                }
+            }
+        }
+    });
+}
+
+},{"./components/commands/delete-modal.vue":30,"./components/commands/edit-modal.vue":31,"./components/currency/settings.vue":32,"./components/giveaway/control-panel.vue":33,"./components/giveaway/entries.vue":34,"./components/giveaway/settings.vue":35,"./components/paginator.vue":36,"./components/quotes/delete-modal.vue":37,"./components/quotes/edit-modal.vue":38,"./components/timers/delete-modal.vue":39,"./components/timers/edit-modal.vue":40,"vue":28,"vue-resource":16,"vue-validator":27}],30:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -14203,6 +14297,185 @@ exports.default = {
 
     data: function data() {
         return {
+            title: 'Delete Quote',
+            modal: false,
+            quote: false,
+            deleting: false
+        };
+    },
+
+    ready: function ready() {
+        var _this = this;
+
+        this.$set('modal', $(this.$els.modal));
+
+        this.modal.on('hide.bs.modal', function () {
+            setTimeout(function () {
+                _this.quote = false;
+                _this.deleting = false;
+            }, 500);
+        });
+    },
+
+    events: {
+        openDeleteModal: function openDeleteModal(quote) {
+            this.open(quote);
+        }
+    },
+
+    methods: {
+        delete: function _delete() {
+            var _this2 = this;
+
+            this.$http.delete('quotes/' + this.quote.id, {}, {
+                beforeSend: function beforeSend(request) {
+                    _this2.deleting = true;
+                }
+            }).then(function (response) {
+                _this2.$parent.deleteFromTable(_this2.quote);
+                _this2.close();
+            }, function (response) {
+                _this2.deleting = false;
+            });
+        },
+        open: function open(quote) {
+            this.quote = quote;
+            this.modal.modal('toggle');
+        },
+        close: function close() {
+            this.modal.modal('toggle');
+        }
+    }
+};
+if (module.exports.__esModule) module.exports = module.exports.default
+;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n<div class=\"modal fade\" v-el:modal=\"\">\n    <div class=\"modal-dialog\" role=\"document\">\n        <div class=\"modal-content\">\n            <div class=\"modal-header\">\n                <button type=\"button\" class=\"close\" @click=\"close\" aria-label=\"Close\"><span aria-hidden=\"true\">×</span></button>\n                <h4 class=\"modal-title\">{{ title }}</h4>\n            </div><!-- .modal-header -->\n\n            <form @submit.prevent=\"\" @submit=\"delete\">\n                <div class=\"modal-body\">\n                    Are you sure you want to delete the quote <code>#{{ quote.id }}</code> ?\n                </div><!-- .modal-body -->\n\n                <div class=\"modal-footer\">\n                    <button type=\"button\" class=\"btn btn-default\" @click=\"close\">Cancel</button>\n                    <button type=\"submit\" class=\"btn btn-primary\" v-bind:disabled=\"deleting\">{{ deleting ? 'Deleting...' : 'Yes, Delete' }}</button>\n                </div><!-- .modal-footer -->\n            </form><!-- form -->\n        </div><!-- .modal-content -->\n    </div><!-- .modal-dialog -->\n</div><!-- .modal -->\n"
+if (module.hot) {(function () {  module.hot.accept()
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), true)
+  if (!hotAPI.compatible) return
+  var id = "/home/vagrant/Code/twitch-points/resources/assets/js/components/quotes/delete-modal.vue"
+  if (!module.hot.data) {
+    hotAPI.createRecord(id, module.exports)
+  } else {
+    hotAPI.update(id, module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
+  }
+})()}
+},{"vue":28,"vue-hot-reload-api":2}],38:[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+exports.default = {
+    props: {},
+
+    data: function data() {
+        return {
+            title: false,
+            modal: false,
+            saving: false,
+            id: null,
+            text: null
+        };
+    },
+
+    ready: function ready() {
+        var _this = this;
+
+        this.$set('modal', $(this.$els.modal));
+
+        this.modal.on('hide.bs.modal', function () {
+            setTimeout(function () {
+                _this.id = null;
+                _this.text = null;
+                _this.saving = false;
+                _this.$validatorReset();
+            }, 500);
+        });
+    },
+
+    events: {
+        openEditModal: function openEditModal(timer) {
+            this.title = 'Edit Quote';
+            this.open(timer);
+        },
+        openNewModal: function openNewModal() {
+            this.title = 'New Quote';
+            this.open();
+        }
+    },
+
+    methods: {
+        save: function save() {
+            var _this2 = this;
+
+            var request = undefined,
+                data = {
+                text: this.text
+            };
+
+            if (this.id === null) {
+                request = this.$http.post('quotes', data, {
+                    beforeSend: function beforeSend() {
+                        _this2.saving = true;
+                    }
+                });
+            } else {
+                request = this.$http.put('quotes/' + this.id, data, {
+                    beforeSend: function beforeSend() {
+                        _this2.saving = true;
+                    }
+                });
+            }
+
+            request.then(function (response) {
+                _this2.$parent.updateOrAddToTable(response.data);
+
+                _this2.close();
+            }, function (response) {
+                _this2.saving = false;
+            });
+        },
+        open: function open(timer) {
+            if (timer) {
+                this.id = timer.id;
+                this.text = timer.text;
+            }
+
+            this.$validatorReset();
+
+            this.modal.modal('toggle');
+        },
+        close: function close() {
+            this.modal.modal('toggle');
+        }
+    }
+};
+if (module.exports.__esModule) module.exports = module.exports.default
+;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n<div class=\"modal fade\" v-el:modal=\"\">\n    <div class=\"modal-dialog\" role=\"document\">\n        <div class=\"modal-content\">\n            <div class=\"modal-header\">\n                <button type=\"button\" class=\"close\" @click=\"close\" aria-label=\"Close\"><span aria-hidden=\"true\">×</span></button>\n                <h4 class=\"modal-title\">{{ title }}</h4>\n            </div><!-- .modal-header -->\n\n            <validator name=\"editValidation\">\n                <form @submit.prevent=\"\" @submit=\"save\">\n                    <div class=\"modal-body\">\n                        <div class=\"form-group\" v-bind:class=\"{ 'has-error': !$editValidation.text.valid &amp;&amp; $editValidation.text.modified }\">\n                            <label for=\"message-input\">Quote Text:</label>\n                            <textarea class=\"form-control\" id=\"text-input\" name=\"text\" rows=\"4\" v-model=\"text\" v-bind:disabled=\"\" placeholder=\"\" v-validate:text=\"{ maxlength: 500, required: true }\"></textarea>\n\n                            <span class=\"help-block\" v-if=\"$editValidation.text.required &amp;&amp; $editValidation.text.modified\">Message is required.</span>\n                            <span class=\"help-block\" v-if=\"$editValidation.text.maxlength\">Text cannot be longer than 500 characters.</span>\n                        </div><!-- .form-group -->\n                    </div><!-- .modal-body -->\n\n                    <div class=\"modal-footer\">\n                        <button type=\"button\" class=\"btn btn-default\" @click=\"close\">Close</button>\n                        <button type=\"submit\" class=\"btn btn-primary\" v-bind:disabled=\"saving || !$editValidation.valid\">{{ saving ? 'Saving...' : 'Save' }}</button>\n                    </div><!-- .modal-footer -->\n                </form><!-- form -->\n            </validator>\n        </div><!-- .modal-content -->\n    </div><!-- .modal-dialog -->\n</div><!-- .modal -->\n"
+if (module.hot) {(function () {  module.hot.accept()
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), true)
+  if (!hotAPI.compatible) return
+  var id = "/home/vagrant/Code/twitch-points/resources/assets/js/components/quotes/edit-modal.vue"
+  if (!module.hot.data) {
+    hotAPI.createRecord(id, module.exports)
+  } else {
+    hotAPI.update(id, module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
+  }
+})()}
+},{"vue":28,"vue-hot-reload-api":2}],39:[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+exports.default = {
+
+    props: {},
+
+    data: function data() {
+        return {
             title: 'Delete Timer',
             modal: false,
             timer: false,
@@ -14225,7 +14498,6 @@ exports.default = {
 
     events: {
         openDeleteModal: function openDeleteModal(timer) {
-            console.log(timer);
             this.open(timer);
         }
     },
@@ -14267,7 +14539,7 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update(id, module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"vue":28,"vue-hot-reload-api":2}],38:[function(require,module,exports){
+},{"vue":28,"vue-hot-reload-api":2}],40:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -14359,8 +14631,6 @@ exports.default = {
                         _this2.saving = true;
                     }
                 });
-
-                console.log('sdfsd');
             }
 
             request.then(function (response) {
@@ -14402,7 +14672,7 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update(id, module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"vue":28,"vue-hot-reload-api":2}],39:[function(require,module,exports){
+},{"vue":28,"vue-hot-reload-api":2}],41:[function(require,module,exports){
 'use strict';
 
 if (!String.prototype.capitalize) {
@@ -14463,6 +14733,6 @@ if (!Array.prototype.find) {
     };
 }
 
-},{}]},{},[39,29]);
+},{}]},{},[41,29]);
 
 //# sourceMappingURL=admin.js.map

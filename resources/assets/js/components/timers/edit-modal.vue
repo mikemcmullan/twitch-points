@@ -160,8 +160,6 @@
                             this.saving = true;
                         }
                     });
-
-                    console.log('sdfsd');
                 }
 
                 request.then((response) => {

@@ -281,3 +281,92 @@ if (document.querySelector('#timers')) {
         }
     });
 }
+
+//------------------------------------------------------------------------------
+// Quotes
+//------------------------------------------------------------------------------
+import editQuoteModal from './components/quotes/edit-modal.vue'
+import deleteQuoteModal from './components/quotes/delete-modal.vue'
+
+if (document.querySelector('#quotes')) {
+    new Vue({
+        el: '#quotes',
+
+        components: {
+            'edit-quote-modal': editQuoteModal,
+            'delete-quote-modal': deleteQuoteModal
+        },
+
+        data: {
+            quotes: [],
+            loading: true
+        },
+
+        ready() {
+            this.$http.get('quotes')
+                .then((response) => {
+                    this.quotes = response.data;
+                    this.loading = false;
+
+                    this.$els.loop.className = '';
+                })
+        },
+
+        methods: {
+            _getQuote(value, key = 'id') {
+                return this.quotes.find((quote) => {
+                    return quote[key] == value;
+                });
+            },
+
+            editModal(id) {
+                this.$broadcast('openEditModal', this._getQuote(id));
+            },
+
+            newModal() {
+                this.$broadcast('openNewModal');
+            },
+
+            // disable(id) {
+            //     if (this.disableDisableBtn) {
+            //         return;
+            //     }
+            //
+            //     this.disableDisableBtn = true;
+            //     let timer = this._getQuote(id);
+            //
+            //     this.$http.put(`timers/${timer.id}`, { disabled: !timer.disabled })
+            //         .then((response) => {
+            //             this.updateOrAddToTable(response.data);
+            //             this.disableDisableBtn = false;
+            //         });
+            // },
+
+            deleteModal(id) {
+                this.$broadcast('openDeleteModal', this._getQuote(id));
+            },
+
+            updateOrAddToTable(quote) {
+                let index = this.quotes.findIndex((row) => {
+                    return row.id === quote.id
+                });
+
+                if (index !== -1) {
+                    this.quotes.splice(index, 1, quote);
+                } else {
+                    this.quotes.unshift(quote);
+                }
+            },
+
+            deleteFromTable(quote) {
+                let index = this.quotes.findIndex((row) => {
+                    return row.id === quote.id
+                });
+
+                if (index !== -1) {
+                    this.quotes.splice(index, 1);
+                }
+            }
+        }
+    });
+}
