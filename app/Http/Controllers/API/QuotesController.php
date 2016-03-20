@@ -33,7 +33,7 @@ class QuotesController extends Controller
      */
     public function index(Channel $channel)
     {
-        $quotes = $this->quoteManager->all($channel);
+        $quotes = $this->quoteManager->all($channel, 'id');
 
         return response()->json($quotes);
     }
