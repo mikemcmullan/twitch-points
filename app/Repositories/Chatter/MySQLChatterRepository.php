@@ -109,6 +109,7 @@ class MySQLChatterRepository implements ChatterRepository
     public function allModsForChannel(Channel $channel)
     {
         return (new Collection(DB::table('chatters')
+            ->where('channel_id', '=', $channel->id)
             ->where('moderator', '=', true)
             ->get()))->keyBy('handle');
     }
@@ -158,6 +159,7 @@ class MySQLChatterRepository implements ChatterRepository
     public function allAdminsForChannel(Channel $channel)
     {
         return (new Collection(DB::table('chatters')
+            ->where('channel_id', '=', $channel->id)
             ->where('administrator', '=', true)
             ->get()))->keyBy('handle');
     }
