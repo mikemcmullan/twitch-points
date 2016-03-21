@@ -68,11 +68,12 @@
                                 </div><!-- .form-group -->
 
                                 <div class="form-group" v-bind:class="{ 'has-error': !$settingsValidation.keyword.valid }">
-                                    <label for="control-amount" class="col-sm-3 control-label">Keyword</label>
+                                    <label for="control-keyword" class="col-sm-3 control-label">Keyword</label>
                                     <div class="col-sm-9">
-                                        {!! Form::text('keyword', $channel->getSetting('currency.keyword'), ['class' => 'form-control', 'id' => 'control-amount', 'v-model' => 'keyword', 'v-validate:keyword' => "{ minlength: 2, maxlength: 20, required: true }"]) !!}
 
-                                        <span class="help-block" v-show="!$settingsValidation.keyword.valid">Keyword requires a minimum of 2 characters and has a maximum 20 characters.</span>
+                                        <input type="text" name="keyword" id="control-keyword" class="form-control" v-model="keyword" value="{{ $channel->getSetting('currency.keyword') }}" v-validate:keyword="{ keywordFormat: true }">
+
+                                        <span class="help-block" v-show="!$settingsValidation.keyword.valid">Keyword must be a single word and may be prepended with a !, maximum of 20 chatacters.</span>
                                         <span class="help-block">Viewers will enter this keyword to check how much {{ lcfirst($channel->getSetting('currency.name')) }} they have.</span>
                                     </div>
                                 </div><!-- .form-group -->

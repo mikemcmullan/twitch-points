@@ -11,6 +11,13 @@ Vue.transition('fade', {
     leaveClass: 'fadeOut'
 });
 
+Vue.validator('keywordFormat', {
+    message: 'invalid email address', // error message with plain string
+    check: (val) => {
+        return /^!?\w{2,20}$/.test(val);
+    }
+})
+
 // Vue.config.debug = true;
 
 //------------------------------------------------------------------------------

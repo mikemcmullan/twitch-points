@@ -13273,6 +13273,14 @@ _vue2.default.transition('fade', {
     leaveClass: 'fadeOut'
 });
 
+_vue2.default.validator('keywordFormat', {
+    message: 'invalid email address', // error message with plain string
+    check: function check(val) {
+        return (/^!?\w{2,20}$/.test(val)
+        );
+    }
+});
+
 // Vue.config.debug = true;
 
 //------------------------------------------------------------------------------

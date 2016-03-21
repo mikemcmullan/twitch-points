@@ -72,11 +72,11 @@
                                 <div class="form-group" v-bind:class="{ 'has-error': !$settingsValidation.keyword.valid }">
                                     <label for="giveaway-keyword">Keyword</label>
                                     <div class="input-group">
-                                        {!! Form::text('keyword', $channel->getSetting('giveaway.keyword'), ['id' => 'giveaway-keyword', 'class' => 'form-control', 'v-model' => 'keyword', 'v-validate:keyword' => "{ minlength: 2, maxlength: 10, required: true }"]) !!}
+                                        {!! Form::text('keyword', $channel->getSetting('giveaway.keyword'), ['id' => 'giveaway-keyword', 'class' => 'form-control', 'v-model' => 'keyword', 'v-validate:keyword' => "{ keywordFormat: true }"]) !!}
                                         <span class="input-group-addon">#-number-of-tickets</span>
                                     </div>
 
-                                    <span class="help-block" v-show="!$settingsValidation.keyword.valid">Keyword requires a minimum of 2 characters and has a maximum 10 characters.</span>
+                                    <span class="help-block" v-show="!$settingsValidation.keyword.valid">Keyword must be a single word and may be prepended with a !, maximum of 20 chatacters.</span>
                                     <span class="help-block">Viewers would enter the keyword + the amount of tickets to enter the giveaway. ex, <code>@{{ keyword }} #-of-tickets</code></span>
                                 </div><!-- .form-group -->
 
