@@ -10,6 +10,7 @@ use App\Http\Controllers\Controller;
 use App\Exceptions\UnknownHandleException;
 use Exception;
 use InvalidArgumentException;
+use App\Support\NamedRanks;
 
 class ViewerController extends Controller
 {
@@ -33,7 +34,6 @@ class ViewerController extends Controller
         $handle = $request->get('handle');
 
         $response = $this->dispatch(new GetViewerJob($channel, $handle));
-        $response['time_online'] = presentTimeOnline($response['minutes']);
 
         return response()->json($response);
     }
