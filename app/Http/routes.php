@@ -115,6 +115,11 @@ Route::group(['domain' => config('app.api_domain'), 'prefix' => '{channel}', 'na
         'as'   => 'api_settings_update_path'
     ]);
 
+    Route::put('/settings/named-rankings', [
+        'uses' => 'SettingsController@updateNamedRankings',
+        'as'   => 'api_settings_named_rankings_update_path'
+    ]);
+
     /*
      * Currency Routes
      */

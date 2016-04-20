@@ -45,7 +45,7 @@ class GetViewerJob extends Job
         $viewer['channel'] = $this->channel->name;
         $viewer['points'] = floor($viewer['points']);
         $viewer['time_online'] = presentTimeOnline($viewer['minutes']);
-        $viewer['named_rank'] = (new \App\Support\NamedRankings($this->channel))->getRank($viewer['points']);
+        $viewer['named_rank'] = (new \App\Support\NamedRankings($this->channel))->getRank($viewer['points'])['name'];
 
         return array_only($viewer, ['handle', 'points', 'minutes', 'rank', 'moderator', 'administrator', 'time_online', 'named_rank']);
     }

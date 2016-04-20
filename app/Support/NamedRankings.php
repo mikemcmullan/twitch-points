@@ -3,7 +3,7 @@
 namespace App\Support;
 
 use App\Channel;
-use \Exception;
+use Exception;
 
 class NamedRankings
 {
@@ -30,7 +30,7 @@ class NamedRankings
     public function __construct(Channel $channel)
     {
         $this->channel = $channel;
-        $this->rankings = $channel->getSetting('named-rankings', []);
+        $this->rankings = []; //$channel->getSetting('named-rankings', []);
     }
 
     /**
@@ -46,13 +46,17 @@ class NamedRankings
     {
         $this->canAddRank($name, $min, $max);
 
+        if (strlen($name) < 2 || ! preg_match('/^[0-9]{1,6}$/', $min) || ! preg_match('/^[0-9]{1,6}$/', $max)) {
+            throw new Exception('Name must be at least 2 characters. Starting amount must be between 0 and 999999.');
+        }
+
         foreach ($this->rankings as $ranking) {
             if (
                 trim($name) === trim($ranking['name'])
                 || ($min >= $ranking['min'] && $max <= $ranking['max'])
                 || ($min < $ranking['min'] && $max > $ranking['max'])
             ) {
-                throw new Exception("Unable to add rank, '{$name}' colides with '{$ranking['name']}'.");
+                throw new Exception("Unable to add rank, the group named '{$name}' colides with the group named '{$ranking['name']}'.");
             }
         }
 
@@ -72,21 +76,26 @@ class NamedRankings
      * @return bool
      * @throws Exception
      */
-    public function removeRank($name, $min, $max)
-    {
-        foreach ($this->rankings as $index => $ranking) {
-            if ($ranking['name'] === $name && $ranking['min'] === $min && $ranking['max'] === $max) {
-                unset($this->rankings[$index]);
-                return true;
-            }
-        }
+    // public function removeRank($name, $min, $max)
+    // {
+    //     foreach ($this->rankings as $index => $ranking) {
+    //         if ($ranking['name'] === $name && $ranking['min'] === $min && $ranking['max'] === $max) {
+    //             unset($this->rankings[$index]);
+    //             return true;
+    //         }
+    //     }
+    //
+    //     throw new \Exception("No rank matching name: '{$name}', min: {$min}, max: {$max} found.");
+    // }
 
-        throw new \Exception("No rank matching name: '{$name}', min: {$min}, max: {$max} found.");
-    }
-
+    /**
+     * Save the rankings back to the db.
+     *
+     * @return bool
+     */
     public function save()
     {
-        $this->channel->setSetting('named-rankings', $this->rankings);
+        return $this->channel->setSetting('named-rankings', $this->rankings);
     }
 
     /**
@@ -97,28 +106,17 @@ class NamedRankings
      */
     public function getRank($amount)
     {
-        $rank = $this->findRank($amount);
-
-        if ($rank) {
-            return $rank['name'];
-        }
-
-        return 'Unknown';
-    }
-
-    /**
-     * Find the rank according to the provided amount.
-     *
-     * @param  int          $amount The amount of points.
-     * @return array|null
-     */
-    public function findRank($amount)
-    {
         foreach ($this->rankings as $ranking) {
             if ($amount >= $ranking['min'] && $amount <= $ranking['max']) {
                 return $ranking;
             }
         }
+
+        return [
+            'min' => 0,
+            'max' => 0,
+            'name' => 'Unknown'
+        ];
     }
 
     /**

@@ -10,6 +10,7 @@ use App\Http\Requests;
 use App\Http\Controllers\Controller;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use App\Channel;
+use App\Support\NamedRankings;
 
 class SettingsController extends Controller
 {
@@ -18,7 +19,7 @@ class SettingsController extends Controller
      */
     public function __construct(Request $request)
     {
-        $this->middleware('jwt.auth');
+        // $this->middleware('jwt.auth');
         $this->channel = $request->route()->getParameter('channel');
     }
 
@@ -51,5 +52,25 @@ class SettingsController extends Controller
         $this->channel->setSetting($newSettings);
 
         return response()->json($newSettings, 200);
+    }
+
+    public function updateNamedRankings(Request $request, Dispatcher $events, Channel $channel)
+    {
+        try {
+            $rankings = new NamedRankings($channel);
+
+            foreach ($request->input('named-rankings', []) as $rank) {
+                $rankings->addRank($rank['name'], $rank['min'], $rank['max']);
+            }
+
+            $rankings->save();
+        } catch (\Exception $e) {
+            return response()->json([
+                'error' => 'Bad Request',
+                'code'  => 400,
+                'message' => $e->getMessage()
+            ], 400);
+        }
+
     }
 }

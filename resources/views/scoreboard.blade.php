@@ -52,6 +52,9 @@
                     </div><!-- .box-header -->
 
                     <div class="box-body">
+
+                        <named-rankings-modal :ranks='{!! json_encode($channel->getSetting('named-rankings', [])) !!}'></named-rankings-modal>
+
                         <validator name="settingsValidation">
                             <form class="form-horizontal" @submit.prevent @submit="submit" novalidate>
                                 <div class="form-group">
@@ -106,6 +109,14 @@
                                             </label>
                                             <p class="help-block">Shound the currency system sync with the status of the stream? This is useful if you want to award currency when the stream is offline.</p>
                                         </div>
+                                    </div>
+                                </div><!-- .form-group -->
+
+                                <div class="form-group">
+                                    <div class="col-sm-offset-3 col-sm-9">
+                                        <a @click="openRankingsModal()" class="btn btn-default">Edit Rankings</a>
+
+                                        <p class="help-block"></p>
                                     </div>
                                 </div><!-- .form-group -->
 

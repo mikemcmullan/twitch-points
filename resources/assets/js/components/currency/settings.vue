@@ -1,4 +1,6 @@
 <script>
+    import namedRankingsModal from './named-rankings-modal.vue';
+
     export default {
         data: () => {
             return {
@@ -18,7 +20,19 @@
             }
         },
 
+        ready() {
+            // this.openRankingsModal();
+        },
+
+        components: {
+            'named-rankings-modal': namedRankingsModal
+        },
+
         methods: {
+            openRankingsModal() {
+                this.$broadcast('openRankingsModal');
+            },
+
             submit() {
                 let request = this.$http.put('settings', {
                     'currency.interval': this.timeInterval,

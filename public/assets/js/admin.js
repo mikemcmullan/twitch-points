@@ -13626,7 +13626,7 @@ if (document.querySelector('#quotes')) {
     });
 }
 
-},{"./components/commands/delete-modal.vue":30,"./components/commands/edit-modal.vue":31,"./components/currency/settings.vue":32,"./components/giveaway/control-panel.vue":33,"./components/giveaway/entries.vue":34,"./components/giveaway/settings.vue":35,"./components/paginator.vue":36,"./components/quotes/delete-modal.vue":37,"./components/quotes/edit-modal.vue":38,"./components/timers/delete-modal.vue":39,"./components/timers/edit-modal.vue":40,"vue":28,"vue-resource":16,"vue-validator":27}],30:[function(require,module,exports){
+},{"./components/commands/delete-modal.vue":30,"./components/commands/edit-modal.vue":31,"./components/currency/settings.vue":33,"./components/giveaway/control-panel.vue":34,"./components/giveaway/entries.vue":35,"./components/giveaway/settings.vue":36,"./components/paginator.vue":37,"./components/quotes/delete-modal.vue":38,"./components/quotes/edit-modal.vue":39,"./components/timers/delete-modal.vue":40,"./components/timers/edit-modal.vue":41,"vue":28,"vue-resource":16,"vue-validator":27}],30:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -13874,6 +13874,119 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 exports.default = {
+    props: ['ranks'],
+
+    data: function data() {
+        return {
+            title: 'Named Rankings',
+            modal: false,
+            saving: false,
+            rankings: [],
+            errorText: ''
+        };
+    },
+
+    ready: function ready() {
+        var _this = this;
+
+        this.$set('modal', $(this.$els.modal));
+
+        this.rankings = this.ranks;
+
+        this.modal.on('hide.bs.modal', function () {
+            setTimeout(function () {
+                _this.saving = false;
+                _this.errorText = '';
+            }, 500);
+        });
+    },
+
+    events: {
+        openRankingsModal: function openRankingsModal() {
+            this.open();
+        }
+    },
+
+    methods: {
+        addBlankRanking: function addBlankRanking() {
+            var min = 0;
+
+            if (this.rankings[this.rankings.length - 1]) {
+                min = ~ ~this.rankings[this.rankings.length - 1].min + 100;
+            }
+
+            this.rankings.push({ name: '', min: min, max: 0 });
+        },
+        save: function save() {
+            var _this2 = this;
+
+            this.rankings = this.rankings.sort(function (a, b) {
+                return ~ ~a.min - ~ ~b.min;
+            });
+
+            this.rankings = this.rankings.map(function (ranking, index, rankings) {
+                var nextRank = rankings[index + 1];
+                var max = 999999;
+
+                if (nextRank) {
+                    max = ~ ~nextRank.min - 1;
+                }
+
+                ranking.max = max;
+
+                return ranking;
+            });
+
+            var request = this.$http.put('settings/named-rankings', {
+                'named-rankings': this.rankings
+            }, {
+                beforeSend: function beforeSend(request) {
+                    _this2.saving = true;
+                }
+            });
+
+            request.then(function (response) {
+                _this2.close();
+            }, function (error) {
+                _this2.errorText = error.data.message;
+                _this2.saving = false;
+            });
+        },
+        open: function open() {
+            this.modal.modal('toggle');
+        },
+        close: function close() {
+            this.modal.modal('toggle');
+        }
+    }
+};
+if (module.exports.__esModule) module.exports = module.exports.default
+;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n<div class=\"modal fade\" v-el:modal=\"\">\n    <div class=\"modal-dialog\" role=\"document\">\n        <div class=\"modal-content\">\n            <div class=\"modal-header\">\n                <button type=\"button\" class=\"close\" @click=\"close\" aria-label=\"Close\"><span aria-hidden=\"true\">×</span></button>\n                <h4 class=\"modal-title\">{{ title }}</h4>\n            </div><!-- .modal-header -->\n\n            <validator name=\"validation\">\n                <form @submit.prevent=\"\" @submit=\"save\">\n                    <div class=\"modal-body\">\n                        <p>If you would like to assign names to different point groups fill in the form below. Once a viewer has reached the starting amount\n                            of points they will be given that rank.</p>\n\n                        <div class=\"alert alert-danger\" v-if=\"errorText.length !== 0\">\n                            {{ errorText }}\n                        </div>\n\n                        <table class=\"table\">\n                            <thead>\n                                <tr>\n                                    <th style=\"width: 45%\">Name</th>\n                                    <th style=\"width: 45%\">Starting Amount</th>\n                                    <th>--</th>\n                                </tr>\n                            </thead>\n                            <tbody>\n                                <tr v-for=\"rank in rankings\">\n                                    <td><input class=\"form-control\" type=\"text\" v-model=\"rank.name\" required=\"\" maxlength=\"30\"></td>\n                                    <td><input class=\"form-control\" type=\"number\" min=\"0\" max=\"999999\" required=\"\" v-model=\"rank.min\"></td>\n                                    <td><a style=\"margin-top: 5px\" @click=\"rankings.splice($index, 1)\" class=\"btn btn-danger btn-xs\" title=\"Delete Ranking\"><i class=\"fa fa-trash-o\"></i></a></td>\n                                </tr>\n\n                                <tr v-if=\"rankings.length === 0\">\n                                    <td col-span=\"3\">No rankings have been added.</td>\n                                </tr>\n                            </tbody>\n                        </table>\n\n                        <button type=\"button\" class=\"btn btn-info\" @click=\"addBlankRanking()\">Add Ranking</button>\n                    </div><!-- .modal-body -->\n\n                    <div class=\"modal-footer\">\n                        <button type=\"button\" class=\"btn btn-default\" @click=\"close\">Close</button>\n                        <button type=\"submit\" class=\"btn btn-primary\" v-bind:disabled=\"saving || !$validation.valid\">{{ saving ? 'Saving...' : 'Save' }}</button>\n                    </div><!-- .modal-footer -->\n                </form><!-- form -->\n            </validator>\n        </div><!-- .modal-content -->\n    </div><!-- .modal-dialog -->\n</div><!-- .modal -->\n"
+if (module.hot) {(function () {  module.hot.accept()
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), true)
+  if (!hotAPI.compatible) return
+  var id = "/home/vagrant/Code/twitch-points/resources/assets/js/components/currency/named-rankings-modal.vue"
+  if (!module.hot.data) {
+    hotAPI.createRecord(id, module.exports)
+  } else {
+    hotAPI.update(id, module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
+  }
+})()}
+},{"vue":28,"vue-hot-reload-api":2}],33:[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _namedRankingsModal = require('./named-rankings-modal.vue');
+
+var _namedRankingsModal2 = _interopRequireDefault(_namedRankingsModal);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+exports.default = {
     data: function data() {
         return {
             saving: false,
@@ -13892,7 +14005,18 @@ exports.default = {
         };
     },
 
+    ready: function ready() {
+        // this.openRankingsModal();
+    },
+
+    components: {
+        'named-rankings-modal': _namedRankingsModal2.default
+    },
+
     methods: {
+        openRankingsModal: function openRankingsModal() {
+            this.$broadcast('openRankingsModal');
+        },
         submit: function submit() {
             var _this = this;
 
@@ -13945,7 +14069,7 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update(id, module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"vue":28,"vue-hot-reload-api":2}],33:[function(require,module,exports){
+},{"./named-rankings-modal.vue":32,"vue":28,"vue-hot-reload-api":2}],34:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -14076,7 +14200,7 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update(id, module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"vue":28,"vue-hot-reload-api":2}],34:[function(require,module,exports){
+},{"vue":28,"vue-hot-reload-api":2}],35:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -14142,7 +14266,7 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update(id, module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"vue":28,"vue-hot-reload-api":2}],35:[function(require,module,exports){
+},{"vue":28,"vue-hot-reload-api":2}],36:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -14214,7 +14338,7 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update(id, module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"vue":28,"vue-hot-reload-api":2}],36:[function(require,module,exports){
+},{"vue":28,"vue-hot-reload-api":2}],37:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -14293,7 +14417,7 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update(id, module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"vue":28,"vue-hot-reload-api":2}],37:[function(require,module,exports){
+},{"vue":28,"vue-hot-reload-api":2}],38:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -14368,7 +14492,7 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update(id, module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"vue":28,"vue-hot-reload-api":2}],38:[function(require,module,exports){
+},{"vue":28,"vue-hot-reload-api":2}],39:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -14472,7 +14596,7 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update(id, module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"vue":28,"vue-hot-reload-api":2}],39:[function(require,module,exports){
+},{"vue":28,"vue-hot-reload-api":2}],40:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -14547,7 +14671,7 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update(id, module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"vue":28,"vue-hot-reload-api":2}],40:[function(require,module,exports){
+},{"vue":28,"vue-hot-reload-api":2}],41:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -14680,7 +14804,7 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update(id, module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"vue":28,"vue-hot-reload-api":2}],41:[function(require,module,exports){
+},{"vue":28,"vue-hot-reload-api":2}],42:[function(require,module,exports){
 'use strict';
 
 if (!String.prototype.capitalize) {
@@ -14741,6 +14865,6 @@ if (!Array.prototype.find) {
     };
 }
 
-},{}]},{},[41,29]);
+},{}]},{},[42,29]);
 
 //# sourceMappingURL=admin.js.map
