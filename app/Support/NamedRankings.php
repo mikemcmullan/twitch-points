@@ -30,7 +30,19 @@ class NamedRankings
     public function __construct(Channel $channel)
     {
         $this->channel = $channel;
-        $this->rankings = []; //$channel->getSetting('named-rankings', []);
+        $this->rankings = $channel->getSetting('named-rankings', []);
+    }
+
+    /**
+     * Clear rankings.
+     *
+     * @return NamedRankings
+     */
+    public function clearRankings()
+    {
+        $this->rankings = [];
+
+        return $this;
     }
 
     /**

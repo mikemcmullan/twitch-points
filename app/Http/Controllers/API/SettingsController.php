@@ -58,6 +58,7 @@ class SettingsController extends Controller
     {
         try {
             $rankings = new NamedRankings($channel);
+            $rankings->clearRankings();
 
             foreach ($request->input('named-rankings', []) as $rank) {
                 $rankings->addRank($rank['name'], $rank['min'], $rank['max']);
