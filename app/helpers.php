@@ -1,6 +1,25 @@
 <?php
 
 /**
+ * Add protocol and port to a domain name.
+ *
+ * @param  String $domain   Domain name without protocol, port or path.
+ * @param  String $protocol If not null protocal will be guessed based on the request.
+ * @return String
+ */
+function makeDomain($domain, $protocol = null)
+{
+    $request  = app(\Illuminate\Http\Request::class);
+    $port     = in_array($request->getPort(), [80, 443]) ? '' : ':' . $request->getPort();
+
+    if ($protocol === null) {
+        $protocol = $request->secure() ? 'https://' : 'http://';
+    }
+
+    return $protocol . $domain . $port;
+}
+
+/**
  * Check if we are in the api based on the host name.
  * @param $host
  *

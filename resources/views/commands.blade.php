@@ -128,7 +128,7 @@
             var options = {
                 api: {
                     token: '{{ $apiToken }}',
-                    root: '//{{ config('app.api_domain') }}/{{ $channel->slug }}'
+                    root: '{{ makeDomain(config('app.api_domain'), '//') }}/{{ $channel->slug }}'
                 },
                 csrf_token: '{{ csrf_token() }}',
                 pusher: {
