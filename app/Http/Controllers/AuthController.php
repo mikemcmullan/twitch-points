@@ -58,9 +58,7 @@ class AuthController extends Controller
     public function login(Request $request, AuthenticateUser $authUser)
     {
         if (! $request->get('code') && ! $request->get('error')) {
-            $protocal = $request->secure() ? 'https://' : 'http://';
-
-            return redirect($protocal . env('AUTH_DOMAIN', 'auth.twitch.dev') . '/login?referer=' . $request->fullUrl());
+            return redirect(makeDomain(env('AUTH_DOMAIN', 'auth.twitch.dev')) . '/login?referer=' . $request->fullUrl());
         } else {
             return $authUser->execute($this->channel, $request->get('code'), $request->get('error'), $this);
         }
