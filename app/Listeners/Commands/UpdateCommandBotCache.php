@@ -38,28 +38,43 @@ class UpdateCommandBotCache
     public function handle(CommandWasUpdated $event)
     {
         $commands = collect(json_decode($this->redis->get(sprintf($this->commandsKey, $event->channel->name))));
-
         $existing = $commands->where('id', $event->command->id);
 
         if ($existing->isEmpty()) {
-            $commands->push([
-                'id' => $event->command->id,
-                'pattern' => $event->command->pattern,
-                'level' => $event->command->level,
-                'cool_down' => $event->command->cool_down
-            ]);
+            $commands->push($event->command);
+            // $commands->push([
+            //     'id' => $event->command->id,
+            //     'pattern' => $event->command->pattern,
+            //     'level' => $event->command->level,
+            //     'cool_down' => $event->command->cool_down
+            // ]);
         } else {
             $key = $existing->keys()->first();
 
-            $commands->splice($key, 1, [[
-                'id' => $event->command->id,
-                'pattern' => $event->command->pattern,
-                'level' => $event->command->level,
-                'cool_down' => $event->command->cool_down
-            ]]);
+            $commands->splice($key, 1, [$event->command]);
+
+            // $commands->splice($key, 1, [[
+            //     'id' => $event->command->id,
+            //     'pattern' => $event->command->pattern,
+            //     'level' => $event->command->level,
+            //     'cool_down' => $event->command->cool_down
+            // ]]);
         }
 
+        // Temporary
+        $commands = $commands->map(function ($command, $key) {
+            if (! isset($command->file) || ($command->file === '' || $command->file === null)) {
+                $command->module = 'Simple';
+            } else {
+                $command->module = $command->file;
+            }
+
+            return $command;
+        });
+
+        // dd($commands);
+
         $this->redis->set(sprintf($this->commandsKey, $event->channel->name), $commands);
-        $this->redis->set(sprintf($this->commandKey, $event->channel->name, $event->command->id), $event->command);
+        // $this->redis->set(sprintf($this->commandKey, $event->channel->name, $event->command->id), $event->command);
     }
 }

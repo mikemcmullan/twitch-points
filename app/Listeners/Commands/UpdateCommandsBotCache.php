@@ -41,9 +41,16 @@ class UpdateCommandsBotCache
         $commands = Command::allForChannel($event->channel, false);
 
         $commands = $commands->map(function ($command) use ($event) {
-            $this->redis->set(sprintf($this->commandKey, $event->channel->name, $command->id), $command);
+            // $this->redis->set(sprintf($this->commandKey, $event->channel->name, $command->id), $command);
 
-            return array_only($command->toArray(), ['id', 'pattern', 'level', 'cool_down']);
+            // Temporary
+            if (! isset($command->file) || ($command->file === '' || $command->file === null)) {
+                $command->module = 'Simple';
+            } else {
+                $command->module = $command->file;
+            }
+
+            return $command->toArray(); //array_only($command->toArray(), ['id', 'pattern', 'level', 'cool_down']);
         });
 
         $this->redis->set(sprintf($this->commandsKey, $event->channel->name), $commands);
