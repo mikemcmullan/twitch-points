@@ -79,9 +79,9 @@
             },
 
             selectWinner() {
-                if (this.status === 'Stopped') {
-                    return;
-                }
+                // if (this.status === 'Stopped') {
+                //     return;
+                // }
 
                 this.$http.get('giveaway/winner', {}, {
                     beforeSend: (request) => {
