@@ -33,13 +33,31 @@ class PushToBot
         return null;
     }
 
-    private function getData($event)
+    protected function getData($event)
     {
         if (method_exists($event, 'broadcastWith')) {
             return $event->broadcastWith();
         }
 
         return null;
+    }
+
+    protected function getType($event)
+    {
+        if (method_exists($event, 'broadcastType')) {
+            return $event->broadcastType();
+        }
+
+        return 'commands';
+    }
+
+    protected function getModuleName($event)
+    {
+        if (method_exists($event, 'getModuleName')) {
+            return $event->getModuleName();
+        }
+
+        return 'Simple';
     }
 
     /**
@@ -50,30 +68,26 @@ class PushToBot
      */
     public function handle($event)
     {
-        $outEvent = [
+        $outEvent = array_merge([
             'source'    => 'web',
             'channel'   => "#{$event->channel->name}",
-            'data'      => $this->getData($event)
-        ];
+            'bot'       => $event->channel->getSetting('bot.username'),
+            'module'    => $this->getModuleName($event),
+            'byPassAuth'=> true
+        ], $this->getData($event));
 
-        if (array_get($outEvent, 'data.delay') !== null) {
-            config(['amqp.properties.production.exchange_type' => 'x-delayed-message']);
+        config(['amqp.properties.production.exchange_type' => 'x-delayed-message']);
 
-            $msg = new Message(json_encode($outEvent), [
-                'content_type' => 'application/json',
-                'delivery_mode' => 2,
-                'application_headers' => [
-                    'x-delay' => ['I', array_get($outEvent, 'data.delay')]
-                ]
-            ]);
+        $msg = new Message(json_encode($outEvent), [
+            'content_type' => 'application/json',
+            'delivery_mode' => 1,
+            'application_headers' => [
+                'x-delay' => ['I', array_get($outEvent, 'delay', 0)]
+            ]
+        ]);
 
-            \Amqp::publish("commands.mcsmike", $msg, ['exchange' => 'irc-messages-delayed']);
+        \Amqp::publish("{$this->getType($event)}.{$event->channel->name}", $msg, ['exchange' => 'irc-messages-delayed']);
 
-            config(['amqp.properties.production.exchange_type' => 'topic']);
-
-            return;
-        }
-
-        \Amqp::publish("commands.{$event->channel->name}", json_encode($outEvent), ['exchange' => "irc-messages"]);
+        config(['amqp.properties.production.exchange_type' => 'topic']);
     }
 }

@@ -46,8 +46,7 @@ class TimerWasExecuted extends Event
     public function broadcastWith()
     {
         return [
-            'file'      => 'Timer',
-            'message'   => $this->timer->message,
+            'response'  => $this->timer->message,
             'interval'  => $this->timer->interval,
             'lines'     => $this->timer->lines,
             'delay'     => ($this->delay*1000)*60
@@ -62,5 +61,10 @@ class TimerWasExecuted extends Event
     public function broadcastOn()
     {
         return [];
+    }
+
+    public function getModuleName()
+    {
+        return 'Timer';
     }
 }

@@ -38,7 +38,7 @@ class GiveawayWasStarted extends Event
     public function broadcastWith()
     {
         return [
-            'message' => $this->message
+            'response' => $this->message
         ];
     }
 
