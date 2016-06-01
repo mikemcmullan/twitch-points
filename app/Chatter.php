@@ -6,17 +6,17 @@ use Illuminate\Database\Eloquent\Model;
 
 class Chatter extends Model
 {
+    /**
+     * Indicates if the IDs are auto-incrementing.
+     *
+     * @var bool
+     */
     public $incrementing = true;
-    
-    protected $fillable = ['handle', 'start_time', 'total_minutes_online', 'points', 'rank'];
 
-    public function getTotalMinutesOnlineAttribute($minutes)
-    {
-        return sprintf('%d hours, %d minutes', floor($minutes/60), $minutes%60);
-    }
-
-    public function getRankAttribute($rank)
-    {
-        return ! $rank ? 'N/A' : $rank;
-    }
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array
+     */
+    protected $fillable = ['handle', 'points', 'minutes'];
 }
