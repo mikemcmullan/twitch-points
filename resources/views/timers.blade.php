@@ -22,7 +22,7 @@
                     <table class="table table-bordered table-striped" id="timers-table">
                         <thead>
                             <th style="width: 7%">Status</th>
-                            <th stlye="width: 63%">Name</th>
+                            <th stlye="width: 63%">Content</th>
                             <th style="width: 15%">Interval</th>
                             <th style="width: 15%" class="text-center">Actions</th>
                         </thead>
@@ -33,7 +33,10 @@
                                     <button @click="disable(timer.id)" :disabled="disableDisableBtn" class="btn label label-danger" v-if="timer.disabled">Disabled</button>
                                     <button @click="disable(timer.id)" :disabled="disableDisableBtn" class="btn label label-primary" v-if="!timer.disabled">Enabled</button>
                                 </td>
-                                <td>@{{ timer.name }}</td>
+                                <td>
+                                    @{{ timer.name }}<br>
+                                    <small>@{{ timer.message }}</small>
+                                </td>
                                 <td>@{{ timer.interval }} mins, @{{ timer.lines }} lines</td>
                                 <td class="text-center">
                                     <button type="button" @click="editModal(timer.id)" class="btn btn-primary btn-xs" title="Edit Timer"><i class="fa fa-pencil-square-o"></i></button>
