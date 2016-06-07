@@ -80,7 +80,7 @@
 
                                 <div class="form-group" v-bind:class="{ 'has-error': !$settingsValidation.startedtext.valid }">
                                     <label for="giveaway-started">Giveaway Started Text</label>
-                                    {!! Form::textarea('started-text', $channel->getSetting('giveaway.started-text'), ['cols' => 30, 'rows' => 3, 'class' => 'form-control', 'id' => 'giveaway-started', 'v-model' => 'startedText', 'v-validate:startedText' => "{ maxlength: 250, required: true }"]) !!}
+                                    {!! Form::textarea('started-text', $channel->getSetting('giveaway.started-text'), ['cols' => 30, 'rows' => 3, 'class' => 'form-control', 'id' => 'giveaway-started', 'v-model' => 'startedText', 'v-validate:startedText' => "{ maxlength: 250 }"]) !!}
 
                                     <span class="help-block" v-show="!$settingsValidation.startedtext.valid">Started text cannot be longer than 250 characters.</span>
                                     <span class="help-block">The bot will display this message when the giveaway starts. Max characters 250.</span>
@@ -88,7 +88,7 @@
 
                                 <div class="form-group" v-bind:class="{ 'has-error': !$settingsValidation.stoppedtext.valid  }">
                                     <label for="giveaway-stopped">Giveaway Stopped Text</label>
-                                    {!! Form::textarea('stopped-text', $channel->getSetting('giveaway.stopped-text'), ['cols' => 30, 'rows' => 3, 'class' => 'form-control', 'id' => 'giveaway-stopped', 'v-model' => 'stoppedText', 'v-validate:stoppedText' => "{ maxlength: 250, required: true }"]) !!}
+                                    {!! Form::textarea('stopped-text', $channel->getSetting('giveaway.stopped-text'), ['cols' => 30, 'rows' => 3, 'class' => 'form-control', 'id' => 'giveaway-stopped', 'v-model' => 'stoppedText', 'v-validate:stoppedText' => "{ maxlength: 250 }"]) !!}
 
                                     <span class="help-block" v-show="!$settingsValidation.stoppedtext.valid">Stopped text cannot be longer than 250 characters.</span>
                                     <span class="help-block">The bot will display this message when the giveaway is stopped. Max characters 250.</span>
