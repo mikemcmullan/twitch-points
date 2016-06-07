@@ -6,7 +6,7 @@ use App\Channel;
 use App\Contracts\Repositories\ChatterRepository;
 use App\Currency\Manager as CurrencyManager;
 use App\Events\Giveaway\GiveawayWasEntered;
-use App\Events\Giveaway\GiveawayWasReset;
+use App\Events\Giveaway\GiveawayWasCleared;
 use App\Events\Giveaway\GiveawayWasStarted;
 use App\Events\Giveaway\GiveawayWasStopped;
 use App\Exceptions\GiveAwayException;
@@ -88,14 +88,13 @@ class Manager
      *
      * @param Channel $channel
      */
-    public function reset(Channel $channel)
+    public function clear(Channel $channel)
     {
         $entries = $this->entries($channel, true);
 
-        $this->stop($channel);
         $this->redis->del("#{$channel->name}:giveaway:entries");
 
-        $this->events->fire(new GiveawayWasReset($channel));
+        $this->events->fire(new GiveawayWasCleared($channel));
 
         return true;
     }

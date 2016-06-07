@@ -7,7 +7,7 @@ use App\Jobs\Giveaway\EnterGiveawayJob;
 use App\Jobs\Giveaway\GetGiveawayEntriesJob;
 use App\Jobs\Giveaway\StartGiveawayJob;
 use App\Jobs\Giveaway\StopGiveawayJob;
-use App\Jobs\Giveaway\ResetGiveawayJob;
+use App\Jobs\Giveaway\ClearGiveawayJob;
 use App\Jobs\Giveaway\SelectGiveawayWinnerJob;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
@@ -94,14 +94,14 @@ class GiveawayController extends Controller
     }
 
     /*
-     * Reset the giveaway.
+     * Clear giveaway entries.
      *
      * @param Channel $channel
      * @return \Symfony\Component\HttpFoundation\Response
      */
-    public function reset(Channel $channel)
+    public function clear(Channel $channel)
     {
-        $this->dispatch(new ResetGiveawayJob($channel));
+        $this->dispatch(new ClearGiveawayJob($channel));
 
         return response()->json(['ok' => 'success']);
     }

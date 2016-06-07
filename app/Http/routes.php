@@ -166,9 +166,9 @@ Route::group(['domain' => config('app.api_domain'), 'prefix' => '{channel}', 'na
         'as'    => 'api_giveaway_stop_path'
     ]);
 
-    Route::post('/giveaway/reset', [
-        'uses'  => 'GiveawayController@reset',
-        'as'    => 'api_giveaway_reset_path'
+    Route::post('/giveaway/clear', [
+        'uses'  => 'GiveawayController@clear',
+        'as'    => 'api_giveaway_clear_path'
     ]);
 
     Route::get('/giveaway/winner', [

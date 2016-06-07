@@ -31,7 +31,22 @@
         },
 
         methods: {
+            clearEntries() {
+                this.entries = [];
 
+                this.$http.post('giveaway/clear', {}, {
+                    beforeSend: (request) => {
+                        // this.disableButtons = true;
+                    }
+                }).then((response) => {
+                    // this.disableButtons = false;
+                    // this.$dispatch('clearEntries');
+                },(response) => {
+                    if (response.status === 401 || response.status === 403) {
+                        alert('There was a problem authenticating with the api. Please refresh the page.');
+                    }
+                });
+            }
         },
 
         ready() {
@@ -39,7 +54,9 @@
                 height: 400,
                 alwaysVisible: false
             });
-            
+
+            // this.entries.push({ handle: 'mcsmike', tickets: 5 });
+
             this.$http.get('giveaway/entries').then((response) => {
                 let entry;
 

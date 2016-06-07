@@ -13432,6 +13432,10 @@ if (document.querySelector('#giveaway')) {
 
                 var channel = pusher.subscribe('private-' + options.channel);
 
+                channel.bind('giveaway.was-cleared', function (data) {
+                    _this3.$broadcast('clearEntries');
+                });
+
                 channel.bind('giveaway.was-entered', function (data) {
                     _this3.$broadcast('newEntry', { handle: data.handle, tickets: data.tickets });
                 });
@@ -13694,7 +13698,7 @@ if (module.hot) {(function () {  module.hot.accept()
   var hotAPI = require("vue-hot-reload-api")
   hotAPI.install(require("vue"), true)
   if (!hotAPI.compatible) return
-  var id = "/Users/mike/Code/twitch-points/resources/assets/js/components/commands/delete-modal.vue"
+  var id = "/home/vagrant/Code/twitch-points/resources/assets/js/components/commands/delete-modal.vue"
   if (!module.hot.data) {
     hotAPI.createRecord(id, module.exports)
   } else {
@@ -13860,7 +13864,7 @@ if (module.hot) {(function () {  module.hot.accept()
   var hotAPI = require("vue-hot-reload-api")
   hotAPI.install(require("vue"), true)
   if (!hotAPI.compatible) return
-  var id = "/Users/mike/Code/twitch-points/resources/assets/js/components/commands/edit-modal.vue"
+  var id = "/home/vagrant/Code/twitch-points/resources/assets/js/components/commands/edit-modal.vue"
   if (!module.hot.data) {
     hotAPI.createRecord(id, module.exports)
   } else {
@@ -13966,7 +13970,7 @@ if (module.hot) {(function () {  module.hot.accept()
   var hotAPI = require("vue-hot-reload-api")
   hotAPI.install(require("vue"), true)
   if (!hotAPI.compatible) return
-  var id = "/Users/mike/Code/twitch-points/resources/assets/js/components/currency/named-rankings-modal.vue"
+  var id = "/home/vagrant/Code/twitch-points/resources/assets/js/components/currency/named-rankings-modal.vue"
   if (!module.hot.data) {
     hotAPI.createRecord(id, module.exports)
   } else {
@@ -14062,7 +14066,7 @@ if (module.hot) {(function () {  module.hot.accept()
   var hotAPI = require("vue-hot-reload-api")
   hotAPI.install(require("vue"), true)
   if (!hotAPI.compatible) return
-  var id = "/Users/mike/Code/twitch-points/resources/assets/js/components/currency/settings.vue"
+  var id = "/home/vagrant/Code/twitch-points/resources/assets/js/components/currency/settings.vue"
   if (!module.hot.data) {
     hotAPI.createRecord(id, module.exports)
   } else {
@@ -14138,26 +14142,8 @@ exports.default = {
                 }
             });
         },
-        resetGiveaway: function resetGiveaway() {
-            var _this3 = this;
-
-            this.$http.post('giveaway/reset', {}, {
-                beforeSend: function beforeSend(request) {
-                    _this3.disableButtons = true;
-                }
-            }).then(function (response) {
-                _this3.status = 'Stopped';
-                _this3.winner = '';
-                _this3.disableButtons = false;
-                _this3.$dispatch('clearEntries');
-            }, function (response) {
-                if (response.status === 401 || response.status === 403) {
-                    alert('There was a problem authenticating with the api. Please refresh the page.');
-                }
-            });
-        },
         selectWinner: function selectWinner() {
-            var _this4 = this;
+            var _this3 = this;
 
             // if (this.status === 'Stopped') {
             //     return;
@@ -14165,15 +14151,15 @@ exports.default = {
 
             this.$http.get('giveaway/winner', {}, {
                 beforeSend: function beforeSend(request) {
-                    _this4.disableButtons = true;
+                    _this3.disableButtons = true;
                 }
             }).then(function (response) {
-                _this4.disableButtons = false;
-                _this4.winner = response.data.winner;
-                _this4.$dispatch('removeEntry', response.data.winner);
+                _this3.disableButtons = false;
+                _this3.winner = response.data.winner;
+                _this3.$dispatch('removeEntry', response.data.winner);
             }, function (response) {
                 if (response.status === 409) {
-                    _this4.disableButtons = false;
+                    _this3.disableButtons = false;
                     alert(response.data.message);
                 }
 
@@ -14193,7 +14179,7 @@ if (module.hot) {(function () {  module.hot.accept()
   var hotAPI = require("vue-hot-reload-api")
   hotAPI.install(require("vue"), true)
   if (!hotAPI.compatible) return
-  var id = "/Users/mike/Code/twitch-points/resources/assets/js/components/giveaway/control-panel.vue"
+  var id = "/home/vagrant/Code/twitch-points/resources/assets/js/components/giveaway/control-panel.vue"
   if (!module.hot.data) {
     hotAPI.createRecord(id, module.exports)
   } else {
@@ -14201,7 +14187,7 @@ if (module.hot) {(function () {  module.hot.accept()
   }
 })()}
 },{"vue":28,"vue-hot-reload-api":2}],35:[function(require,module,exports){
-"use strict";
+'use strict';
 
 Object.defineProperty(exports, "__esModule", {
     value: true
@@ -14235,7 +14221,24 @@ exports.default = {
         }
     },
 
-    methods: {},
+    methods: {
+        clearEntries: function clearEntries() {
+            this.entries = [];
+
+            this.$http.post('giveaway/clear', {}, {
+                beforeSend: function beforeSend(request) {
+                    // this.disableButtons = true;
+                }
+            }).then(function (response) {
+                // this.disableButtons = false;
+                // this.$dispatch('clearEntries');
+            }, function (response) {
+                if (response.status === 401 || response.status === 403) {
+                    alert('There was a problem authenticating with the api. Please refresh the page.');
+                }
+            });
+        }
+    },
 
     ready: function ready() {
         var _this = this;
@@ -14244,6 +14247,8 @@ exports.default = {
             height: 400,
             alwaysVisible: false
         });
+
+        // this.entries.push({ handle: 'mcsmike', tickets: 5 });
 
         this.$http.get('giveaway/entries').then(function (response) {
             var entry = undefined;
@@ -14259,7 +14264,7 @@ if (module.hot) {(function () {  module.hot.accept()
   var hotAPI = require("vue-hot-reload-api")
   hotAPI.install(require("vue"), true)
   if (!hotAPI.compatible) return
-  var id = "/Users/mike/Code/twitch-points/resources/assets/js/components/giveaway/entries.vue"
+  var id = "/home/vagrant/Code/twitch-points/resources/assets/js/components/giveaway/entries.vue"
   if (!module.hot.data) {
     hotAPI.createRecord(id, module.exports)
   } else {
@@ -14331,7 +14336,7 @@ if (module.hot) {(function () {  module.hot.accept()
   var hotAPI = require("vue-hot-reload-api")
   hotAPI.install(require("vue"), true)
   if (!hotAPI.compatible) return
-  var id = "/Users/mike/Code/twitch-points/resources/assets/js/components/giveaway/settings.vue"
+  var id = "/home/vagrant/Code/twitch-points/resources/assets/js/components/giveaway/settings.vue"
   if (!module.hot.data) {
     hotAPI.createRecord(id, module.exports)
   } else {
@@ -14410,7 +14415,7 @@ if (module.hot) {(function () {  module.hot.accept()
   var hotAPI = require("vue-hot-reload-api")
   hotAPI.install(require("vue"), true)
   if (!hotAPI.compatible) return
-  var id = "/Users/mike/Code/twitch-points/resources/assets/js/components/paginator.vue"
+  var id = "/home/vagrant/Code/twitch-points/resources/assets/js/components/paginator.vue"
   if (!module.hot.data) {
     hotAPI.createRecord(id, module.exports)
   } else {
@@ -14485,7 +14490,7 @@ if (module.hot) {(function () {  module.hot.accept()
   var hotAPI = require("vue-hot-reload-api")
   hotAPI.install(require("vue"), true)
   if (!hotAPI.compatible) return
-  var id = "/Users/mike/Code/twitch-points/resources/assets/js/components/quotes/delete-modal.vue"
+  var id = "/home/vagrant/Code/twitch-points/resources/assets/js/components/quotes/delete-modal.vue"
   if (!module.hot.data) {
     hotAPI.createRecord(id, module.exports)
   } else {
@@ -14589,7 +14594,7 @@ if (module.hot) {(function () {  module.hot.accept()
   var hotAPI = require("vue-hot-reload-api")
   hotAPI.install(require("vue"), true)
   if (!hotAPI.compatible) return
-  var id = "/Users/mike/Code/twitch-points/resources/assets/js/components/quotes/edit-modal.vue"
+  var id = "/home/vagrant/Code/twitch-points/resources/assets/js/components/quotes/edit-modal.vue"
   if (!module.hot.data) {
     hotAPI.createRecord(id, module.exports)
   } else {
@@ -14664,7 +14669,7 @@ if (module.hot) {(function () {  module.hot.accept()
   var hotAPI = require("vue-hot-reload-api")
   hotAPI.install(require("vue"), true)
   if (!hotAPI.compatible) return
-  var id = "/Users/mike/Code/twitch-points/resources/assets/js/components/timers/delete-modal.vue"
+  var id = "/home/vagrant/Code/twitch-points/resources/assets/js/components/timers/delete-modal.vue"
   if (!module.hot.data) {
     hotAPI.createRecord(id, module.exports)
   } else {
@@ -14797,7 +14802,7 @@ if (module.hot) {(function () {  module.hot.accept()
   var hotAPI = require("vue-hot-reload-api")
   hotAPI.install(require("vue"), true)
   if (!hotAPI.compatible) return
-  var id = "/Users/mike/Code/twitch-points/resources/assets/js/components/timers/edit-modal.vue"
+  var id = "/home/vagrant/Code/twitch-points/resources/assets/js/components/timers/edit-modal.vue"
   if (!module.hot.data) {
     hotAPI.createRecord(id, module.exports)
   } else {

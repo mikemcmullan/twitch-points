@@ -7,7 +7,7 @@ use App\Giveaway\Manager;
 use App\Channel;
 use Illuminate\Contracts\Bus\SelfHandling;
 
-class ResetGiveawayJob implements SelfHandling
+class ClearGiveawayJob implements SelfHandling
 {
     /**
      * @var
@@ -29,6 +29,6 @@ class ResetGiveawayJob implements SelfHandling
      */
     public function handle(Manager $manager)
     {
-        return $manager->reset($this->channel);
+        return $manager->clear($this->channel);
     }
 }
