@@ -61,23 +61,6 @@
                 });
             },
 
-            resetGiveaway() {
-                this.$http.post('giveaway/reset', {}, {
-                    beforeSend: (request) => {
-                        this.disableButtons = true;
-                    }
-                }).then((response) => {
-                    this.status = 'Stopped';
-                    this.winner = '';
-                    this.disableButtons = false;
-                    this.$dispatch('clearEntries');
-                },(response) => {
-                    if (response.status === 401 || response.status === 403) {
-                        alert('There was a problem authenticating with the api. Please refresh the page.');
-                    }
-                });
-            },
-
             selectWinner() {
                 // if (this.status === 'Stopped') {
                 //     return;

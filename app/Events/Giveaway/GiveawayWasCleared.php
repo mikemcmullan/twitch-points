@@ -6,7 +6,7 @@ use App\Channel;
 use App\Events\Event;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 
-class GiveawayWasReset extends Event implements ShouldBroadcast
+class GiveawayWasCleared extends Event implements ShouldBroadcast
 {
     /**
      * @var Channel
@@ -30,7 +30,7 @@ class GiveawayWasReset extends Event implements ShouldBroadcast
      */
     public function broadcastAs()
     {
-        return 'giveaway.was-reset';
+        return 'giveaway.was-cleared';
     }
 
     /**

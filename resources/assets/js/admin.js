@@ -177,6 +177,10 @@ if (document.querySelector('#giveaway')) {
         ready() {
             let channel = pusher.subscribe(`private-${options.channel}`);
 
+            channel.bind('giveaway.was-cleared', (data) => {
+                this.$broadcast('clearEntries');
+            });
+
             channel.bind('giveaway.was-entered', (data) => {
                 this.$broadcast('newEntry', { handle: data.handle, tickets: data.tickets });
             });

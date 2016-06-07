@@ -25,10 +25,7 @@
                                 <button type="button" class="btn btn-primary" @click="startGiveaway" :disabled="disableButtons">Start</button>
                             </div>
                             <div class="btn-group">
-                                <button type="button" class="btn btn-warning" @click="stopGiveaway" :disabled="disableButtons">Stop</button>
-                            </div>
-                            <div class="btn-group">
-                                <button type="button" class="btn btn-danger" @click="resetGiveaway" :disabled="disableButtons">Reset</button>
+                                <button type="button" class="btn btn-danger" @click="stopGiveaway" :disabled="disableButtons">Stop</button>
                             </div>
                         </div>
 
@@ -47,6 +44,7 @@
                 <div class="box">
                     <div class="box-header with-border">
                         <h3 class="box-title">Entries (@{{ entries.length }})</h3>
+                        <button type="button" class="btn btn-primary btn-xs pull-right" :disabled="disableButtons" @click="clearEntries">Clear Entries</button>
                     </div><!-- .box-header -->
 
                     <div class="box-body">
