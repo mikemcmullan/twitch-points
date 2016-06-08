@@ -169,11 +169,14 @@ class Manager extends BasicManager implements BasicManagerInterface
 
         if (! empty($timers)) {
             $timers = $this->timers($timers);
-            $delay = 0;
 
-            $timers->each(function ($timer) use (&$delay) {
-                $this->events->fire(new \App\Events\TimerWasExecuted($timer, $delay));
-                $delay++;
+            $timers->groupBy('channel_id')->each(function ($channelTimers) {
+                $delay = 0;
+
+                $channelTimers->each(function ($timer) use (&$delay) {
+                    $this->events->fire(new \App\Events\TimerWasExecuted($timer, $delay));
+                    $delay++;
+                });
             });
         }
     }
