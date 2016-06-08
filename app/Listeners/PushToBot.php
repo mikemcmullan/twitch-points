@@ -86,7 +86,7 @@ class PushToBot
             ]
         ]);
 
-        \Amqp::publish("{$this->getType($event)}.{$event->channel->name}", $msg, ['exchange' => 'irc-messages-delayed']);
+        \Amqp::publish($this->getType($event), $msg, ['exchange' => 'irc-messages-delayed']);
 
         config(['amqp.properties.production.exchange_type' => 'topic']);
     }
