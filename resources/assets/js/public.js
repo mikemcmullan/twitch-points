@@ -22,7 +22,29 @@ if (document.querySelector('#commands')) {
             loading: true,
             loading2: true,
             itemsPerPage: 10,
-            itemsIndex: 0
+            itemsIndex: 0,
+            searchKeyword: '',
+            searchCount: 0,
+            isSearching: false
+        },
+
+        filters: {
+            searchCommands(commands) {
+                if (this.searchKeyword === '') {
+                    this.searchCount = 0;
+
+                    return commands;
+                }
+
+                const result = commands.filter((command) => {
+                    return command.command.indexOf(this.searchKeyword) !== -1
+                        || command.response.indexOf(this.searchKeyword) !== -1;
+                });
+
+                this.searchCount = result.length;
+
+                return result;
+            }
         },
 
         computed: {
@@ -30,6 +52,10 @@ if (document.querySelector('#commands')) {
                 return this.commands.filter((command) => {
                     return command.type === 'custom';
                 });
+            },
+
+            noSearchResults() {
+                return this.searchCount === 0 && this.searchKeyword !== '';
             },
 
             systemCommands() {

@@ -13297,16 +13297,42 @@ if (document.querySelector('#commands')) {
             'paginator': _paginator2.default
         },
 
+        filters: {
+            searchCommands: function searchCommands(commands) {
+                var _this = this;
+
+                if (this.searchKeyword === '') {
+                    this.searchCount = 0;
+
+                    return commands;
+                }
+
+                var result = commands.filter(function (command) {
+                    return command.command.indexOf(_this.searchKeyword) !== -1 || command.response.indexOf(_this.searchKeyword) !== -1;
+                });
+
+                this.searchCount = result.length;
+
+                return result;
+            }
+        },
+
         data: {
             commands: [],
             loading: true,
             loading2: true,
             disableDisableBtn: false,
             itemsPerPage: 10,
-            itemsIndex: 0
+            itemsIndex: 0,
+            searchKeyword: '',
+            searchCount: 0,
+            isSearching: false
         },
 
         computed: {
+            noSearchResults: function noSearchResults() {
+                return this.searchCount === 0 && this.searchKeyword !== '';
+            },
             customCommands: function customCommands() {
                 return this.commands.filter(function (command) {
                     return command.type === 'custom';
@@ -13320,20 +13346,20 @@ if (document.querySelector('#commands')) {
         },
 
         ready: function ready() {
-            var _this = this;
+            var _this2 = this;
 
             this.$http.get('commands?type=custom').then(function (response) {
-                _this.commands = _this.commands.concat(response.data);
-                _this.loading = false;
+                _this2.commands = _this2.commands.concat(response.data);
+                _this2.loading = false;
 
-                _this.$els.loop.className = '';
+                _this2.$els.loop.className = '';
             });
 
             this.$http.get('commands?type=system&orderBy=order&orderDirection=ASC').then(function (response) {
-                _this.commands = _this.commands.concat(response.data);
-                _this.loading2 = false;
+                _this2.commands = _this2.commands.concat(response.data);
+                _this2.loading2 = false;
 
-                _this.$els.loop2.className = '';
+                _this2.$els.loop2.className = '';
             });
         },
 
@@ -13355,7 +13381,7 @@ if (document.querySelector('#commands')) {
                 this.$broadcast('openDeleteCustomCommandModal', this._getCommand(id));
             },
             disableCommand: function disableCommand(id) {
-                var _this2 = this;
+                var _this3 = this;
 
                 if (this.disableDisableBtn) {
                     return;
@@ -13365,8 +13391,8 @@ if (document.querySelector('#commands')) {
                 var command = this._getCommand(id);
 
                 this.$http.put('commands/' + command.id, { disabled: !command.disabled }).then(function (response) {
-                    _this2.updateOrAddToCommandsTable(response.data);
-                    _this2.disableDisableBtn = false;
+                    _this3.updateOrAddToCommandsTable(response.data);
+                    _this3.disableDisableBtn = false;
                 });
             },
             deleteFromCommandsTable: function deleteFromCommandsTable(command) {
@@ -13428,16 +13454,16 @@ if (document.querySelector('#giveaway')) {
             },
 
             ready: function ready() {
-                var _this3 = this;
+                var _this4 = this;
 
                 var channel = pusher.subscribe('private-' + options.channel);
 
                 channel.bind('giveaway.was-cleared', function (data) {
-                    _this3.$broadcast('clearEntries');
+                    _this4.$broadcast('clearEntries');
                 });
 
                 channel.bind('giveaway.was-entered', function (data) {
-                    _this3.$broadcast('newEntry', { handle: data.handle, tickets: data.tickets });
+                    _this4.$broadcast('newEntry', { handle: data.handle, tickets: data.tickets });
                 });
             }
         });
@@ -13478,13 +13504,13 @@ if (document.querySelector('#timers')) {
         },
 
         ready: function ready() {
-            var _this4 = this;
+            var _this5 = this;
 
             this.$http.get('timers').then(function (response) {
-                _this4.timers = response.data;
-                _this4.loading = false;
+                _this5.timers = response.data;
+                _this5.loading = false;
 
-                _this4.$els.loop.className = '';
+                _this5.$els.loop.className = '';
             });
         },
 
@@ -13503,7 +13529,7 @@ if (document.querySelector('#timers')) {
                 this.$broadcast('openNewModal');
             },
             disable: function disable(id) {
-                var _this5 = this;
+                var _this6 = this;
 
                 if (this.disableDisableBtn) {
                     return;
@@ -13513,8 +13539,8 @@ if (document.querySelector('#timers')) {
                 var timer = this._getTimer(id);
 
                 this.$http.put('timers/' + timer.id, { disabled: !timer.disabled }).then(function (response) {
-                    _this5.updateOrAddToTable(response.data);
-                    _this5.disableDisableBtn = false;
+                    _this6.updateOrAddToTable(response.data);
+                    _this6.disableDisableBtn = false;
                 });
             },
             deleteModal: function deleteModal(id) {
@@ -13563,13 +13589,13 @@ if (document.querySelector('#quotes')) {
         },
 
         ready: function ready() {
-            var _this6 = this;
+            var _this7 = this;
 
             this.$http.get('quotes').then(function (response) {
-                _this6.quotes = response.data;
-                _this6.loading = false;
+                _this7.quotes = response.data;
+                _this7.loading = false;
 
-                _this6.$els.loop.className = '';
+                _this7.$els.loop.className = '';
             });
         },
 

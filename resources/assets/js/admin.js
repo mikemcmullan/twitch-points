@@ -37,16 +37,42 @@ if (document.querySelector('#commands')) {
             'paginator': paginator
         },
 
+        filters: {
+            searchCommands(commands) {
+                if (this.searchKeyword === '') {
+                    this.searchCount = 0;
+
+                    return commands;
+                }
+
+                const result = commands.filter((command) => {
+                    return command.command.indexOf(this.searchKeyword) !== -1
+                        || command.response.indexOf(this.searchKeyword) !== -1;
+                });
+
+                this.searchCount = result.length;
+
+                return result;
+            }
+        },
+
         data: {
             commands: [],
             loading: true,
             loading2: true,
             disableDisableBtn: false,
             itemsPerPage: 10,
-            itemsIndex: 0
+            itemsIndex: 0,
+            searchKeyword: '',
+            searchCount: 0,
+            isSearching: false
         },
 
         computed: {
+            noSearchResults() {
+                return this.searchCount === 0 && this.searchKeyword !== '';
+            },
+
             customCommands() {
                 return this.commands.filter((command) => {
                     return command.type === 'custom';

@@ -11616,7 +11616,30 @@ if (document.querySelector('#commands')) {
             loading: true,
             loading2: true,
             itemsPerPage: 10,
-            itemsIndex: 0
+            itemsIndex: 0,
+            searchKeyword: '',
+            searchCount: 0,
+            isSearching: false
+        },
+
+        filters: {
+            searchCommands: function searchCommands(commands) {
+                var _this = this;
+
+                if (this.searchKeyword === '') {
+                    this.searchCount = 0;
+
+                    return commands;
+                }
+
+                var result = commands.filter(function (command) {
+                    return command.command.indexOf(_this.searchKeyword) !== -1 || command.response.indexOf(_this.searchKeyword) !== -1;
+                });
+
+                this.searchCount = result.length;
+
+                return result;
+            }
         },
 
         computed: {
@@ -11624,6 +11647,9 @@ if (document.querySelector('#commands')) {
                 return this.commands.filter(function (command) {
                     return command.type === 'custom';
                 });
+            },
+            noSearchResults: function noSearchResults() {
+                return this.searchCount === 0 && this.searchKeyword !== '';
             },
             systemCommands: function systemCommands() {
                 return this.commands.filter(function (command) {
@@ -11633,20 +11659,20 @@ if (document.querySelector('#commands')) {
         },
 
         ready: function ready() {
-            var _this = this;
+            var _this2 = this;
 
             this.$http.get('commands?type=custom&disabled=0').then(function (response) {
-                _this.commands = _this.commands.concat(response.data);
-                _this.loading = false;
+                _this2.commands = _this2.commands.concat(response.data);
+                _this2.loading = false;
 
-                _this.$els.loop.className = '';
+                _this2.$els.loop.className = '';
             });
 
             this.$http.get('commands?type=system&orderBy=order&orderDirection=ASC&disabled=0').then(function (response) {
-                _this.commands = _this.commands.concat(response.data);
-                _this.loading2 = false;
+                _this2.commands = _this2.commands.concat(response.data);
+                _this2.loading2 = false;
 
-                _this.$els.loop2.className = '';
+                _this2.$els.loop2.className = '';
             });
         }
     });
@@ -11665,13 +11691,13 @@ if (document.querySelector('#quotes')) {
         },
 
         ready: function ready() {
-            var _this2 = this;
+            var _this3 = this;
 
             this.$http.get('quotes').then(function (response) {
-                _this2.quotes = response.data;
-                _this2.loading = false;
+                _this3.quotes = response.data;
+                _this3.loading = false;
 
-                _this2.$els.loop.className = '';
+                _this3.$els.loop.className = '';
             });
         }
     });

@@ -17,12 +17,15 @@
                 <div class="box-body">
 
                     <p>
-                        <select class="form-control" v-model="itemsPerPage" style="width: 130px; display: inline-block;">
+                        <select class="form-control pull-right" v-model="itemsPerPage" style="width: 130px; display: inline-block;">
                             <option value="10" selected="selected">10 per page</option>
                             <option value="25">25 per page</option>
                             <option value="50">50 per page</option>
                             <option value="100">100 per page</option>
                         </select>
+
+                        <input type="search" class="form-control pull-right" v-model="searchKeyword" placeholder="search commands" style="width: 180px; display: inline-block; margin-right: 15px;">
+                        <br><br>
                     </p>
 
                     <table class="table table-bordered table-striped" id="custom-commands-table">
@@ -33,13 +36,13 @@
                         </thead>
 
                         <tbody class="hide" v-el:loop>
-                            <tr v-for="command in commands | filterBy 'custom' in 'type' | limitBy itemsPerPage itemsIndex" :class="{ 'command-disabled': command.disabled }">
+                            <tr v-for="command in commands | filterBy 'custom' in 'type' | limitBy itemsPerPage itemsIndex | searchCommands searchKeyword" :class="{ 'command-disabled': command.disabled }">
                                 <td>@{{ command.command }}</td>
                                 <td class="hidden-sm hidden-xs">@{{ command.level.capitalize() }}</td>
                                 <td class="hidden-sm hidden-xs">@{{ command.response.substring(0, 100) }}<span v-if="command.response.length > 100">...</span></td>
                             </tr>
-                            <tr v-if="customCommands.length === 0">
-                                <td colspan="3">No custom commands have been created.</td>
+                            <tr v-if="customCommands.length === 0 || noSearchResults">
+                                <td colspan="3">No records found.</td>
                             </tr>
                         </tbody>
 
