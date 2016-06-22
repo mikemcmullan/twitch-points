@@ -118,10 +118,6 @@ class Manager
         if ($points > 10000) {
             throw new InvalidArgumentException('You cannot award or take away more than 10000 points at a time.');
         }
-
-        if ($handle === $source) {
-            throw new InvalidArgumentException('You cannot give yourself points.');
-        }
     }
 
     /**
@@ -159,6 +155,10 @@ class Manager
         $channel = $this->resolveChannel($channel);
         $sourceChatter = null;
         $points = (int) $points;
+
+        if ($handle === $source) {
+            throw new InvalidArgumentException(sprintf('You cannot give yourself %s.', strtolower($channel->getSetting('currency.name'))));
+        }
 
         if ($source && $sourceChatter = $this->getViewer($channel, $source)) {
             if ($sourceChatter['points'] < $points) {
