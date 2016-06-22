@@ -24,7 +24,7 @@ class CurrencyController extends Controller
      */
     public function __construct()
     {
-        $this->middleware('jwt.auth');
+        // $this->middleware('jwt.auth');
     }
 
     /**
@@ -37,9 +37,9 @@ class CurrencyController extends Controller
      */
     public function addCurrency(Request $request, Channel $channel)
     {
-        $data = $request->only(['handle', 'points']);
+        $data = $request->only(['handle', 'points', 'source']);
 
-        $response = $this->dispatch(new AddCurrencyJob($channel, $data['handle'], $data['points']));
+        $response = $this->dispatch(new AddCurrencyJob($channel, $data['handle'], $data['points'], $data['source']));
 
         return response()->json($response);
     }

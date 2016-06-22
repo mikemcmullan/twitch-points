@@ -23,17 +23,24 @@ class AddCurrencyJob extends Job
     public $points;
 
     /**
+     * @var
+     */
+    public $source;
+
+    /**
      * Create a new command instance.
      *
      * @param string $channel  The channel the chatter belongs to.
      * @param string $handle   The chat handle of the user who will receive the points.
      * @param int $points      Amount of points to award.
+     * @param string $source   The chat handle of the user who the points will be token from.
      */
-    public function __construct($channel, $handle, $points)
+    public function __construct($channel, $handle, $points, $source = null)
     {
         $this->channel = $channel;
         $this->handle = $handle;
         $this->points = $points;
+        $this->source = $source;
     }
 
     /**
@@ -43,6 +50,6 @@ class AddCurrencyJob extends Job
      */
     public function handle(Manager $manager)
     {
-        return $manager->addPoints($this->channel, $this->handle, $this->points);
+        return $manager->addPoints($this->channel, $this->handle, $this->points, $this->source);
     }
 }
