@@ -68,8 +68,8 @@ class Handler extends ExceptionHandler
                 $e instanceof UnknownHandleException
                 ) {
                 return response()->json([
-                    'error' => 'Not Found',
-                    'status'=> 404,
+                    'error'   => 'Not Found',
+                    'status'  => 404,
                     'message' => $e->getMessage()
                 ], 404);
             }
@@ -77,7 +77,7 @@ class Handler extends ExceptionHandler
             if ($e instanceof UnauthorizedHttpException) {
                 return response()->json([
                     'error'   => 'Unauthorized Request',
-                    'code'    => 401,
+                    'status'  => 401,
                     'message' => $e->getMessage()
                 ], 401);
             }
@@ -85,7 +85,7 @@ class Handler extends ExceptionHandler
             if ($e instanceof ValidationException) {
                 return response()->json([
                     'error'   => 'Bad Request',
-                    'code'    => 400,
+                    'status'  => 400,
                     'message' => [
                         'validation_errors' => $e->errors()
                     ]
@@ -95,15 +95,15 @@ class Handler extends ExceptionHandler
             if ($e instanceof \InvalidArgumentException) {
                 return response()->json([
                     'error'   => 'Bad Request',
-                    'code'    => 400,
+                    'status'  => 400,
                     'message' => $e->getMessage()
                 ], 400);
             }
 
             if ($e instanceof GiveAwayException) {
                 return response()->json([
-                    'error' => 'Conflict',
-                    'code'  => 409,
+                    'error'   => 'Conflict',
+                    'status'  => 409,
                     'message' => $e->getMessage()
                 ], 409);
             }
