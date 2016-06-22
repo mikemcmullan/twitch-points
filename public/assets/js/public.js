@@ -11639,7 +11639,7 @@ if (document.querySelector('#commands')) {
                 }
 
                 var result = commands.filter(function (command) {
-                    return command.command.indexOf(_this.searchKeyword) !== -1 || command.response.indexOf(_this.searchKeyword) !== -1;
+                    return command.command.toLowerCase().indexOf(_this.searchKeyword) !== -1 || command.response.toLowerCase().indexOf(_this.searchKeyword) !== -1;
                 });
 
                 if (this.searchCount !== result.length) {

@@ -46,8 +46,8 @@ if (document.querySelector('#commands')) {
                 }
 
                 const result = commands.filter((command) => {
-                    return command.command.indexOf(this.searchKeyword) !== -1
-                        || command.response.indexOf(this.searchKeyword) !== -1;
+                    return command.command.toLowerCase().indexOf(this.searchKeyword.toLowerCase()) !== -1
+                        || command.response.toLowerCase().indexOf(this.searchKeyword.toLowerCase()) !== -1;
                 });
 
                 if (this.searchCount !== result.length) {
