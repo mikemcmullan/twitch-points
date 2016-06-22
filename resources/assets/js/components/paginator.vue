@@ -47,6 +47,12 @@
             });
         },
 
+        events: {
+            goToPage(page) {
+                this.goToPage(page);
+            }
+        },
+
         methods: {
             previousPage() {
                 if (this.currentPage === 1) {

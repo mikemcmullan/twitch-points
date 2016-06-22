@@ -36,7 +36,7 @@
                         </thead>
 
                         <tbody class="hide" v-el:loop>
-                            <tr v-for="command in commands | filterBy 'custom' in 'type' | limitBy itemsPerPage itemsIndex | searchCommands searchKeyword" :class="{ 'command-disabled': command.disabled }">
+                            <tr v-for="command in commands | filterBy 'custom' in 'type' | searchCommands searchKeyword | limitBy itemsPerPage itemsIndex" :class="{ 'command-disabled': command.disabled }">
                                 <td>@{{ command.command }}</td>
                                 <td class="hidden-sm hidden-xs">@{{ command.level.capitalize() }}</td>
                                 <td class="hidden-sm hidden-xs">@{{ command.response.substring(0, 100) }}<span v-if="command.response.length > 100">...</span></td>

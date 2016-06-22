@@ -41,6 +41,10 @@ if (document.querySelector('#commands')) {
                         || command.response.indexOf(this.searchKeyword) !== -1;
                 });
 
+                if (this.searchCount !== result.length) {
+                    this.$broadcast('goToPage', 1);
+                }
+
                 this.searchCount = result.length;
 
                 return result;

@@ -11485,6 +11485,12 @@ exports.default = {
         });
     },
 
+    events: {
+        goToPage: function goToPage(page) {
+            this.goToPage(page);
+        }
+    },
+
     methods: {
         previousPage: function previousPage() {
             if (this.currentPage === 1) {
@@ -11635,6 +11641,10 @@ if (document.querySelector('#commands')) {
                 var result = commands.filter(function (command) {
                     return command.command.indexOf(_this.searchKeyword) !== -1 || command.response.indexOf(_this.searchKeyword) !== -1;
                 });
+
+                if (this.searchCount !== result.length) {
+                    this.$broadcast('goToPage', 1);
+                }
 
                 this.searchCount = result.length;
 

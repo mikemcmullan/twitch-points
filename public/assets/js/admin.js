@@ -13311,6 +13311,10 @@ if (document.querySelector('#commands')) {
                     return command.command.indexOf(_this.searchKeyword) !== -1 || command.response.indexOf(_this.searchKeyword) !== -1;
                 });
 
+                if (this.searchCount !== result.length) {
+                    this.$broadcast('goToPage', 1);
+                }
+
                 this.searchCount = result.length;
 
                 return result;
@@ -14413,6 +14417,12 @@ exports.default = {
         this.$watch('itemsPerPage', function (newVal, oldVal) {
             _this.itemsIndex = 0;
         });
+    },
+
+    events: {
+        goToPage: function goToPage(page) {
+            this.goToPage(page);
+        }
     },
 
     methods: {

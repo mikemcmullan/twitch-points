@@ -41,7 +41,7 @@
                         </thead>
 
                         <tbody class="hide" v-el:loop>
-                            <tr v-for="command in commands | filterBy 'custom' in 'type' | limitBy itemsPerPage itemsIndex | searchCommands searchKeyword" :class="{ 'command-disabled': command.disabled }">
+                            <tr v-for="command in commands | filterBy 'custom' in 'type' | searchCommands searchKeyword | limitBy itemsPerPage itemsIndex" :class="{ 'command-disabled': command.disabled }">
                                 <td>
                                     <button class="btn label label-danger" :disabled="disableDisableBtn" @click="disableCommand(command.id)"  v-if="command.disabled">Disabled</button>
                                     <button class="btn label label-primary" :disabled="disableDisableBtn" @click="disableCommand(command.id)" v-if="!command.disabled">Enabled</button>
@@ -67,7 +67,7 @@
                     </table><!-- .table -->
 
                     <div class="text-center">
-                        <paginator :items-index.sync="itemsIndex" :items-per-page.sync="itemsPerPage" :data.sync="customCommands"></paginator>
+                        <paginator :items-index.sync="itemsIndex" :items-per-page.sync="itemsPerPage" :data.sync="customCommands | searchCommands searchKeyword"></paginator>
                     </div>
 
                     <br>
