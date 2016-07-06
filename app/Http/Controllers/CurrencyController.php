@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Jobs\ToggleSystemJob;
+use App\Support\ScoreboardCache;
 use App\Contracts\Repositories\ChatterRepository;
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
@@ -10,6 +11,7 @@ use App\Contracts\Repositories\TrackSessionRepository;
 use Illuminate\Http\Request;
 use JasonGrimes\Paginator;
 use App\Channel;
+use Cache;
 
 class CurrencyController extends Controller
 {
@@ -33,7 +35,7 @@ class CurrencyController extends Controller
      *
      * @return \Illuminate\View\View
      */
-    public function scoreboard(Request $request, TrackSessionRepository $trackPointsSession, Channel $channel)
+    public function scoreboard(Request $request, TrackSessionRepository $trackPointsSession, Channel $channel, ScoreboardCache $scoreboardCache)
     {
         $data = [
             'handle' => strtolower($request->get('handle')),
@@ -41,13 +43,14 @@ class CurrencyController extends Controller
         ];
 
         if ($data['handle']) {
-            $data['chatter'] = $this->chatterRepository->findByHandle($channel, $data['handle']);
+            $data['chatter'] = $scoreboardCache->findByHandle($channel, $data['handle']);
         }
 
-        $data['page'] = $request->get('page', 1);
-        $data['chatters'] = $this->chatterRepository->paginate($data['page'], 100)->allForChannel($channel, false, $channel->getSetting('rank-mods', false));
-        $data['count'] = $data['chatters']->total();
+        $data['page'] = (int) $request->get('page', 1);
         $data['status'] = (bool) $trackPointsSession->findIncompletedSession($channel);
+        $data['chatters'] = $scoreboardCache->paginate($data['page'])->allForChannel($channel);
+        $data['count'] = $scoreboardCache->countForChannel($channel);
+        $data['paginator'] = new Paginator($data['count'], 100, $data['page'], '/scoreboard?page=(:num)');
 
         return view('scoreboard', $data);
     }

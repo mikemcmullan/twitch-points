@@ -17,7 +17,9 @@ class Kernel extends ConsoleKernel
         \App\Console\Commands\SyncSystemStatus::class,
         \App\Console\Commands\RemoveChannel::class,
         \App\Console\Commands\RemoveOldViewers::class,
-        \App\Console\Commands\RunTimer::class
+        \App\Console\Commands\RunTimer::class,
+        \App\Console\Commands\GenerateUserJWTToken::class,
+        \App\Console\Commands\UpdateScoreboardCache::class
     ];
 
     /**
@@ -28,6 +30,7 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
+        $schedule->command('points:update-scoreboard-cache')->everyFiveMinutes();
         $schedule->command('points:update')->everyMinute();
         $schedule->command('points:sync-status')->everyFiveMinutes();
         $schedule->command('bot:run-timer')->everyFiveMinutes();
