@@ -175,7 +175,8 @@
                             </table><!-- .body -->
 
                             <div class="text-center">
-                                {!! $chatters->links() !!}
+                                {{-- $chatters->links() --}}
+                                {!! $paginator !!}
                             </div>
                         </div><!-- .col -->
                     </div><!-- .row -->
