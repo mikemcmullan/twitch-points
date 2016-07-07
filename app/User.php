@@ -23,6 +23,11 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
         return $this->belongsToMany(Channel::class);
     }
 
+    public static function findByName($name)
+    {
+        return (new static)->where('name', $name)->first();
+    }
+
     public function hasPermission($permission)
     {
         $permissions = explode(',', $this->permissions);
