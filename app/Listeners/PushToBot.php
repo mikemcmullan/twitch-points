@@ -76,8 +76,6 @@ class PushToBot
             'byPassAuth'=> true
         ], $this->getData($event));
 
-        config(['amqp.properties.production.exchange_type' => 'x-delayed-message']);
-
         $msg = new Message(json_encode($outEvent), [
             'content_type' => 'application/json',
             'delivery_mode' => 1,
@@ -87,7 +85,5 @@ class PushToBot
         ]);
 
         \Amqp::publish($this->getType($event), $msg, ['exchange' => 'irc-messages-delayed']);
-
-        config(['amqp.properties.production.exchange_type' => 'topic']);
     }
 }
