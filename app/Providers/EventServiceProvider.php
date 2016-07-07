@@ -14,7 +14,7 @@ class EventServiceProvider extends ServiceProvider
      */
     protected $listen = [
         \App\Events\ChatListWasDownloaded::class => [
-            \App\Handlers\Events\ProcessChatList::class,
+            \App\Listeners\ProcessChatList::class,
             \App\Listeners\UpdateDeModdedChatters::class
         ],
 
