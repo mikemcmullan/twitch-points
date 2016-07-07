@@ -13,7 +13,7 @@ function makeDomain($domain, $protocol = null)
     $port     = in_array($request->getPort(), [80, 443]) ? '' : ':' . $request->getPort();
 
     if ($protocol === null) {
-        $protocol = $request->secure() ? 'https://' : 'http://';
+        $protocol = config('app.secure') ? 'https://' : 'http://';
     }
 
     return $protocol . $domain . $port;

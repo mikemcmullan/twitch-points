@@ -9,6 +9,8 @@ return [
 
     'env' => env('APP_ENV', 'production'),
 
+    'secure' => env('APP_SECURE', false),
+
     /*
     |--------------------------------------------------------------------------
     | Application Debug Mode
