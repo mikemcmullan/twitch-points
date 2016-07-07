@@ -7,6 +7,7 @@ use App\Exceptions\UnknownUserException;
 use App\Exceptions\UnknownHandleException;
 use App\Channel;
 use InvalidArgumentException;
+use App\Support\ScoreboardCache;
 
 class Manager
 {
@@ -16,12 +17,18 @@ class Manager
     private $chatterRepo;
 
     /**
+     * @var ScoreboardCache
+     */
+    private $scoreboardCache;
+
+    /**
      * @param ChatterRepository $chatterRepo
      * @param ChannelRepository $channelRepo
      */
-    public function __construct(ChatterRepository $chatterRepo)
+    public function __construct(ChatterRepository $chatterRepo, ScoreboardCache $scoreboardCache)
     {
         $this->chatterRepo = $chatterRepo;
+        $this->scoreboardCache = $scoreboardCache;
     }
 
     /**
@@ -67,7 +74,8 @@ class Manager
 
         $handle = strtolower($handle);
 
-        $chatter = $this->chatterRepo->findByHandle($channel, $handle);
+        // $chatter = $this->chatterRepo->findByHandle($channel, $handle);
+        $chatter = $this->scoreboardCache->findByHandle($channel, $handle);
 
         if (! $chatter) {
             throw new UnknownHandleException(sprintf('%s is not a valid handle.', $handle));
@@ -166,6 +174,9 @@ class Manager
             }
 
             $this->chatterRepo->updateChatter($channel, $sourceChatter['handle'], 0, '-' . $points);
+            $this->scoreboardCache->addViewer($channel, array_merge($sourceChatter, [
+                'points' => $this->calculateTotalPoints($sourceChatter['points'], $points, '-')
+            ]));
         }
 
         $chatter = $this->getViewer($channel, $handle);
@@ -177,6 +188,7 @@ class Manager
         }
 
         $this->chatterRepo->updateChatter($channel, $chatter['handle'], 0, $symbol . $points);
+        $this->scoreboardCache->addViewer($channel, array_merge($chatter, ['points' => $pointTotal]));
 
         return array_merge(array_only($chatter, ['handle', 'minutes']), [
             'channel' => $channel->name,
