@@ -30,7 +30,7 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        $schedule->command('points:update-scoreboard-cache')->everyFiveMinutes();
+        $schedule->command('points:update-scoreboard-cache')->everyThirtyMinutes();
         $schedule->command('points:update')->everyMinute();
         $schedule->command('points:sync-status')->everyFiveMinutes();
         $schedule->command('bot:run-timer')->everyFiveMinutes();
