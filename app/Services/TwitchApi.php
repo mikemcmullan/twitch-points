@@ -49,10 +49,9 @@ class TwitchApi
     private function setupHttpClient()
     {
         $client = new Client([
-            'defaults' => [
-                'headers' => [
-                    'Accept' => 'application/vnd.twitchtv.v3+json'
-                ]
+            'headers' => [
+                'Accept' => 'application/vnd.twitchtv.v3+json',
+                'Client-ID' => config('twitch.credentials.client_id')
             ]
         ]);
 
@@ -79,7 +78,7 @@ class TwitchApi
         while ($stop === false) {
             try {
                 $this->logger->info(sprintf('Attempt: #%d', $attempts), ['channel' => $channel]);
-                $response = $this->httpClient->get(sprintf($this->config->get('twitch.chat_list_api'), $channel));
+                $response = $this->httpClient->request('GET', sprintf($this->config->get('twitch.chat_list_api'), $channel));
                 $this->logger->info(sprintf('Chat list was obtained, took %d attempts.', $attempts), ['channel' => $channel]);
                 $stop = true;
             } catch (\GuzzleHttp\Exception\ServerException $e) {
@@ -155,7 +154,7 @@ class TwitchApi
     public function getStream($channel)
     {
         try {
-            $response = $this->httpClient->get('https://api.twitch.tv/kraken/streams/' . $channel);
+            $response = $this->httpClient->request('GET', 'https://api.twitch.tv/kraken/streams/' . $channel);
             return json_decode((string) $response->getBody(), true);
         } catch (ClientException $e) {
             $this->logger->error('Invalid channel.', ['channel' => $channel]);
