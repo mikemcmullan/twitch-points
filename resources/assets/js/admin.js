@@ -20,6 +20,55 @@ Vue.validator('keywordFormat', {
 
 // Vue.config.debug = true;
 
+if (document.querySelector('#header-nav')) {
+    new Vue({
+        el: '#header-nav',
+
+        data: {
+            status: '',
+            loading: true
+        },
+
+        ready() {
+            this.$http.get('bot/status')
+                .then((response) => {
+                    this.status = response.data.status;
+                    this.$els.join.className = '';
+                    this.$els.leave.className = '';
+                    this.$els.unavailable.className = '';
+
+                    this.loading = false;
+                });
+        },
+
+        methods: {
+            joinChannel() {
+                this.$http.post('bot/join')
+                    .then((response) => {
+                        if (response.data.error) {
+                            this.status = 'not_in_channel';
+                            return alert(response.data.message);
+                        }
+
+                        this.status = 'in_channel';
+                    });
+            },
+
+            leaveChannel() {
+                this.$http.post('bot/leave')
+                    .then((response) => {
+                        if (response.data.error) {
+                            this.status = 'not_in_channel';
+                            return alert(response.data.message);
+                        }
+
+                        this.status = 'not_in_channel';
+                    });
+            }
+        }
+    });
+}
+
 //------------------------------------------------------------------------------
 // Commands
 //------------------------------------------------------------------------------

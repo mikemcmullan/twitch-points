@@ -44,6 +44,14 @@ class EventServiceProvider extends ServiceProvider
 
         \App\Events\TimerWasExecuted::class => [
             \App\Listeners\PushToBot::class
+        ],
+
+        \App\Events\Bot\BotJoinedChannel::class => [
+            \App\Listeners\PushToBot::class
+        ],
+
+        \App\Events\Bot\BotLeftChannel::class => [
+            \App\Listeners\PushToBot::class
         ]
     ];
 

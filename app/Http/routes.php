@@ -7,6 +7,12 @@ Route::group(['domain' => config('app.auth_domain')], function () {
     ]);
 });
 
+Route::group(['domain' => config('app.api_domain'), 'namespace' => 'API'], function () {
+    Route::put('/bot/status', [
+        'uses'  => 'BotController@updateStatus'
+    ]);
+});
+
 Route::group(['domain' => config('app.api_domain'), 'prefix' => '{channel}', 'namespace' => 'API'], function () {
     Route::get('/viewer', [
         'uses'  => 'ViewerController@getViewer',
@@ -174,6 +180,24 @@ Route::group(['domain' => config('app.api_domain'), 'prefix' => '{channel}', 'na
     Route::get('/giveaway/winner', [
         'uses'  => 'GiveawayController@winner',
         'as'    => 'api_giveaway_winner_path'
+    ]);
+
+    /*
+     * Bot Routes
+     */
+    Route::get('/bot/status', [
+        'uses'  => 'BotController@status',
+        'as'    => 'api_bot_status_path'
+    ]);
+
+    Route::post('/bot/join', [
+        'uses'  => 'BotController@joinChannel',
+        'as'    => 'api_bot_join_channel_path'
+    ]);
+
+    Route::post('/bot/leave', [
+        'uses'  => 'BotController@leaveChannel',
+        'as'    => 'api_bot_leave_channel_path'
     ]);
 });
 

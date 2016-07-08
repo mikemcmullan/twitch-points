@@ -6,7 +6,7 @@ use fXmlRpc\Client;
 use fXmlRpc\Transport\HttpAdapterTransport;
 use GuzzleHttp\Client as GuzzleClient;
 use Illuminate\Support\ServiceProvider;
-use Ivory\HttpAdapter\GuzzleHttpHttpAdapter;
+use Ivory\HttpAdapter\Guzzle6HttpAdapter;
 use Supervisor\Connector\XmlRpc;
 use Supervisor\Supervisor;
 
@@ -36,7 +36,7 @@ class SupervisorServiceProvider extends ServiceProvider
             $client = new Client(
                 env('SUPERVISOR_RPC'),
                 new HttpAdapterTransport(
-                    new GuzzleHttpHttpAdapter(
+                    new Guzzle6HttpAdapter(
                         new GuzzleClient([
                             'defaults' => [
                                 'auth' => [$username, $password]

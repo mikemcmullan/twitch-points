@@ -32,13 +32,19 @@
                     <span class="sr-only">Toggle navigation</span>
                 </a>
 
-                @if (Auth::check())
-                <div class="navbar-custom-menu">
+                <div class="navbar-custom-menu" id="header-nav">
                     <ul class="nav navbar-nav">
+                        @can('admin-channel', $channel)
+                        <li class="navbar-text" v-if="loading"><img src="/assets/img/loader-white.svg" width="24" height="24" alt="Loading..."></li>
+                        <li v-el:unavailable class="hide"><a v-if="status === 'unavailable'">Bot is unavailable &nbsp; <i class="fa fa-fw fa-toggle-off"></i></a></li>
+                        <li v-el:join class="hide"><a href="#" @click="joinChannel()" v-if="status === 'not_in_channel'">Join Channel &nbsp; <i class="fa fa-fw fa-toggle-off"></i></a></li>
+                        <li v-el:leave class="hide"><a href="#" @click="leaveChannel()" v-if="status === 'in_channel'">Leave Channel &nbsp; <i class="fa fa-fw fa-toggle-on"></i></a></li>
+                        @endcan
+                        @if ($user)
                         <li><a href="{{ route('logout_path', $channel->slug) }}">Logout</a></li>
+                        @endif
                     </ul>
                 </div><!-- .navbar-custom-menu -->
-                @endif
             </nav><!-- .navbar -->
         </header><!-- .main-header -->
 

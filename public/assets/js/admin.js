@@ -13283,6 +13283,57 @@ _vue2.default.validator('keywordFormat', {
 
 // Vue.config.debug = true;
 
+if (document.querySelector('#header-nav')) {
+    new _vue2.default({
+        el: '#header-nav',
+
+        data: {
+            status: '',
+            loading: true
+        },
+
+        ready: function ready() {
+            var _this = this;
+
+            this.$http.get('bot/status').then(function (response) {
+                _this.status = response.data.status;
+                _this.$els.join.className = '';
+                _this.$els.leave.className = '';
+                _this.$els.unavailable.className = '';
+
+                _this.loading = false;
+            });
+        },
+
+        methods: {
+            joinChannel: function joinChannel() {
+                var _this2 = this;
+
+                this.$http.post('bot/join').then(function (response) {
+                    if (response.data.error) {
+                        _this2.status = 'not_in_channel';
+                        return alert(response.data.message);
+                    }
+
+                    _this2.status = 'in_channel';
+                });
+            },
+            leaveChannel: function leaveChannel() {
+                var _this3 = this;
+
+                this.$http.post('bot/leave').then(function (response) {
+                    if (response.data.error) {
+                        _this3.status = 'not_in_channel';
+                        return alert(response.data.message);
+                    }
+
+                    _this3.status = 'not_in_channel';
+                });
+            }
+        }
+    });
+}
+
 //------------------------------------------------------------------------------
 // Commands
 //------------------------------------------------------------------------------
@@ -13299,7 +13350,7 @@ if (document.querySelector('#commands')) {
 
         filters: {
             searchCommands: function searchCommands(commands) {
-                var _this = this;
+                var _this4 = this;
 
                 if (this.searchKeyword === '') {
                     this.searchCount = 0;
@@ -13308,7 +13359,7 @@ if (document.querySelector('#commands')) {
                 }
 
                 var result = commands.filter(function (command) {
-                    return command.command.toLowerCase().indexOf(_this.searchKeyword.toLowerCase()) !== -1 || command.response.toLowerCase().indexOf(_this.searchKeyword.toLowerCase()) !== -1;
+                    return command.command.toLowerCase().indexOf(_this4.searchKeyword.toLowerCase()) !== -1 || command.response.toLowerCase().indexOf(_this4.searchKeyword.toLowerCase()) !== -1;
                 });
 
                 if (this.searchCount !== result.length) {
@@ -13350,20 +13401,20 @@ if (document.querySelector('#commands')) {
         },
 
         ready: function ready() {
-            var _this2 = this;
+            var _this5 = this;
 
             this.$http.get('commands?type=custom').then(function (response) {
-                _this2.commands = _this2.commands.concat(response.data);
-                _this2.loading = false;
+                _this5.commands = _this5.commands.concat(response.data);
+                _this5.loading = false;
 
-                _this2.$els.loop.className = '';
+                _this5.$els.loop.className = '';
             });
 
             this.$http.get('commands?type=system&orderBy=order&orderDirection=ASC').then(function (response) {
-                _this2.commands = _this2.commands.concat(response.data);
-                _this2.loading2 = false;
+                _this5.commands = _this5.commands.concat(response.data);
+                _this5.loading2 = false;
 
-                _this2.$els.loop2.className = '';
+                _this5.$els.loop2.className = '';
             });
         },
 
@@ -13385,7 +13436,7 @@ if (document.querySelector('#commands')) {
                 this.$broadcast('openDeleteCustomCommandModal', this._getCommand(id));
             },
             disableCommand: function disableCommand(id) {
-                var _this3 = this;
+                var _this6 = this;
 
                 if (this.disableDisableBtn) {
                     return;
@@ -13395,8 +13446,8 @@ if (document.querySelector('#commands')) {
                 var command = this._getCommand(id);
 
                 this.$http.put('commands/' + command.id, { disabled: !command.disabled }).then(function (response) {
-                    _this3.updateOrAddToCommandsTable(response.data);
-                    _this3.disableDisableBtn = false;
+                    _this6.updateOrAddToCommandsTable(response.data);
+                    _this6.disableDisableBtn = false;
                 });
             },
             deleteFromCommandsTable: function deleteFromCommandsTable(command) {
@@ -13458,16 +13509,16 @@ if (document.querySelector('#giveaway')) {
             },
 
             ready: function ready() {
-                var _this4 = this;
+                var _this7 = this;
 
                 var channel = pusher.subscribe('private-' + options.channel);
 
                 channel.bind('giveaway.was-cleared', function (data) {
-                    _this4.$broadcast('clearEntries');
+                    _this7.$broadcast('clearEntries');
                 });
 
                 channel.bind('giveaway.was-entered', function (data) {
-                    _this4.$broadcast('newEntry', { handle: data.handle, tickets: data.tickets });
+                    _this7.$broadcast('newEntry', { handle: data.handle, tickets: data.tickets });
                 });
             }
         });
@@ -13508,13 +13559,13 @@ if (document.querySelector('#timers')) {
         },
 
         ready: function ready() {
-            var _this5 = this;
+            var _this8 = this;
 
             this.$http.get('timers').then(function (response) {
-                _this5.timers = response.data;
-                _this5.loading = false;
+                _this8.timers = response.data;
+                _this8.loading = false;
 
-                _this5.$els.loop.className = '';
+                _this8.$els.loop.className = '';
             });
         },
 
@@ -13533,7 +13584,7 @@ if (document.querySelector('#timers')) {
                 this.$broadcast('openNewModal');
             },
             disable: function disable(id) {
-                var _this6 = this;
+                var _this9 = this;
 
                 if (this.disableDisableBtn) {
                     return;
@@ -13543,8 +13594,8 @@ if (document.querySelector('#timers')) {
                 var timer = this._getTimer(id);
 
                 this.$http.put('timers/' + timer.id, { disabled: !timer.disabled }).then(function (response) {
-                    _this6.updateOrAddToTable(response.data);
-                    _this6.disableDisableBtn = false;
+                    _this9.updateOrAddToTable(response.data);
+                    _this9.disableDisableBtn = false;
                 });
             },
             deleteModal: function deleteModal(id) {
@@ -13593,13 +13644,13 @@ if (document.querySelector('#quotes')) {
         },
 
         ready: function ready() {
-            var _this7 = this;
+            var _this10 = this;
 
             this.$http.get('quotes').then(function (response) {
-                _this7.quotes = response.data;
-                _this7.loading = false;
+                _this10.quotes = response.data;
+                _this10.loading = false;
 
-                _this7.$els.loop.className = '';
+                _this10.$els.loop.className = '';
             });
         },
 

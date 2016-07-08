@@ -91,6 +91,24 @@ class Channel extends Model implements AuthenticatableContract, CanResetPassword
     }
 
     /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     */
+    public function bot()
+    {
+        return $this->belongsTo(Bot::class);
+    }
+
+    /**
+     * Used to keep track of if the bot is in the channel.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+    public function bots()
+    {
+        return $this->belongsToMany(Bot::class);
+    }
+
+    /**
      * Find a channel by name.
      *
      * @param $slug
@@ -98,7 +116,7 @@ class Channel extends Model implements AuthenticatableContract, CanResetPassword
      */
     public static function findBySlug($slug)
     {
-        return (new static)->where('slug', $slug)->first();
+        return (new static)->with('bot')->where('slug', $slug)->first();
     }
 
     /**
@@ -109,7 +127,7 @@ class Channel extends Model implements AuthenticatableContract, CanResetPassword
      */
     public static function findByName($name)
     {
-        return (new static)->where('name', $name)->first();
+        return (new static)->with('bot')->where('name', $name)->first();
     }
 
     /**
