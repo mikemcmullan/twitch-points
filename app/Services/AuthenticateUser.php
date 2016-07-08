@@ -61,7 +61,7 @@ class AuthenticateUser
 
         $user = $this->userRepo->findByName($channel, $authUser['name']);
 
-        if (! $user) {
+        if (\Gate::forUser($user)->denies('admin-channel', $channel)) {
             return $listener->loginHasFailed();
         }
 

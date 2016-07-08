@@ -19,7 +19,7 @@ class SettingsController extends Controller
      */
     public function __construct(Request $request)
     {
-        // $this->middleware('jwt.auth');
+        $this->middleware(['jwt.auth', 'auth.api']);
         $this->channel = $request->route()->getParameter('channel');
     }
 

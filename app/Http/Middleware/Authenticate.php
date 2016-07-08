@@ -35,12 +35,11 @@ class Authenticate
      */
     public function handle($request, Closure $next, $guard = null)
     {
-        if (\Auth::guard($guard)->guest()) {
-            if ($request->ajax() || $request->wantsJson()) {
-                return response('Unauthorized.', 401);
-            } else {
-                return redirect()->guest(route('login_path', $request->route()->getParameter('channel')->slug));
-            }
+        $channel = $request->route()->getParameter('channel');
+        $user = \Auth::user();
+
+        if (! $user || $user->cannot('admin-channel', $channel)) {
+            return redirect()->guest(route('login_path', $channel->slug));
         }
 
         return $next($request);

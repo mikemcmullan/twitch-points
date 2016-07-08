@@ -31,7 +31,7 @@ class GiveawayController extends Controller
      */
     public function index(Channel $channel)
     {
-        if (\Gate::denies('access-page', 'giveaway')) {
+        if (\Gate::denies('access-page', [$channel, 'giveaway'])) {
             return $this->redirectHomeWithMessage();
         }
 

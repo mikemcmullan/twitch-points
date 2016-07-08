@@ -13,6 +13,7 @@ use App\Jobs\StopCurrencySystemJob;
 use App\Jobs\StartCurrencySystemJob;
 use Exception;
 use InvalidArgumentException;
+use Tymon\JWTAuth\Token;
 use App\Exceptions\UnknownHandleException;
 
 class CurrencyController extends Controller
@@ -24,7 +25,7 @@ class CurrencyController extends Controller
      */
     public function __construct()
     {
-        $this->middleware('jwt.auth');
+        $this->middleware(['jwt.auth', 'auth.api']);
     }
 
     /**

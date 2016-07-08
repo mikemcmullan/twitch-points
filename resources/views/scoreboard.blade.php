@@ -9,7 +9,11 @@
 
     @if ($page == 1)
     <div class="row">
-        <div class="col-md-{{ $user ? 6 : 12 }}">
+        @can('admin-channel', $channel)
+        <div class="col-md-6">
+        @else
+        <div class="col-md-12">
+        @endcan
             <div class="box">
                 <div class="box-header with-border">
                     <h3 class="box-title">Check {{ $channel->getSetting('currency.name') }}</h3>
@@ -43,7 +47,7 @@
             </div><!-- .box -->
         </div><!-- .col -->
 
-        @if ($user)
+        @can('admin-channel', $channel)
         <div class="col-md-6">
             <currency-settings inline-template>
                 <div class="box">
@@ -187,7 +191,7 @@
 </scection><!-- .content -->
 @endsection
 
-@if ($user)
+@can('admin-channel', $channel)
     @section('after-js')
         <script>
             var options = {
@@ -201,4 +205,4 @@
 
         <script src="/assets/js/admin.js"></script>
     @endsection
-@endif
+@endcan

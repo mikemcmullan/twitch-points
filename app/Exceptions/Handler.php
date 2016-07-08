@@ -20,6 +20,7 @@ use App\Exceptions\GiveAwayException;
 use App\Exceptions\UnknownHandleException;
 use App\Exceptions\InvalidChannelException;
 use App\Exceptions\InvalidContentTypeException;
+use App\Exceptions\AccessDeniedException;
 
 class Handler extends ExceptionHandler
 {
@@ -107,6 +108,14 @@ class Handler extends ExceptionHandler
                     'message' => $e->getMessage()
                 ], 409);
             }
+        }
+
+        if ($e instanceof AccessDeniedException) {
+            return response()->json([
+                'error'     => 'Forbidden',
+                'status'    => 403,
+                'message'   => $e->getMessage()
+            ], 403);
         }
 
         // if ($request->is('api/bot/*') && ($e instanceof TransportException || $e instanceof RrcHttpException)) {

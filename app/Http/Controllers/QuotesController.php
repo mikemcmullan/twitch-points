@@ -16,7 +16,7 @@ class QuotesController extends Controller
 
     public function index(Channel $channel)
     {
-        if (\Auth::user()) {
+        if (\Gate::allows('admin-channel', $channel)) {
             return view('quotes');
         }
 

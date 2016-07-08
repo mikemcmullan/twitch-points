@@ -29,7 +29,7 @@ class CommandsController extends Controller
      */
     public function __construct(Request $request, CommandManager $commandManager)
     {
-        $this->middleware('jwt.auth', ['only' => ['store', 'update', 'destroy']]);
+        $this->middleware(['jwt.auth', 'auth.api'], ['only' => ['store', 'update', 'destroy']]);
         $this->commandManager = $commandManager;
     }
 

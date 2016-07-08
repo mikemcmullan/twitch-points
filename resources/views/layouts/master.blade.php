@@ -50,11 +50,11 @@
                     <li{!! Route::currentRouteName() === 'quotes_path' ? ' class="active"' : '' !!}><a href="{!! route('quotes_path', [$channel->slug]) !!}"><i class="fa fa-quote-left"></i> <span>Quotes</span></a></li>
 
                     @if ($user)
-                        @can('access-page', 'giveaway')
+                        @can('access-page', [$channel, 'giveaway'])
                             <li{!! Route::currentRouteName() === 'giveaway_path' ? ' class="active"' : '' !!}><a href="{!! route('giveaway_path', [$channel->slug]) !!}"><i class="fa fa-gift"></i> <span>Giveaways</span></a></li>
                         @endcan
 
-                        @can('access-page', 'timers')
+                        @can('access-page', [$channel, 'timers'])
                             <li{!! Route::currentRouteName() === 'timers_path' ? ' class="active"' : '' !!}><a href="{!! route('timers_path', [$channel->slug]) !!}"><i class="fa fa-clock-o"></i> <span>Timers</span></a></li>
                         @endcan
                     @endif
