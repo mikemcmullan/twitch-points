@@ -256,10 +256,10 @@ class MySQLChatterRepository implements ChatterRepository
 
         DB::beginTransaction();
 
-        foreach ($exists as $handle) {
+        foreach ($exists as $chatter) {
             DB::table('chatters')
                 ->where('channel_id', '=', $channel->id)
-                ->where('handle', '=', $handle)
+                ->where('handle', '=', $chatter['handle'])
                 ->update([
                     'points' => DB::raw("points + {$points}"),
                     'minutes' => DB::raw("minutes + {$minutes}")
