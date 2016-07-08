@@ -9,23 +9,29 @@ use Illuminate\Contracts\Config\Repository as ConfigRepository;
 use Illuminate\Events\Dispatcher;
 use Carbon\Carbon;
 use App\Channel;
+use App\Support\ScoreboardCache;
 
 class ProcessChatList
 {
     /**
      * @var ChatterRepository
      */
-    private $chatterRepository;
+    protected $chatterRepository;
+
+    /**
+     * @var ScoreboardCache
+     */
+    protected $scoreboardCache;
 
     /**
      * @var ConfigRepository
      */
-    private $config;
+    protected $config;
 
     /**
      * @var Dispatcher
      */
-     private $events;
+    protected $events;
 
     /**
      * Create the event handler.
@@ -33,9 +39,10 @@ class ProcessChatList
      * @param ChatterRepository $chatterRepository
      * @param ConfigRepository $config
      */
-    public function __construct(ChatterRepository $chatterRepository, ConfigRepository $config, Dispatcher $events)
+    public function __construct(ChatterRepository $chatterRepository, ConfigRepository $config, Dispatcher $events, ScoreboardCache $scoreboardCache)
     {
         $this->chatterRepository = $chatterRepository;
+        $this->scoreboardCache = $scoreboardCache;
         $this->config = $config;
         $this->events = $events;
     }
@@ -93,8 +100,26 @@ class ProcessChatList
         $chattersList = $event->chatList['chatters'];
         $modList      = $event->chatList['moderators'];
 
-        $this->chatterRepository->updateChatter($event->channel, $chattersList, $minutes, $points);
-        $this->chatterRepository->updateModerator($event->channel, $modList, $minutes, $points);
+        $chatters     = $this->chatterRepository->updateChatter($event->channel, $chattersList, $minutes, $points);
+        $mods         = $this->chatterRepository->updateModerator($event->channel, $modList, $minutes, $points);
+
+        foreach ($chatters['existing']->merge($mods['existing']) as $chatter) {
+            $chatter['points'] += $chatters['points'];
+            $chatter['minutes'] += $chatters['minutes'];
+
+            $this->scoreboardCache->addViewer($event->channel, $chatter);
+        }
+
+        foreach ($chatters['new']->merge($mods['new']) as $handle) {
+            $chatter = [
+                'handle'        => $handle,
+                'points'        => $chatters['points'],
+                'minutes'       => $chatters['minutes'],
+                'moderator'     => $mods['new']->search($handle) !== false
+            ];
+
+            $this->scoreboardCache->addViewer($event->channel, $chatter);
+        }
 
         $this->events->fire(new VIPsWereUpdated($event->channel));
     }

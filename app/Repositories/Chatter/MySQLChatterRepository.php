@@ -248,11 +248,11 @@ class MySQLChatterRepository implements ChatterRepository
         $exists = new Collection();
 
         $handle->chunk(100)->each(function ($handles) use (&$exists, $channel) {
-            $result = DB::table('chatters')->where('channel_id', '=', $channel->id)->whereIn('handle', $handles)->lists('handle');
+            $result = DB::table('chatters')->where('channel_id', '=', $channel->id)->whereIn('handle', $handles)->get();
             $exists = $exists->merge($result);
         });
 
-        $notExists = $handle->diff($exists);
+        $notExists = $handle->diff($exists->lists('handle'));
 
         DB::beginTransaction();
 
@@ -277,6 +277,13 @@ class MySQLChatterRepository implements ChatterRepository
         }
 
         DB::commit();
+
+        return [
+            'points' => $points,
+            'minutes' => $minutes,
+            'existing' => $exists,
+            'new' => $notExists
+        ];
     }
 
     /**
@@ -290,13 +297,13 @@ class MySQLChatterRepository implements ChatterRepository
      */
     public function updateModerator(Channel $channel, $handle, $minutes = 0, $points = 0)
     {
-        $this->updateChatter($channel, $handle, $minutes, $points);
         $this->addMod($channel, $handle);
+        return $this->updateChatter($channel, $handle, $minutes, $points);
     }
 
     private function chattersQuery(Channel $channel)
     {
-        return DB::table(DB::raw('chatters, (SELECT @curr := null, @prev := null, @rank := 0) sel1'))
+        return DB::table(DB::raw('chatters, (SELECT @curr := 1, @prev := null, @rank := 0) sel1'))
             ->select(DB::raw('*, @prev := @curr, @curr := FLOOR(points), @rank := IF(@prev = @curr, @rank, @rank+1) AS rank'))
             ->where('channel_id', '=', $channel->id)
             ->orderBy('points', 'desc');

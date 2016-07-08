@@ -107,7 +107,19 @@ class ScoreboardCache
 	 */
 	public function addViewer(Channel $channel, $viewer)
 	{
-		$data = sprintf('%s:%s:%s:%s:%s:%s', $viewer['handle'], $viewer['rank'], $viewer['points'], $viewer['minutes'], $viewer['moderator'], $viewer['administrator']);
+		if (! isset($viewer['rank'])) {
+			$viewer['rank'] = $this->redis->zscore("#{$channel->slug}:sbIndex", $viewer['handle']);
+
+			if (! $viewer['rank']) {
+				$viewer['rank'] = $this->redis->zrevrange("#{$channel->slug}:sbIndex", 0, 0, 'WITHSCORES');
+				$viewer['rank'] = (int) array_shift($viewer['rank']);
+			}
+		}
+
+		$viewer['administrator'] = array_get($viewer, 'administrator', false);
+		$viewer['moderator'] = array_get($viewer, 'moderator', false);
+
+		$data = sprintf('%s:%s:%s:%s:%s:%s', $viewer['handle'], $viewer['rank'], $viewer['points'], $viewer['minutes'], (int) $viewer['moderator'], (int) $viewer['administrator']);
 
 		$this->redis->hset("#{$channel->slug}:sb", $viewer['handle'], $data);
 		$this->redis->zadd("#{$channel->slug}:sbIndex", $viewer['rank'], $viewer['handle']);
