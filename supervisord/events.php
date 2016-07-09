@@ -19,9 +19,7 @@ $client = new Client(
     new HttpAdapterTransport(
         new Guzzle6HttpAdapter(
             new GuzzleClient([
-                'defaults' => [
-                    'auth' => [$_ENV['SUPERVISOR_USERNAME'], $_ENV['SUPERVISOR_PASSWORD']]
-                ]
+                'auth' => [$_ENV['SUPERVISOR_USERNAME'], $_ENV['SUPERVISOR_PASSWORD']]
             ])
         )
     )
@@ -31,6 +29,9 @@ $supervisor = new Supervisor(new XmlRpc($client));
 $listener = new EventListener();
 $guzzleClient = new GuzzleClient([
     'base_uri' => ($_ENV['APP_SECURE'] === 'true' ? 'https' : 'http') . '://' . $_ENV['API_DOMAIN'],
+    'headers'  => [
+        'Authorization' => 'Bearer ' . $_ENV['API_TOKEN']
+    ],
     'timeout'  => 2.0
 ]);
 
@@ -52,7 +53,12 @@ $listener->listen(function (EventListener $listener, EventNotification $event) u
         if ($states[$proc['name']] !== $state) {
             // Something has changed, do something.
             // file_put_contents('/home/vagrant/Code/twitch-points/supervisord/event.log', str_replace('twitch-bot-', '', $proc['name']) . ' ' . $state . "\r\n", FILE_APPEND);
-            $guzzleClient->request('PUT', '/bot/status', ['json' => ['status' => $state, 'bot' => str_replace('twitch-bot-', '', $proc['name'])]]);
+            try {
+                $guzzleClient->request('PUT', '/bot/status', ['json' => ['status' => $state, 'bot' => str_replace('twitch-bot-', '', $proc['name'])]]);
+            } catch (Exception $e) {
+                // echo $e->getMessage();
+            }
+
         }
 
         $states[$proc['name']] = $state;
