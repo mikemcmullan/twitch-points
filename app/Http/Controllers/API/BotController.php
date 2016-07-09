@@ -125,9 +125,8 @@ class BotController extends Controller
     protected function getStatus(Channel $channel)
     {
         $channel->load('bots');
-        $bot = Bot::find($channel->bot->id)->first();
 
-        if ($bot->status !== 'available') {
+        if ($channel->bot->status !== 'available') {
             return 'unavailable';
         }
 
