@@ -37,7 +37,7 @@ class UpdateCommandBotCache
      */
     public function handle(CommandWasUpdated $event)
     {
-        $commands = collect(json_decode($this->redis->get(sprintf($this->commandsKey, $event->channel->name))));
+        $commands = collect(json_decode($this->redis->get(sprintf($this->commandsKey, $event->channel->name)), true));
         $existing = $commands->where('id', $event->command->id);
 
         $command = array_only($event->command->toArray(), [
