@@ -48,6 +48,5 @@ class DeleteCommandFromBotCache
         }
 
         $this->redis->set(sprintf($this->commandsKey, $event->channel->name), $commands);
-        $this->redis->del(sprintf($this->commandKey, $event->channel->name, $event->command->id));
     }
 }

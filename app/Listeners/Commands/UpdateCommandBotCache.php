@@ -40,41 +40,30 @@ class UpdateCommandBotCache
         $commands = collect(json_decode($this->redis->get(sprintf($this->commandsKey, $event->channel->name))));
         $existing = $commands->where('id', $event->command->id);
 
+        $command = array_only($event->command->toArray(), [
+            'id', 'cool_down', 'command', 'pattern', 'usage', 'level', 'type', 'response'
+        ]);
+
         if ($existing->isEmpty()) {
-            $commands->push($event->command);
-            // $commands->push([
-            //     'id' => $event->command->id,
-            //     'pattern' => $event->command->pattern,
-            //     'level' => $event->command->level,
-            //     'cool_down' => $event->command->cool_down
-            // ]);
+            $commands->push($command);
         } else {
             $key = $existing->keys()->first();
-
-            $commands->splice($key, 1, [$event->command]);
-
-            // $commands->splice($key, 1, [[
-            //     'id' => $event->command->id,
-            //     'pattern' => $event->command->pattern,
-            //     'level' => $event->command->level,
-            //     'cool_down' => $event->command->cool_down
-            // ]]);
+            $commands->splice($key, 1, [$command]);
         }
 
-        // Temporary
+        // In the bot I have switched to using module instead of file.
         $commands = $commands->map(function ($command, $key) {
-            if (! isset($command->file) || ($command->file === '' || $command->file === null)) {
-                $command->module = 'Simple';
+            if (! isset($command['file']) || ($command['file'] === '' || $command['file'] === null)) {
+                $command['module'] = 'Simple';
             } else {
-                $command->module = $command->file;
+                $command['module'] = $command['file'];
             }
+
+            unset($command['file']);
 
             return $command;
         });
 
-        // dd($commands);
-
         $this->redis->set(sprintf($this->commandsKey, $event->channel->name), $commands);
-        // $this->redis->set(sprintf($this->commandKey, $event->channel->name, $event->command->id), $event->command);
     }
 }

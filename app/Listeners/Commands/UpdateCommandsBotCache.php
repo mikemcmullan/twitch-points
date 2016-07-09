@@ -41,16 +41,14 @@ class UpdateCommandsBotCache
         $commands = Command::allForChannel($event->channel, false);
 
         $commands = $commands->map(function ($command) use ($event) {
-            // $this->redis->set(sprintf($this->commandKey, $event->channel->name, $command->id), $command);
-
-            // Temporary
+            // In the bot I have switched to using module instead of file.
             if (! isset($command->file) || ($command->file === '' || $command->file === null)) {
                 $command->module = 'Simple';
             } else {
                 $command->module = $command->file;
             }
 
-            return $command->toArray(); //array_only($command->toArray(), ['id', 'pattern', 'level', 'cool_down']);
+            return array_only($command->toArray(), ['id', 'cool_down', 'command', 'pattern', 'usage', 'level', 'type', 'response']);
         });
 
         $this->redis->set(sprintf($this->commandsKey, $event->channel->name), $commands);
