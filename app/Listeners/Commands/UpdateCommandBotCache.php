@@ -41,7 +41,7 @@ class UpdateCommandBotCache
         $existing = $commands->where('id', $event->command->id);
 
         $command = array_only($event->command->toArray(), [
-            'id', 'cool_down', 'command', 'pattern', 'usage', 'level', 'type', 'response'
+            'id', 'cool_down', 'command', 'pattern', 'usage', 'level', 'type', 'response', 'file', 'module'
         ]);
 
         if ($existing->isEmpty()) {

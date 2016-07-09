@@ -48,7 +48,7 @@ class UpdateCommandsBotCache
                 $command->module = $command->file;
             }
 
-            return array_only($command->toArray(), ['id', 'cool_down', 'command', 'pattern', 'usage', 'level', 'type', 'response']);
+            return array_only($command->toArray(), ['id', 'cool_down', 'command', 'pattern', 'usage', 'level', 'type', 'response', 'module']);
         });
 
         $this->redis->set(sprintf($this->commandsKey, $event->channel->name), $commands);
