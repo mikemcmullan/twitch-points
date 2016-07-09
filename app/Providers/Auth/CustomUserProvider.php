@@ -33,7 +33,7 @@ class CustomUserProvider extends EloquentUserProvider implements UserProvider
     public function retrieveById($identifier)
     {
         return $this->createModel()->newQuery()->with(['channels' => function ($query) {
-            $query->where('slug', $this->channel->slug);
+            $query->where('slug', isset($this->channel->slug) ? $this->channel->slug : '');
         }])->find($identifier);
     }
 }

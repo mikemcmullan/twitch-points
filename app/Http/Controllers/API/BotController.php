@@ -89,8 +89,25 @@ class BotController extends Controller
 
     public function updateStatus(Request $request)
     {
-        $bot = Bot::where('name', $request->get('bot'))->first();
         $status = $request->get('status');
+
+        if (! in_array($status, ['available', 'unavailable'])) {
+            return response()->json([
+                'error'     => 'Conflict',
+                'status'    => 409,
+                'message'   => 'available and unavailable are the only valid statuses.'
+            ], 404);
+        }
+
+        $bot = Bot::where('name', $request->get('bot'))->first();
+
+        if (! $bot) {
+            return response()->json([
+                'error'     => 'Not Found',
+                'status'    => 404,
+                'message'   => "Bot '{$request->get('bot')}' does not exist."
+            ], 404);
+        }
 
         if ($bot && $bot->status !== $status) {
             $bot->update(['status' => $status]);
@@ -98,9 +115,9 @@ class BotController extends Controller
             if ($status === 'unavailable') {
                 $bot->channels()->detach();
             }
-        }
 
-        \Log::info($bot->name . ' has been set to: ' . $request->get('status'));
+            \Log::info($bot->name . ' has been set to: ' . $request->get('status'));
+        }
 
         return response()->json(['ok' => 'success']);
     }
