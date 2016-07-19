@@ -111,7 +111,7 @@
                                             <label>
                                                 {!! Form::checkbox('sync-status', 'yes', $channel->getSetting('currency.sync-status'), ['v-model' => 'syncStatus']) !!} Sync Status
                                             </label>
-                                            <p class="help-block">Should the currency system sync with the status of the stream? This is useful if you want to award currency when the stream is offline.</p>
+                                            <p class="help-block">Should the currency system sync with the status of the stream?</p>
                                         </div>
                                     </div>
                                 </div><!-- .form-group -->
