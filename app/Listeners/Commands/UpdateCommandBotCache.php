@@ -53,6 +53,10 @@ class UpdateCommandBotCache
 
         // In the bot I have switched to using module instead of file.
         $commands = $commands->map(function ($command, $key) {
+            if (isset($command['module'])) {
+                return $command;
+            }
+
             if (! isset($command['file']) || ($command['file'] === '' || $command['file'] === null)) {
                 $command['module'] = 'Simple';
             } else {
