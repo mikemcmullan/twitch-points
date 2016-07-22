@@ -5,6 +5,7 @@ namespace App\Timers;
 use Illuminate\Events\Dispatcher;
 use Carbon\Carbon;
 use App\Channel;
+use App\ChatLogs;
 use App\Support\BasicManager;
 use App\Contracts\BasicManager as BasicManagerInterface;
 use Illuminate\Contracts\Validation\Factory;
@@ -146,7 +147,7 @@ class Manager extends BasicManager implements BasicManagerInterface
     public function execute(Carbon $currentTime)
     {
         // Get the time to the closest 5 minutes.
-        $time = Carbon::createFromTimestamp(floor($currentTime->timestamp/300)*300);
+        $time = Carbon::createFromTimestamp(floor($currentTime->timestamp/300)*300)->timezone('UTC');
 
         // $timers = $this->timers()->filter(function ($timer) use ($time) {
         //     $difference = Carbon::createFromTimestamp(floor($timer->created_at->timestamp/300)*300)->diffInMinutes($time);
@@ -161,6 +162,7 @@ class Manager extends BasicManager implements BasicManagerInterface
         $difference = $timerInit->diffInMinutes($time);
         $timers = [];
 
+
         foreach ($this->validIntervals as $interval) {
             if ($difference % $interval === 0) {
                 $timers[] = $interval;
@@ -170,10 +172,19 @@ class Manager extends BasicManager implements BasicManagerInterface
         if (! empty($timers)) {
             $timers = $this->timers($timers);
 
-            $timers->groupBy('channel_id')->each(function ($channelTimers) {
+            $timers->groupBy('channel_id')->each(function ($channelTimers) use ($time) {
                 $delay = 0;
 
-                $channelTimers->each(function ($timer) use (&$delay) {
+                $start = $time->copy()->subMinutes(5);
+                $end = $start->copy()->addMinutes(4)->addSeconds(59);
+
+                $lineCount = ChatLogs::lineCountForPeriod($channelTimers[0]->channel, $start, $end);
+
+                $channelTimers->each(function ($timer) use (&$delay, $lineCount) {
+                    if ($lineCount < $timer->lines && $timer->lines !== 0) {
+                        return;
+                    }
+
                     $this->events->fire(new \App\Events\TimerWasExecuted($timer, $delay));
                     $delay++;
                 });

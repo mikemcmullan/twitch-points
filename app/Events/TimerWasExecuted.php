@@ -62,9 +62,4 @@ class TimerWasExecuted extends Event
     {
         return [];
     }
-
-    public function getModuleName()
-    {
-        return 'Timer';
-    }
 }
