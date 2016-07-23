@@ -89,7 +89,6 @@ class Manager extends BasicManager implements BasicManagerInterface
             throw new ValidationException($validator);
         }
 
-        $data['pattern'] = $this->makePattern($data['command']);
         $data['type']    = 'custom';
 
         $created = $channel->commands()->create($data);
@@ -133,10 +132,6 @@ class Manager extends BasicManager implements BasicManagerInterface
             throw new ValidationException($validator);
         }
 
-        if (array_get($data, 'command')) {
-            $data['pattern'] = $this->makePattern($data['command']);
-        }
-
         $command->fill($data);
         $command->save();
 
@@ -164,20 +159,5 @@ class Manager extends BasicManager implements BasicManagerInterface
         $this->events->fire(new \App\Events\Commands\CommandWasDeleted($channel, $command));
 
         return $command->delete();
-    }
-
-    /**
-     * Make pattern.
-     *
-     * @param string $command
-     * @return string
-     */
-    private function makePattern($command)
-    {
-        if (substr($command, 0, 6) === 'regex:') {
-            return substr($command, 6);
-        } else {
-            return '^' . preg_quote(trim($command)) . '(.*)$';
-        }
     }
 }
