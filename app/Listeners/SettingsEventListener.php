@@ -33,14 +33,14 @@ class SettingsEventListener
      */
     public function currencyKeywordUpdated(Channel $channel, $oldSetting, $newSetting)
     {
-        $commands = Command::where(['channel_id' => $channel->id, 'file' => 'GetCurrency'])->get();
+        $command = Command::where(['channel_id' => $channel->id, 'file' => 'GetCurrency'])->first();
 
-        $commands->each(function ($command) use ($channel, $oldSetting, $newSetting) {
+        if ($command) {
             $this->commandsManager->update($channel, $command->id, [
-                'command' => str_replace($oldSetting, $newSetting, $command->command),
-                'usage' => str_replace($oldSetting, $newSetting, $command->usage)
+                'command' => sprintf(config('commands.default.currency.get.command'), preg_quote($newSetting, '/')),
+                'usage' => sprintf(config('commands.default.currency.get.usage'), $newSetting)
             ]);
-        });
+        }
     }
 
     /**
@@ -58,8 +58,8 @@ class SettingsEventListener
 
         if ($command) {
             $this->commandsManager->update($channel, $command->id, [
-                'command' => str_replace($oldSetting, $newSetting, $command->command),
-                'usage' => str_replace($oldSetting, $newSetting, $command->usage)
+                'command' => sprintf(config('commands.default.giveaway.enter.command'), preg_quote($newSetting, '/')),
+                'usage' => sprintf(config('commands.default.giveaway.enter.usage'), $newSetting)
             ]);
         }
     }
