@@ -16,7 +16,7 @@ return [
                 'usage' => '%s [username]',
                 'description' => 'Get the amount of currency for the provided username or for the user who executed the command.',
                 'level' => 'everyone',
-                'file' => 'GetCurrency',
+                'module' => 'GetCurrency',
                 'response' => '{{ handle }} has {{ points }} coins. Rank: {{ rank }} | {{ named_rank }}'
             ],
 
@@ -25,7 +25,7 @@ return [
                 'usage' => '!currency add <username> <amount>',
                 'description' => 'Add currency to a user.',
                 'level' => 'admin',
-                'file' => 'AlterCurrency',
+                'module' => 'AlterCurrency',
                 'response' => '{{ handle }} has been awarded {{ amount }} coins.'
             ],
 
@@ -34,7 +34,7 @@ return [
                 'usage' => '!currency remove <username> <amount>',
                 'description' => 'Remove currency from a user.',
                 'level' => 'admin',
-                'file' => 'AlterCurrency',
+                'module' => 'AlterCurrency',
                 'response' => '{{ amount }} coins have been removed from {{ handle }}.'
             ],
 
@@ -43,7 +43,7 @@ return [
                 'usage' => '!give <username> <amount>',
                 'description' => 'Give your own currency to another user.',
                 'level' => 'everyone',
-                'file' => 'GiveCurrency',
+                'module' => 'GiveCurrency',
                 'response' => 'Give your own currency to another user.'
             ]
         ],
@@ -54,7 +54,7 @@ return [
                 'usage' => '%s <ticket-amount>',
                 'description' => 'Enter the giveaway.',
                 'level' => 'everyone',
-                'file' => 'Giveaway',
+                'module' => 'Giveaway',
                 'response' => ''
             ]
         ],
@@ -65,7 +65,7 @@ return [
                 'usage' => '!betting open <min-bet> <max-bet> <option-1>,<option-2>,etc...',
                 'description' => 'Open betting. Options must be provided as a comma separated list. Example, <code>!betting open 0 10 mike, bob, joe</code>',
                 'level' => 'admin',
-                'file' => 'Betting/Open',
+                'module' => 'Betting/Open',
                 'response' => ''
             ],
 
@@ -74,7 +74,7 @@ return [
                 'usage' => '!betting close',
                 'description' => 'Close betting.',
                 'level' => 'admin',
-                'file' => 'Betting/Close',
+                'module' => 'Betting/Close',
                 'response' => ''
             ],
 
@@ -83,7 +83,7 @@ return [
                 'usage' => '!betting winner <option-number>',
                 'description' => 'Select the winning option and award currency to the winners.',
                 'level' => 'admin',
-                'file' => 'Betting/Winner',
+                'module' => 'Betting/Winner',
                 'response' => ''
             ],
 
@@ -92,7 +92,7 @@ return [
                 'usage' => '!bet <amount> <option>',
                 'description' => 'Place a bet.',
                 'level' => 'everyone',
-                'file' => 'Betting/Bet',
+                'module' => 'Betting/Bet',
                 'response' => ''
             ],
 
@@ -101,7 +101,7 @@ return [
                 'usage' => '!betting options',
                 'description' => 'Get options for the current bet.',
                 'level' => 'everyone',
-                'file' => 'Betting/Options',
+                'module' => 'Betting/Options',
                 'response' => ''
             ]
         ],
@@ -112,7 +112,7 @@ return [
                 'usage' => '!quote',
                 'description' => 'Get a random quote.',
                 'level' => 'everyone',
-                'file' => 'Quotes/Random',
+                'module' => 'Quotes/Random',
                 'response' => ''
             ],
 
@@ -121,7 +121,7 @@ return [
                 'usage' => '!quote <id>',
                 'description' => 'Get a quote by it\'s ID.',
                 'level' => 'everyone',
-                'file' => 'Quotes/Get',
+                'module' => 'Quotes/Get',
                 'response' => ''
             ],
 
@@ -130,7 +130,7 @@ return [
                 'usage' => '!quote add <text>',
                 'description' => 'Add a quote.',
                 'level' => 'mod',
-                'file' => 'Quotes/Add',
+                'module' => 'Quotes/Add',
                 'response' => ''
             ],
 
@@ -139,7 +139,7 @@ return [
                 'usage' => '!quote edit <id> <text>',
                 'description' => 'Edit a quote.',
                 'level' => 'mod',
-                'file' => 'Quotes/Edit',
+                'module' => 'Quotes/Edit',
                 'response' => ''
             ],
 
@@ -148,7 +148,7 @@ return [
                 'usage' => '!quote delete <id>',
                 'description' => 'Delete a quote.',
                 'level' => 'mod',
-                'file' => 'Quotes/Delete',
+                'module' => 'Quotes/Delete',
                 'response' => ''
             ]
         ],
@@ -159,7 +159,7 @@ return [
                 'usage' => '!uptime',
                 'description' => 'How long has the channel been live for.',
                 'level' => 'everyone',
-                'file' => 'Uptime',
+                'module' => 'Uptime',
                 'response' => ''
             ],
 
@@ -168,7 +168,7 @@ return [
                 'usage' => '!commands',
                 'description' => 'Provides a link to the commands page.',
                 'level' => 'everyone',
-                'file' => '',
+                'module' => '',
                 'response' => '{{ user }}, you can view all available bot commands here: https://jonzzzzz.mnt.co/commands'
             ],
 
@@ -177,7 +177,7 @@ return [
                 'usage' => '!howlong [username]',
                 'description' => 'How long has a user been following the channel.',
                 'level' => 'everyone',
-                'file' => 'HowLong',
+                'module' => 'HowLong',
                 'response' => ''
             ]
         ]
