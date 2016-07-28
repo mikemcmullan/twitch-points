@@ -40,8 +40,6 @@ class CommandsController extends Controller
      */
     public function index(Request $request, Channel $channel)
     {
-        // event(new \App\Events\Commands\CommandsWereUpdated($channel));
-
         $type = $request->get('type', 'custom');
         $orderBy = $request->get('orderBy', 'created_at');
         $orderDirection = $request->get('orderDirection', 'DESC');
