@@ -163,7 +163,7 @@ return [
 
         'quotes' => [
             'random' => [
-                'command' => '!quote',
+                'command' => 'regex:^!quote\s?$',
                 'usage' => '!quote',
                 'description' => 'Get a random quote.',
                 'level' => 'everyone',
