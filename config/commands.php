@@ -86,7 +86,7 @@ return [
                 'level' => 'everyone',
                 'cool_down' => 0,
                 'module' => 'GiveCurrency',
-                'response' => 'Give your own currency to another user.',
+                'response' => '{{ source }} has given {{ handle }} {{ amount }} coins.',
                 'disabled' => false
             ],
         ],
