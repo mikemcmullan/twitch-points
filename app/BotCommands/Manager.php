@@ -8,7 +8,9 @@ use Illuminate\Events\Dispatcher;
 use Illuminate\Database\Eloquent\Collection;
 use App\Support\BasicManager;
 use App\Contracts\BasicManager as BasicManagerInterface;
+use App\SystemCommandOverrides;
 use Illuminate\Contracts\Validation\ValidationException;
+use Illuminate\Config\Repository as ConfigRepository;
 
 class Manager extends BasicManager implements BasicManagerInterface
 {
@@ -23,12 +25,18 @@ class Manager extends BasicManager implements BasicManagerInterface
     protected $model;
 
     /**
+     * @var ConfigRepository
+     */
+    protected $config;
+
+    /**
      * @param Dispatcher $events
      */
-    public function __construct(Dispatcher $events, Command $model)
+    public function __construct(Dispatcher $events, ConfigRepository $config, Command $model)
     {
         $this->events = $events;
         $this->model = $model;
+        $this->config = $config;
     }
 
     /**
@@ -42,15 +50,19 @@ class Manager extends BasicManager implements BasicManagerInterface
     }
 
     /**
-     * Get all commands for a channel.
+     * Get all custom commands for a channel.
+     *
+     * @param Channel $channel
+     * @param string $orderBy
+     * @param string $orderDirection
+     * @param null|bool $disabled
      *
      * @return Collection
      */
-    public function all(Channel $channel, $type = 'custom', $orderBy = 'order', $orderDirection = 'DESC', $disabled = null)
+    public function allCustom(Channel $channel, $orderBy = 'order', $orderDirection = 'DESC', $disabled = null)
     {
         $where = [
-            'channel_id' => $channel->id,
-            'type' => $type
+            'channel_id' => $channel->id
         ];
 
         if ($disabled !== null) {
@@ -58,6 +70,32 @@ class Manager extends BasicManager implements BasicManagerInterface
         }
 
         return Command::where($where)->orderBy($orderBy, $orderDirection)->get();
+    }
+
+    /**
+     * Get all system commands for a channel.
+     *
+     * @param Channel $channel
+     * @param null|bool $disabled
+     *
+     * @return Collection
+     */
+    public function allSystem(Channel $channel, $disabled = null)
+    {
+        $commands = collect();
+
+        collect(config('commands.system', []))->each(function ($comms, $groupKey) use (&$commands, $disabled) {
+            foreach ($comms as $key => $command) {
+
+                if ($command['disabled'] === true && $disabled == '0') {
+                    continue;
+                }
+
+                $commands->push($command);
+            }
+        });
+
+        return $commands;
     }
 
     /**
@@ -111,6 +149,10 @@ class Manager extends BasicManager implements BasicManagerInterface
      */
     public function update(Channel $channel, $id, array $data)
     {
+        if ($this->isSystemCommand($channel, $id)) {
+            return $this->updateSystem($channel, $id, $data);
+        }
+
         $command = $this->get($channel, $id);
 
         $data = array_filter($data, function ($item) {
@@ -142,6 +184,75 @@ class Manager extends BasicManager implements BasicManagerInterface
         }
 
         return $command;
+    }
+
+    public function updateSystem(Channel $channel, $id, array $data)
+    {
+        $command = $this->config->get('commands.system.' . $id);
+
+        $data = array_filter($data, function ($item) {
+            return $item !== null;
+        });
+
+        // Validate the request
+        $validator = \Validator::make($data, [
+            'command'       => 'sometimes|required|max:80',
+            'level'         => 'sometimes|required|in:everyone,mod,admin,owner',
+            'response'      => 'sometimes|required|max:400',
+            'disabled'      => 'sometimes|required|boolean',
+            'usage'         => 'sometimes|required|max:50',
+            'description'   => 'sometimes|required|max:400',
+            'cool_down'     => 'sometimes|required|numeric_size_between:0,86400'
+        ]);
+
+        if ($validator->fails()) {
+            throw new ValidationException($validator);
+        }
+
+        $commandOverrides = SystemCommandOverrides::where('channel_id', $channel->id)
+            ->where('name', 'LIKE', $id . '%')
+            ->get();
+
+        // dd($commandOverrides);
+
+        \DB::beginTransaction();
+
+        foreach ($data as $attr => $value) {
+            $overrideExists = $commandOverrides->where('name', $id . '.' . $attr);
+
+            if ($command[$attr] === $value) {
+                continue;
+            }
+
+            $this->config->set('commands.system.' . $id . '.' . $attr, $value);
+
+            if (! $overrideExists->isEmpty()) {
+                $overrideExists->first()->update(['value' => $value]);
+            } else {
+                SystemCommandOverrides::create([
+                    'channel_id' => $channel->id,
+                    'name' => $id . '.' . $attr,
+                    'value' => $value
+                ]);
+            }
+        }
+
+        \DB::commit();
+
+        $command = $this->config->get('commands.system.' . $id);
+
+        if ($command['disabled']) {
+            $this->events->fire(new \App\Events\Commands\CommandWasDeleted($channel, $command));
+        } else {
+            $this->events->fire(new \App\Events\Commands\CommandWasUpdated($channel, $command));
+        }
+
+        return $command;
+    }
+
+    protected function isSystemCommand($channel, $id)
+    {
+        return $this->config->get('commands.system.' . $id) !== null;
     }
 
     /*

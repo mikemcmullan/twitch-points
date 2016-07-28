@@ -3,7 +3,6 @@
 namespace App\Events\Commands;
 
 use App\Channel;
-use App\Command;
 use App\Events\Event;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 
@@ -24,7 +23,7 @@ class CommandWasDeleted extends Event
      *
      * @param Channel $channel
      */
-    public function __construct(Channel $channel, Command $command)
+    public function __construct(Channel $channel, $command)
     {
         $this->channel = $channel;
 

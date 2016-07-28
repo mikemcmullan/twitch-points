@@ -29,7 +29,7 @@ class CommandsController extends Controller
      */
     public function __construct(Request $request, CommandManager $commandManager)
     {
-        $this->middleware(['jwt.auth', 'auth.api'], ['only' => ['store', 'update', 'destroy']]);
+        // $this->middleware(['jwt.auth', 'auth.api'], ['only' => ['store', 'update', 'destroy']]);
         $this->commandManager = $commandManager;
     }
 
@@ -40,12 +40,18 @@ class CommandsController extends Controller
      */
     public function index(Request $request, Channel $channel)
     {
+        // event(new \App\Events\Commands\CommandsWereUpdated($channel));
+
         $type = $request->get('type', 'custom');
         $orderBy = $request->get('orderBy', 'created_at');
         $orderDirection = $request->get('orderDirection', 'DESC');
         $disabled = $request->get('disabled', null);
 
-        $commands = $this->commandManager->all($channel, $type, $orderBy, $orderDirection, $disabled);
+        if ($type === 'system') {
+            return response()->json($this->commandManager->allSystem($channel, $disabled));
+        }
+
+        $commands = $this->commandManager->allCustom($channel, $orderBy, $orderDirection, $disabled);
 
         return response()->json($commands);
     }

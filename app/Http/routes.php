@@ -13,7 +13,7 @@ Route::group(['domain' => config('app.api_domain'), 'namespace' => 'API'], funct
     ]);
 });
 
-Route::group(['domain' => config('app.api_domain'), 'prefix' => '{channel}', 'namespace' => 'API'], function () {
+Route::group(['domain' => config('app.api_domain'), 'prefix' => '{channel}', 'namespace' => 'API', 'middleware' => ['api']], function () {
     Route::get('/viewer', [
         'uses'  => 'ViewerController@getViewer',
         'as'    => 'api_points_path'

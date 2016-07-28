@@ -39,7 +39,7 @@ class DeleteCommandFromBotCache
     {
         $commands = collect(json_decode($this->redis->get(sprintf($this->commandsKey, $event->channel->name))));
 
-        $existing = $commands->where('id', $event->command->id);
+        $existing = $commands->where('id', $event->command['id']);
 
         if (! $existing->isEmpty()) {
             $key = $existing->keys()->first();

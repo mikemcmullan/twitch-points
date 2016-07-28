@@ -9,15 +9,52 @@
 |
 */
 return [
-    'default' => [
+    'system' => [
+        'misc' => [
+            'commands' => [
+                'command' => '!commands',
+                'usage' => '!commands',
+                'description' => 'Provides a link to the commands page.',
+                'level' => 'everyone',
+                'cool_down' => 3,
+                'module' => 'Simple',
+                'response' => '{{ user }}, you can view all available bot commands here: %s',
+                'disabled' => false
+            ],
+
+            'uptime' => [
+                'command' => '!uptime',
+                'usage' => '!uptime',
+                'description' => 'How long has the channel been live for.',
+                'level' => 'everyone',
+                'cool_down' => 3,
+                'module' => 'Uptime',
+                'response' => '',
+                'disabled' => false
+            ],
+
+            'howlong' => [
+                'command' => 'regex:^!howlong (\w{1,25})$',
+                'usage' => '!howlong [username]',
+                'description' => 'How long has a user been following the channel.',
+                'level' => 'everyone',
+                'cool_down' => 3,
+                'module' => 'HowLong',
+                'response' => '',
+                'disabled' => false
+            ]
+        ],
+
         'currency' => [
             'get' => [
                 'command' => 'regex:^%s(\s+?\w{1,25})?$',
                 'usage' => '%s [username]',
                 'description' => 'Get the amount of currency for the provided username or for the user who executed the command.',
                 'level' => 'everyone',
+                'cool_down' => 0,
                 'module' => 'GetCurrency',
-                'response' => '{{ handle }} has {{ points }} coins. Rank: {{ rank }} | {{ named_rank }}'
+                'response' => '{{ handle }} has {{ points }} coins. Rank: {{ rank }} | {{ named_rank }}',
+                'disabled' => false
             ],
 
             'add' => [
@@ -25,8 +62,10 @@ return [
                 'usage' => '!currency add <username> <amount>',
                 'description' => 'Add currency to a user.',
                 'level' => 'admin',
+                'cool_down' => 0,
                 'module' => 'AlterCurrency',
-                'response' => '{{ handle }} has been awarded {{ amount }} coins.'
+                'response' => '{{ handle }} has been awarded {{ amount }} coins.',
+                'disabled' => false
             ],
 
             'remove' => [
@@ -34,8 +73,10 @@ return [
                 'usage' => '!currency remove <username> <amount>',
                 'description' => 'Remove currency from a user.',
                 'level' => 'admin',
+                'cool_down' => 0,
                 'module' => 'AlterCurrency',
-                'response' => '{{ amount }} coins have been removed from {{ handle }}.'
+                'response' => '{{ amount }} coins have been removed from {{ handle }}.',
+                'disabled' => false
             ],
 
             'give' => [
@@ -43,9 +84,11 @@ return [
                 'usage' => '!give <username> <amount>',
                 'description' => 'Give your own currency to another user.',
                 'level' => 'everyone',
+                'cool_down' => 0,
                 'module' => 'GiveCurrency',
-                'response' => 'Give your own currency to another user.'
-            ]
+                'response' => 'Give your own currency to another user.',
+                'disabled' => false
+            ],
         ],
 
         'giveaway' => [
@@ -54,8 +97,10 @@ return [
                 'usage' => '%s <ticket-amount>',
                 'description' => 'Enter the giveaway.',
                 'level' => 'everyone',
+                'cool_down' => 0,
                 'module' => 'Giveaway',
-                'response' => ''
+                'response' => '',
+                'disabled' => false
             ]
         ],
 
@@ -65,8 +110,10 @@ return [
                 'usage' => '!betting open <min-bet> <max-bet> <option-1>,<option-2>,etc...',
                 'description' => 'Open betting. Options must be provided as a comma separated list. Example, <code>!betting open 0 10 mike, bob, joe</code>',
                 'level' => 'admin',
+                'cool_down' => 0,
                 'module' => 'Betting/Open',
-                'response' => ''
+                'response' => '',
+                'disabled' => false
             ],
 
             'close' => [
@@ -74,8 +121,10 @@ return [
                 'usage' => '!betting close',
                 'description' => 'Close betting.',
                 'level' => 'admin',
+                'cool_down' => 0,
                 'module' => 'Betting/Close',
-                'response' => ''
+                'response' => '',
+                'disabled' => false
             ],
 
             'winner' => [
@@ -83,8 +132,10 @@ return [
                 'usage' => '!betting winner <option-number>',
                 'description' => 'Select the winning option and award currency to the winners.',
                 'level' => 'admin',
+                'cool_down' => 0,
                 'module' => 'Betting/Winner',
-                'response' => ''
+                'response' => '',
+                'disabled' => false
             ],
 
             'bet' => [
@@ -92,8 +143,10 @@ return [
                 'usage' => '!bet <amount> <option>',
                 'description' => 'Place a bet.',
                 'level' => 'everyone',
+                'cool_down' => 0,
                 'module' => 'Betting/Bet',
-                'response' => ''
+                'response' => '',
+                'disabled' => false
             ],
 
             'options' => [
@@ -101,8 +154,10 @@ return [
                 'usage' => '!betting options',
                 'description' => 'Get options for the current bet.',
                 'level' => 'everyone',
+                'cool_down' => 3,
                 'module' => 'Betting/Options',
-                'response' => ''
+                'response' => '',
+                'disabled' => false
             ]
         ],
 
@@ -112,8 +167,10 @@ return [
                 'usage' => '!quote',
                 'description' => 'Get a random quote.',
                 'level' => 'everyone',
+                'cool_down' => 3,
                 'module' => 'Quotes/Random',
-                'response' => ''
+                'response' => '',
+                'disabled' => false
             ],
 
             'get' => [
@@ -121,8 +178,10 @@ return [
                 'usage' => '!quote <id>',
                 'description' => 'Get a quote by it\'s ID.',
                 'level' => 'everyone',
+                'cool_down' => 3,
                 'module' => 'Quotes/Get',
-                'response' => ''
+                'response' => '',
+                'disabled' => false
             ],
 
             'add' => [
@@ -130,8 +189,10 @@ return [
                 'usage' => '!quote add <text>',
                 'description' => 'Add a quote.',
                 'level' => 'mod',
+                'cool_down' => 0,
                 'module' => 'Quotes/Add',
-                'response' => ''
+                'response' => '',
+                'disabled' => false
             ],
 
             'edit' => [
@@ -139,8 +200,10 @@ return [
                 'usage' => '!quote edit <id> <text>',
                 'description' => 'Edit a quote.',
                 'level' => 'mod',
+                'cool_down' => 0,
                 'module' => 'Quotes/Edit',
-                'response' => ''
+                'response' => '',
+                'disabled' => false
             ],
 
             'delete' => [
@@ -148,37 +211,10 @@ return [
                 'usage' => '!quote delete <id>',
                 'description' => 'Delete a quote.',
                 'level' => 'mod',
+                'cool_down' => 0,
                 'module' => 'Quotes/Delete',
-                'response' => ''
-            ]
-        ],
-
-        'misc' => [
-            'uptime' => [
-                'command' => '!uptime',
-                'usage' => '!uptime',
-                'description' => 'How long has the channel been live for.',
-                'level' => 'everyone',
-                'module' => 'Uptime',
-                'response' => ''
-            ],
-
-            'commands' => [
-                'command' => '!commands',
-                'usage' => '!commands',
-                'description' => 'Provides a link to the commands page.',
-                'level' => 'everyone',
-                'module' => '',
-                'response' => '{{ user }}, you can view all available bot commands here: https://jonzzzzz.mnt.co/commands'
-            ],
-
-            'howlong' => [
-                'command' => 'regex:^!howlong (\w{1,25})$',
-                'usage' => '!howlong [username]',
-                'description' => 'How long has a user been following the channel.',
-                'level' => 'everyone',
-                'module' => 'HowLong',
-                'response' => ''
+                'response' => '',
+                'disabled' => false
             ]
         ]
     ]

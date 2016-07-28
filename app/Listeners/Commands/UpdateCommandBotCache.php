@@ -38,9 +38,13 @@ class UpdateCommandBotCache
     public function handle(CommandWasUpdated $event)
     {
         $commands = collect(json_decode($this->redis->get(sprintf($this->commandsKey, $event->channel->name)), true));
-        $existing = $commands->where('id', $event->command->id);
+        $existing = $commands->where('id', $event->command['id']);
 
-        $command = array_only($event->command->toArray(), [
+        if (is_object($event->command)) {
+            $event->command = $command->toArray();
+        }
+
+        $command = array_only($event->command, [
             'id', 'cool_down', 'command', 'pattern', 'usage', 'level', 'type', 'response', 'file', 'module'
         ]);
 
@@ -57,9 +61,10 @@ class UpdateCommandBotCache
                 return $command;
             }
 
-            if (! isset($command['file']) || ($command['file'] === '' || $command['file'] === null)) {
+            // In the bot I have switched to using module instead of file.
+            if (isset($command['file']) && $command['file'] === '') {
                 $command['module'] = 'Simple';
-            } else {
+            } else if (isset($command['file']) && $command['file'] !== ''){
                 $command['module'] = $command['file'];
             }
 
