@@ -13,6 +13,7 @@ class CreateSystemCommandOverridesTable extends Migration
     public function up()
     {
         Schema::create('system_command_overrides', function (Blueprint $table) {
+            $table->increments('id');
             $table->string('name');
             $table->integer('channel_id');
             $table->text('value')->nullable();
