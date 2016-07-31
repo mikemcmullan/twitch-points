@@ -41,7 +41,7 @@ class UpdateCommandBotCache
         $existing = $commands->where('id', $event->command['id']);
 
         if (is_object($event->command)) {
-            $event->command = $command->toArray();
+            $event->command = $event->command->toArray();
         }
 
         $command = array_only($event->command, [
@@ -62,7 +62,7 @@ class UpdateCommandBotCache
             }
 
             // In the bot I have switched to using module instead of file.
-            if (isset($command['file']) && $command['file'] === '') {
+            if (isset($command['file']) && $command['file'] === '' || ! isset($command['file'])) {
                 $command['module'] = 'Simple';
             } else if (isset($command['file']) && $command['file'] !== ''){
                 $command['module'] = $command['file'];
