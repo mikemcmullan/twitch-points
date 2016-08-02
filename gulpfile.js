@@ -5,6 +5,7 @@ require('laravel-elixir-vueify');
 elixir.config.css.sass.folder = 'scss';
 elixir.config.js.outputFolder = 'assets/js';
 elixir.config.js.browserify.watchify.options.poll = true;
+elixir.config.css.cssnano.pluginOptions.zindex = false;
 
 elixir(function(mix) {
     mix.sass('style.scss', 'public/assets/css')
