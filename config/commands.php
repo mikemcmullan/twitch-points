@@ -128,7 +128,7 @@ return [
             ],
 
             'winner' => [
-                'command' => 'regex:^!betting\s?winner (\d{1,2})$',
+                'command' => 'regex:^!betting\s?winner (.*)$',
                 'usage' => '!betting winner <option-number>',
                 'description' => 'Select the winning option and award currency to the winners.',
                 'level' => 'admin',
