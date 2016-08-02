@@ -106,7 +106,7 @@ return [
 
         'betting' => [
             'open' => [
-                'command' => '^!betting\s?open (\d{1,4}) (\d{1,4}) (.*,.*)',
+                'command' => 'regex:^!betting\s?open (\d{1,4}) (\d{1,4}) (.*,.*)',
                 'usage' => '!betting open <min-bet> <max-bet> <option-1>,<option-2>,etc...',
                 'description' => 'Open betting. Options must be provided as a comma separated list. Example, <code>!betting open 0 10 mike, bob, joe</code>',
                 'level' => 'admin',
@@ -117,7 +117,7 @@ return [
             ],
 
             'close' => [
-                'command' => '^!betting\s?close$',
+                'command' => 'regex:^!betting\s?close$',
                 'usage' => '!betting close',
                 'description' => 'Close betting.',
                 'level' => 'admin',
@@ -128,7 +128,7 @@ return [
             ],
 
             'winner' => [
-                'command' => '^!betting\s?winner (\d{1,2})$',
+                'command' => 'regex:^!betting\s?winner (\d{1,2})$',
                 'usage' => '!betting winner <option-number>',
                 'description' => 'Select the winning option and award currency to the winners.',
                 'level' => 'admin',
