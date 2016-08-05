@@ -17,6 +17,7 @@ return [
                 'description' => 'Provides a link to the commands page.',
                 'level' => 'everyone',
                 'cool_down' => 3,
+                'global_cool_down' => true,
                 'module' => 'Simple',
                 'response' => '{{ user }}, you can view all available bot commands here: %s',
                 'disabled' => false
@@ -27,7 +28,8 @@ return [
                 'usage' => '!uptime',
                 'description' => 'How long has the channel been live for.',
                 'level' => 'everyone',
-                'cool_down' => 3,
+                'cool_down' => 5,
+                'global_cool_down' => true,
                 'module' => 'Uptime',
                 'response' => '',
                 'disabled' => false
@@ -39,6 +41,7 @@ return [
                 'description' => 'How long has a user been following the channel.',
                 'level' => 'everyone',
                 'cool_down' => 3,
+                'global_cool_down' => false,
                 'module' => 'HowLong',
                 'response' => '',
                 'disabled' => false
@@ -51,7 +54,8 @@ return [
                 'usage' => '%s [username]',
                 'description' => 'Get the amount of currency for the provided username or for the user who executed the command.',
                 'level' => 'everyone',
-                'cool_down' => 0,
+                'cool_down' => 3,
+                'global_cool_down' => false,
                 'module' => 'GetCurrency',
                 'response' => '{{ handle }} has {{ points }} coins. Rank: {{ rank }} | {{ named_rank }}',
                 'disabled' => false
@@ -63,6 +67,7 @@ return [
                 'description' => 'Add currency to a user.',
                 'level' => 'admin',
                 'cool_down' => 0,
+                'global_cool_down' => false,
                 'module' => 'AlterCurrency',
                 'response' => '{{ handle }} has been awarded {{ amount }} coins.',
                 'disabled' => false
@@ -74,6 +79,7 @@ return [
                 'description' => 'Remove currency from a user.',
                 'level' => 'admin',
                 'cool_down' => 0,
+                'global_cool_down' => false,
                 'module' => 'AlterCurrency',
                 'response' => '{{ amount }} coins have been removed from {{ handle }}.',
                 'disabled' => false
@@ -84,7 +90,8 @@ return [
                 'usage' => '!give <username> <amount>',
                 'description' => 'Give your own currency to another user.',
                 'level' => 'everyone',
-                'cool_down' => 0,
+                'cool_down' => 3,
+                'global_cool_down' => false,
                 'module' => 'GiveCurrency',
                 'response' => '{{ source }} has given {{ handle }} {{ amount }} coins.',
                 'disabled' => false
@@ -97,7 +104,8 @@ return [
                 'usage' => '%s <ticket-amount>',
                 'description' => 'Enter the giveaway.',
                 'level' => 'everyone',
-                'cool_down' => 0,
+                'cool_down' => 3,
+                'global_cool_down' => false,
                 'module' => 'Giveaway',
                 'response' => '',
                 'disabled' => false
@@ -111,6 +119,7 @@ return [
                 'description' => 'Open betting. Options must be provided as a comma separated list. Example, <code>!betting open 0 10 mike, bob, joe</code>',
                 'level' => 'admin',
                 'cool_down' => 0,
+                'global_cool_down' => false,
                 'module' => 'Betting/Open',
                 'response' => '',
                 'disabled' => false
@@ -122,6 +131,7 @@ return [
                 'description' => 'Close betting.',
                 'level' => 'admin',
                 'cool_down' => 0,
+                'global_cool_down' => false,
                 'module' => 'Betting/Close',
                 'response' => '',
                 'disabled' => false
@@ -133,6 +143,7 @@ return [
                 'description' => 'Select the winning option and award currency to the winners.',
                 'level' => 'admin',
                 'cool_down' => 0,
+                'global_cool_down' => false,
                 'module' => 'Betting/Winner',
                 'response' => '',
                 'disabled' => false
@@ -143,7 +154,8 @@ return [
                 'usage' => '!bet <amount> <option>',
                 'description' => 'Place a bet.',
                 'level' => 'everyone',
-                'cool_down' => 0,
+                'cool_down' => 3,
+                'global_cool_down' => false,
                 'module' => 'Betting/Bet',
                 'response' => '',
                 'disabled' => false
@@ -155,6 +167,7 @@ return [
                 'description' => 'Get options for the current bet.',
                 'level' => 'everyone',
                 'cool_down' => 3,
+                'global_cool_down' => true,
                 'module' => 'Betting/Options',
                 'response' => '',
                 'disabled' => false
@@ -168,6 +181,7 @@ return [
                 'description' => 'Get a random quote.',
                 'level' => 'everyone',
                 'cool_down' => 3,
+                'global_cool_down' => false,
                 'module' => 'Quotes/Random',
                 'response' => '',
                 'disabled' => false
@@ -179,6 +193,7 @@ return [
                 'description' => 'Get a quote by it\'s ID.',
                 'level' => 'everyone',
                 'cool_down' => 3,
+                'global_cool_down' => false,
                 'module' => 'Quotes/Get',
                 'response' => '',
                 'disabled' => false
@@ -190,6 +205,7 @@ return [
                 'description' => 'Add a quote.',
                 'level' => 'mod',
                 'cool_down' => 0,
+                'global_cool_down' => false,
                 'module' => 'Quotes/Add',
                 'response' => '',
                 'disabled' => false
@@ -201,6 +217,7 @@ return [
                 'description' => 'Edit a quote.',
                 'level' => 'mod',
                 'cool_down' => 0,
+                'global_cool_down' => false,
                 'module' => 'Quotes/Edit',
                 'response' => '',
                 'disabled' => false
@@ -212,6 +229,7 @@ return [
                 'description' => 'Delete a quote.',
                 'level' => 'mod',
                 'cool_down' => 0,
+                'global_cool_down' => false,
                 'module' => 'Quotes/Delete',
                 'response' => '',
                 'disabled' => false
