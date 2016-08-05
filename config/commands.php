@@ -34,7 +34,7 @@ return [
             ],
 
             'howlong' => [
-                'command' => 'regex:^!howlong (\w{1,25})$',
+                'command' => 'regex:^!howlong(.*)$',
                 'usage' => '!howlong [username]',
                 'description' => 'How long has a user been following the channel.',
                 'level' => 'everyone',
