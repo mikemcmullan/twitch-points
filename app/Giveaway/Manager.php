@@ -201,34 +201,41 @@ class Manager
         }
 
         $ticketMax = $entry->getChannel()->getSetting('giveaway.ticket-max');
+        $useTickets = $entry->getChannel()->getSetting('giveaway.use-tickets');
+        $tickets = $entry->getTickets();
 
-        if ($entry->getTickets() > $ticketMax) {
+        if ($entry->getChannel()->getSetting('giveaway.use-tickets') === false) {
+            $tickets = 1;
+        }
+
+        if ($tickets > $ticketMax) {
             throw new InvalidArgumentException(sprintf('%s: %d ticket max.', $entry->getHandle(), $ticketMax));
         }
 
-        if ($entry->getTickets() < 1) {
+        if ($tickets < 1) {
             throw new InvalidArgumentException('Missing ticket amount.');
         }
 
-        $viewer = $this->currencyManager->getViewer($entry->getChannel(), $entry->getHandle());
-
         if ($this->checkIfEntered($entry)) {
-            throw new GiveAwayException(sprintf('%s has already entered the giveaway.', $viewer['handle']));
+            throw new GiveAwayException(sprintf('%s has already entered the giveaway.', $entry->getHandle()));
         }
 
-        $cost = $this->calculateCost($entry->getChannel(), $entry->getTickets());
+        if ($useTickets) {
+            $viewer = $this->currencyManager->getViewer($entry->getChannel(), $entry->getHandle());
+            $cost = $this->calculateCost($entry->getChannel(), $tickets);
 
-        if ($cost > $viewer['points']) {
-            throw new GiveAwayException(sprintf('%s does not have enough %s.', $viewer['handle'], strtolower($entry->getChannel()->getSetting('currency.name'))));
+            if ($cost > $viewer['points']) {
+                throw new GiveAwayException(sprintf('%s does not have enough %s.', $viewer['handle'], strtolower($entry->getChannel()->getSetting('currency.name'))));
+            }
+
+            $this->currencyManager->remove($entry->getChannel(), $entry->getHandle(), $cost);
         }
 
-        $this->currencyManager->remove($entry->getChannel(), $entry->getHandle(), $cost);
-
-        for ($i = 0; $i < $entry->getTickets(); $i++) {
+        for ($i = 0; $i < $tickets; $i++) {
             $this->redis->sadd("#{$entry->getChannel()->name}:giveaway:entries", $entry->getHandle());
         }
 
-        $this->events->fire(new GiveawayWasEntered($entry->getChannel(), $entry->getHandle(), $entry->getTickets()));
+        $this->events->fire(new GiveawayWasEntered($entry->getChannel(), $entry->getHandle(), $tickets));
 
         return true;
     }

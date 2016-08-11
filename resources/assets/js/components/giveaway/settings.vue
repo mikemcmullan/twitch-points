@@ -8,6 +8,8 @@
                 ticketCost: 0,
                 ticketMax: 0,
                 saving: false,
+                type: 'keyword',
+                useTickets: false,
                 alert: {
                     visible: false,
                     class: {
@@ -22,6 +24,7 @@
         methods: {
             submit() {
                 let request = this.$http.put('settings', {
+                    'giveaway.use-tickets': this.useTickets,
                     'giveaway.started-text': this.startedText,
                     'giveaway.stopped-text': this.stoppedText,
                     'giveaway.ticket-max': this.ticketMax,
