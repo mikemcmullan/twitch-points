@@ -25,6 +25,13 @@ Route::group(['domain' => config('app.api_domain'), 'prefix' => '{channel}', 'na
     ]);
 
     /*
+     * Follower Routes
+     */
+     Route::post('/followers', [
+         'uses' => 'FollowersController@store'
+     ]);
+
+    /*
      * Commands Routes
      */
     Route::get('/commands', [

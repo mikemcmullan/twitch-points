@@ -52,6 +52,10 @@ class EventServiceProvider extends ServiceProvider
 
         \App\Events\Bot\BotLeftChannel::class => [
             \App\Listeners\PushToBot::class
+        ],
+
+        \App\Events\NewFollower::class => [
+            \App\Listeners\PushToBot::class
         ]
     ];
 
