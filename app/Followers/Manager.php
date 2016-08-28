@@ -27,7 +27,7 @@ class Manager
         $validator = Validator::make($followers, [
             '*.id'            => 'required|numeric|min:1|max:99999999999',
             '*.username'      => 'required|alpha_dash|between:1,25',
-            '*.display_name'  => 'required|alpha_dash|between:1,25',
+            '*.display_name'  => 'alpha_dash|between:1,25',
             '*.created_at'    => 'required|date_format:Y-m-d\TH:i:s\Z'
         ]);
 
