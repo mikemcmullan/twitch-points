@@ -4,6 +4,7 @@ namespace App\Listeners;
 use App\BotCommands\Manager;
 use App\Channel;
 use App\Command;
+use GuzzleHttp\Exception\ClientException;
 
 class SettingsEventListener
 {
@@ -57,6 +58,44 @@ class SettingsEventListener
     }
 
     /**
+     *
+     *
+     * @param  Channel $channel
+     * @param  string  $oldSetting
+     * @param  string  $newSetting
+     *
+     * @return void
+     */
+    public function followersAlertUpdated(Channel $channel, $oldSetting, $newSetting)
+    {
+        if (config('twitch.follower_notifications.enabled') !== true) {
+            return;
+        }
+
+        if ($newSetting === $oldSetting) {
+            return;
+        }
+
+        $client = new \GuzzleHttp\Client();
+
+        if ($newSetting === true) {
+            $method = 'POST';
+        } else {
+            $method = 'DELETE';
+        }
+
+        try {
+            $response = $client->request($method, rtrim(config('twitch.follower_notifications.url'), '/') . '/channels', [
+                'auth' => [config('twitch.follower_notifications.username'), config('twitch.follower_notifications.password')],
+                'json' => ['channel' => $channel->name]
+            ]);
+        } catch (ClientException $e) {
+            \Log::error('Unable to send request to follower notifications server. ' . $e->getMessage());
+        }
+
+    }
+
+    /**
     * Register the listeners for the subscriber.
     *
     * @param  Illuminate\Events\Dispatcher  $events
@@ -65,5 +104,6 @@ class SettingsEventListener
    {
        $events->listen('settings.updated.currency.keyword', 'App\Listeners\SettingsEventListener@currencyKeywordUpdated');
        $events->listen('settings.updated.giveaway.keyword', 'App\Listeners\SettingsEventListener@giveawayKeywordUpdated');
+       $events->listen('settings.updated.followers.alert', 'App\Listeners\SettingsEventListener@followersAlertUpdated');
    }
 }
