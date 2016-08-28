@@ -86,8 +86,10 @@ class SettingsEventListener
 
         try {
             $response = $client->request($method, rtrim(config('twitch.follower_notifications.url'), '/') . '/channels', [
-                'auth' => [config('twitch.follower_notifications.username'), config('twitch.follower_notifications.password')],
-                'json' => ['channel' => $channel->name]
+                'auth'              => [config('twitch.follower_notifications.username'), config('twitch.follower_notifications.password')],
+                'json'              => ['channel' => $channel->name],
+                'connect_timeout'   => 2,
+                'timeout'           => 2
             ]);
         } catch (ClientException $e) {
             \Log::error('Unable to send request to follower notifications server. ' . $e->getMessage());
