@@ -75,6 +75,12 @@ class AuthController extends Controller
      */
     public function login(Request $request, Channel $channel, AuthenticateUser $authUser)
     {
+        if (\Auth::check()) {
+            return redirect()
+                ->route('home_path', $this->channel->slug)
+                ->with('message', 'You are already logged in.');
+        }
+
         if (! $request->get('code') && ! $request->get('error')) {
             $referer = $request->url();
             $expires = Carbon::now()->addMinutes(5)->timestamp;
