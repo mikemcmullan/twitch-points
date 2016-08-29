@@ -77,12 +77,12 @@ class AuthController extends Controller
     public function login(Request $request, Channel $channel, AuthenticateUser $authUser, Encrypter $encrypter)
     {
         if (! $request->get('code') && ! $request->get('error')) {
-            $referer = $request->fullUrl();
+            $referer = $request->url();
             $nonce = time();
             $key = config('app.key');
             $signature = hash_hmac('sha256', $referer . $key . $nonce, $key);
 
-            return redirect(route('login_proxy_path', [$channel->slug, 'referer=' . $referer, 'sig=' . $signature, 'nonce=' . $nonce]));
+            return redirect(route('login_proxy_path', ['referer=' . $referer, 'sig=' . $signature, 'nonce=' . $nonce]));
         } else {
             return $authUser->execute($this->channel, $request->get('code'), $request->get('error'), $this);
         }
