@@ -6,7 +6,6 @@ use App\Http\Requests;
 use App\Http\Controllers\Controller;
 use App\Services\AuthenticateUser;
 use App\Services\TwitchSDKAdapter;
-use Illuminate\Contracts\Encryption\Encrypter;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use App\Channel;
@@ -28,37 +27,37 @@ class AuthController extends Controller
      *
      * @return \Illuminate\Http\RedirectResponse|Response|\Illuminate\Routing\Redirector
      */
-    public function loginProxy(Request $request, TwitchSDKAdapter $twitchSDK, Encrypter $encrypter)
+    public function loginProxy(Request $request, TwitchSDKAdapter $twitchSDK)
     {
         if (! $request->get('code') && ! $request->get('error')) {
-            $data    = $request->only(['referer', 'sig', 'nonce']);
+            $data    = $request->only(['referer', 'sig', 'expires']);
             $url     = $twitchSDK->authLoginURL('user_read');
 
             $response    = new Response(view('login-proxy', compact('url')));
             $response->header('Location', $url);
-            $response->withCookie(cookie('referer', $data['referer'], 5));
-            $response->withCookie(cookie('sig', $data['sig'], 5));
-            $response->withCookie(cookie('nonce', $data['nonce'], 5));
+            $response->withCookie(cookie('referer', $data['referer'], 60));
+            $response->withCookie(cookie('sig', $data['sig'], 60));
+            $response->withCookie(cookie('expires', $data['expires'], 60));
 
             return $response;
         }
 
         $referer = $request->cookie('referer');
         $sig     = $request->cookie('sig');
-        $nonce   = $request->cookie('nonce');
+        $expires   = $request->cookie('expires');
 
         try {
-            $diff = Carbon::createFromTimestampUTC($nonce)->diffInMinutes(Carbon::now());
+            $future = Carbon::createFromTimestamp($expires)->isFuture();
         } catch (\Exception $e) {
             return response('Error, invalid nonce.');
         }
 
-        if (in_array($diff, range(0, 5)) === false) {
+        if (! $future) {
             return response('Error, to much time has past since the authentication process began.');
         }
 
         $key = config('app.key');
-        $signature = hash_hmac('sha256', $referer . $key . $nonce, $key);
+        $signature = hash_hmac('sha256', $referer . $key . $expires, $key);
 
         if ($signature !== $sig) {
             return response('Error, signature mismatch.');
@@ -74,15 +73,15 @@ class AuthController extends Controller
      * @param AuthenticateUser $authUser
      * @return \Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
      */
-    public function login(Request $request, Channel $channel, AuthenticateUser $authUser, Encrypter $encrypter)
+    public function login(Request $request, Channel $channel, AuthenticateUser $authUser)
     {
         if (! $request->get('code') && ! $request->get('error')) {
             $referer = $request->url();
-            $nonce = time();
+            $expires = Carbon::now()->addMinutes(5)->timestamp;
             $key = config('app.key');
-            $signature = hash_hmac('sha256', $referer . $key . $nonce, $key);
+            $signature = hash_hmac('sha256', $referer . $key . $expires, $key);
 
-            return redirect(route('login_proxy_path', ['referer=' . $referer, 'sig=' . $signature, 'nonce=' . $nonce]));
+            return redirect(route('login_proxy_path', ['referer=' . $referer, 'sig=' . $signature, 'expires=' . $expires]));
         } else {
             return $authUser->execute($this->channel, $request->get('code'), $request->get('error'), $this);
         }
