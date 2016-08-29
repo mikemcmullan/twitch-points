@@ -102,7 +102,9 @@ class AuthController extends Controller
     {
         \Auth::logout();
 
-        return redirect()->route('home_path', $this->channel->slug);
+        return redirect()
+            ->route('home_path', $this->channel->slug)
+            ->with('message', 'You have been successfully logged out.');
     }
 
     /**
