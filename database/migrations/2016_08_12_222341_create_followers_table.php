@@ -13,13 +13,14 @@ class CreateFollowersTable extends Migration
     public function up()
     {
         Schema::create('followers', function (Blueprint $table) {
-            $table->integer('id');
+            $table->increments('id');
+            $table->integer('user_id');
             $table->integer('channel_id');
             $table->string('username', 25);
             $table->string('display_name', 25)->nullable();
             $table->timestamp('created_at')->nullable();
 
-            $table->primary('id');
+            $table->index('user_id');
             $table->index('created_at');
         });
     }

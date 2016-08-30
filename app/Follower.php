@@ -12,7 +12,7 @@ class Follower extends Model
      *
      * @var bool
      */
-    public $incrementing = false;
+    public $incrementing = true;
 
     /**
      * Turn off timestamps.
@@ -26,5 +26,5 @@ class Follower extends Model
      *
      * @var array
      */
-    protected $fillable = ['id', 'channel_id', 'username', 'display_name', 'created_at'];
+    protected $fillable = ['id', 'user_id', 'channel_id', 'username', 'display_name', 'created_at'];
 }

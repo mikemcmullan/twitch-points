@@ -37,12 +37,18 @@ class Manager
 
         foreach ($followers as $follower) {
             $follower = array_only($follower, ['id', 'username', 'display_name', 'created_at']);
-            $follower['channel_id'] = $channel->id;
+            $follow = $this->find($channel, $follower['id']);
 
-            try {
-                Follower::create($follower);
+            if(! $follow) {
                 array_push($newFollowers, $follower);
-            } catch (QueryException $e) {
+                Follower::create([
+                    'user_id'     => $follower['id'],
+                    'channel_id'  => $channel->id,
+                    'username'    => $follower['username'],
+                    'display_name'=> $follower['display_name'],
+                    'created_at'  => $follower['created_at']
+                ]);
+            } else {
                 array_push($reFollows, $follower);
             }
         }
@@ -59,5 +65,21 @@ class Manager
             'new' => $newFollowers,
             're'  => $reFollows
         ];
+    }
+
+    /**
+     * Find a follower by their twitch user id.
+     *
+     * @param  Channel $channel
+     * @param  int     $userId
+     *
+     * @return null|Follower
+     */
+    protected function find(Channel $channel, $userId)
+    {
+        return Follower::where([
+            ['channel_id', '=', $channel->id],
+            ['user_id', '=', $userId]
+        ])->first();
     }
 }
