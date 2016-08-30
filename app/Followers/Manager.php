@@ -37,6 +37,7 @@ class Manager
 
         foreach ($followers as $follower) {
             $follower = array_only($follower, ['id', 'username', 'display_name', 'created_at']);
+            $follower['channel_id'] = $channel->id;
 
             try {
                 Follower::create($follower);

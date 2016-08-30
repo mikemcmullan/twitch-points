@@ -26,5 +26,5 @@ class Follower extends Model
      *
      * @var array
      */
-    protected $fillable = ['id', 'username', 'display_name', 'created_at'];
+    protected $fillable = ['id', 'channel_id', 'username', 'display_name', 'created_at'];
 }
