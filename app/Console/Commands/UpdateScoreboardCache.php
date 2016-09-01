@@ -3,13 +3,13 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
-use App\Contracts\Repositories\TrackSessionRepository;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use App\Jobs\UpdateScoreboardCache as UpdateScoreboardCacheJob;
+use App\Currency\CurrencyChannels;
 
 class UpdateScoreboardCache extends Command
 {
-    use DispatchesJobs;
+    use DispatchesJobs, CurrencyChannels;
 
     /**
      * The name and signature of the console command.
@@ -32,13 +32,10 @@ class UpdateScoreboardCache extends Command
 
     /**
      * Create a new command instance.
-     *
-     * @param TrackSessionRepository $pointsSession
      */
-    public function __construct(TrackSessionRepository $pointsSession)
+    public function __construct()
     {
         parent::__construct();
-        $this->pointsSession = $pointsSession;
     }
 
     /**
@@ -48,10 +45,8 @@ class UpdateScoreboardCache extends Command
      */
     public function handle()
     {
-        $sessions = $this->pointsSession->allIncompletedSessions();
-
-        foreach ($sessions as $session) {
-            $this->dispatch(new UpdateScoreboardCacheJob($session->channel));
+        foreach ($this->getActiveCurrencyChannels() as $channel) {
+            $this->dispatch(new UpdateScoreboardCacheJob($channel));
         }
     }
 }

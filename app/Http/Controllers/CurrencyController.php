@@ -47,7 +47,7 @@ class CurrencyController extends Controller
         }
 
         $data['page'] = (int) $request->get('page', 1);
-        $data['status'] = (bool) $trackPointsSession->findIncompletedSession($channel);
+        $data['status'] = (bool) $channel->getSetting('currency.status');
         $data['chatters'] = $scoreboardCache->paginate($data['page'])->allForChannel($channel);
         $data['count'] = $scoreboardCache->countForChannel($channel);
         $data['paginator'] = new Paginator($data['count'], 100, $data['page'], '/scoreboard?page=(:num)');

@@ -6,8 +6,6 @@ use App\Jobs\Job;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
-use App\Contracts\Repositories\TrackSessionRepository;
-use App\Contracts\Repositories\ChatterRepository;
 use Carbon\Carbon;
 use App\Channel;
 
@@ -31,15 +29,10 @@ class StopCurrencySystemJob extends Job
     /**
      * Handle the command.
      *
-     * @param  StartSystemCommand $command
-     * @return \App\Channel
+     * @return void
      */
-    public function handle(TrackSessionRepository $trackSessionRepository, ChatterRepository $chatterRepository)
+    public function handle()
     {
-        $session = $trackSessionRepository->findIncompletedSession($this->channel);
-
-        if ($session) {
-            return $trackSessionRepository->end($session);
-        }
+        $this->channel->setSetting('currency.status', false);
     }
 }

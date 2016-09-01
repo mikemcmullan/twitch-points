@@ -4,6 +4,7 @@ namespace App\Providers;
 
 use Illuminate\Contracts\Events\Dispatcher as DispatcherContract;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
+use App\Events\ChannelStartedStreaming;
 
 class EventServiceProvider extends ServiceProvider
 {
@@ -13,6 +14,16 @@ class EventServiceProvider extends ServiceProvider
      * @var array
      */
     protected $listen = [
+        \App\Events\ChannelStartedStreaming::class => [
+            \App\Listeners\Currency\StartCurrencySystem::class,
+            \App\Listeners\StartStreamingSession::class
+        ],
+
+        \App\Events\ChannelStoppedStreaming::class => [
+            \App\Listeners\Currency\StopCurrencySystem::class,
+            \App\Listeners\StopStreamingSession::class
+        ],
+
         \App\Events\ChatListWasDownloaded::class => [
             \App\Listeners\ProcessChatList::class,
             \App\Listeners\UpdateDeModdedChatters::class

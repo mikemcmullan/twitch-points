@@ -148,13 +148,13 @@ class TwitchApi
     /**
      * Fetch channel info from the api.
      *
-     * @param $channel
+     * @param string    $channel    Comma separated list of channels.
      * @return mixed
      */
-    public function getStream($channel)
+    public function getStream($channels)
     {
         try {
-            $response = $this->httpClient->request('GET', 'https://api.twitch.tv/kraken/streams/' . $channel);
+            $response = $this->httpClient->request('GET', 'https://api.twitch.tv/kraken/streams?channel=' . $channels . '&_nocachetp=' . time());
             return json_decode((string) $response->getBody(), true);
         } catch (ClientException $e) {
             $this->logger->error('Invalid channel.', ['channel' => $channel]);

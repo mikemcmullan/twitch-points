@@ -3,15 +3,15 @@
 namespace App\Console\Commands;
 
 use App\Jobs\DownloadChatListJob;
-use App\Contracts\Repositories\TrackSessionRepository;
 use Illuminate\Console\Command;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Input\InputArgument;
+use App\Currency\CurrencyChannels;
 
 class UpdatePoints extends Command
 {
-    use DispatchesJobs;
+    use DispatchesJobs, CurrencyChannels;
 
     /**
      * The console command name.
@@ -28,19 +28,11 @@ class UpdatePoints extends Command
     protected $description = 'Update chat list for a channel.';
 
     /**
-     * @var TrackSessionRepository
-     */
-    private $pointsSession;
-
-    /**
      * Create a new command instance.
-     *
-     * @param TrackSessionRepository $pointsSession
      */
-    public function __construct(TrackSessionRepository $pointsSession)
+    public function __construct()
     {
         parent::__construct();
-        $this->pointsSession = $pointsSession;
     }
 
     /**
@@ -51,11 +43,10 @@ class UpdatePoints extends Command
     public function fire()
     {
         $startTime = microtime(true);
-        $sessions = $this->pointsSession->allIncompletedSessions();
 
         try {
-            foreach ($sessions as $session) {
-                $this->dispatch(new DownloadChatListJob($session->channel));
+            foreach ($this->getActiveCurrencyChannels() as $channel) {
+                $this->dispatch(new DownloadChatListJob($channel));
             }
         } catch (\Exception $e) {
             dd($e->getMessage());
