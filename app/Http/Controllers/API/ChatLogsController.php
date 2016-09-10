@@ -23,6 +23,7 @@ class ChatLogsController extends Controller
         $twitch = new \App\EmoteReplacer\Replacers\Twitch();
 
         $messages = \App\ChatLogs::where('channel', $channel->name)
+            ->orderBy('created_at', 'DESC')
             ->simplePaginate(100);
 
         $messages->each(function ($message) use ($twitch, $bttv) {
