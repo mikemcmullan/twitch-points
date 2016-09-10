@@ -60,6 +60,14 @@ Route::group(['domain' => config('app.api_domain'), 'prefix' => '{channel}', 'na
     ]);
 
     /**
+     * Chat Logs Routes
+     */
+     Route::get('/chat-logs', [
+         'uses' => 'ChatLogsController@index',
+         'as'   => 'api_chatLogs_index_path'
+     ]);
+
+    /**
      * Timers Routes
      */
      Route::get('/timers', [
