@@ -231,6 +231,13 @@ Route::group(['domain' => '{channel}.' . config('app.root_domain'), 'middleware'
     ]);
 
     /**
+     * Chat Log Routs
+     */
+     Route::get('/chat-logs', ['middleware' => 'auth', function () {
+         return view('chat-logs');
+     }]);
+
+    /**
      * Timers Routes
      */
     Route::get('/timers', [

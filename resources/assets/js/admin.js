@@ -460,3 +460,78 @@ if (document.querySelector('#quotes')) {
         }
     });
 }
+
+//------------------------------------------------------------------------------
+// Chat Logs
+//------------------------------------------------------------------------------
+if (document.querySelector('#test')) {
+    new Vue({
+        el: '#test',
+
+        components: {
+            // 'edit-quote-modal': editQuoteModal,
+            // 'delete-quote-modal': deleteQuoteModal
+            pagination: require('vue-bootstrap-pagination')
+        },
+
+        data: {
+            logs: [],
+            loading: true,
+            pagination: {
+                per_page: 100,    // required
+                current_page: 1, // required
+                from: 1,
+                to: 12           // required
+            },
+
+            bttvEmotes: []
+        },
+
+        ready() {
+            let currentPage = /page=(\d+)/.exec(document.location.hash);
+
+            if (currentPage) {
+                currentPage = currentPage[1];
+            }
+
+            this.getPage(currentPage || 1);
+        },
+
+        methods: {
+            loadData() {
+                this.loading = true;
+                this.$els.loop.className = 'hide';
+                window.location.hash = `#page=${this.pagination.current_page}`
+                this.getPage(this.pagination.current_page);
+            },
+
+            getPage(page) {
+                this.$http.get(`chat-logs?page=${page}`)
+                    .then((response) => {
+                        this.loading = false;
+
+                        this.pagination.per_page = response.data.per_page;
+                        this.pagination.current_page = response.data.current_page;
+                        this.pagination.from = response.data.from;
+                        this.pagination.to = response.data.to;
+
+                        this.$els.loop.className = '';
+                        this.logs = [];
+                        response.data.data.forEach((message) => {
+                            const createdAt = new Date(message.created_at);
+
+                            message.created_at = `${createdAt.toLocaleDateString('en-CA', {
+                                month: 'short',
+                                day: '2-digit',
+                                hour: '2-digit',
+                                minute: '2-digit'
+                            })}`;
+
+
+                            this.logs.push(message);
+                        });
+                    });
+            }
+        }
+    });
+}
