@@ -27,19 +27,17 @@ class ChatLogsController extends Controller
             ->simplePaginate(100);
 
         $messages->each(function ($message) use ($twitch, $bttv) {
-            $cache = \Cache::get('chatLogMessage-' . md5($message->id));
-
             unset($message->command_id);
 
-            if ($cache) {
+            if ($cache = \Cache::get('chatLogMessage-' . md5($message->id))) {
                 $message->message = $cache;
             } else {
                 $message->message = $twitch->replace($message);
                 $message->message = $bttv->replace($message);
-                \Cache::put('message-' . md5($message->id), $message->message, 60*60*24);
+                \Cache::put('chatLogMessage-' . md5($message->id), $message->message, 60*60*24);
             }
         });
 
-        return $messages;
+        return response($messages);
     }
 }

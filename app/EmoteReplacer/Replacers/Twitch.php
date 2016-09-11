@@ -44,12 +44,13 @@ class Twitch extends Replacer
         }
 
         $messageStr = $message->message;
+        $emotes = array_map(function ($emoteString) use ($messageStr) {
+            return $this->findEmote($messageStr, $emoteString);
+        }, explode('/', $message->emotes));
 
-        foreach(explode('/', $message->emotes) as $emoteString) {
-            $emotes = $this->findEmote($messageStr, $emoteString);
-
-            foreach ($emotes as $emote) {
-                $messageStr = str_replace($emote[1], $this->makeImage($emote[0], $imageSize, $this->emoteTemplate), $messageStr);
+        foreach ($emotes as $emote) {
+            foreach ($emote as $em) {
+                $messageStr = str_replace($em[1], $this->makeImage($em[0], $imageSize, $this->emoteTemplate), $messageStr);
             }
         }
 
