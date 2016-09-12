@@ -9,6 +9,7 @@
             <div class="box">
                 <div class="box-header with-border">
                     <h3 class="box-title">Chat Logs (page @{{ pagination.current_page }})</h3>
+                    <em class="pull-right">(as of @{{ formatedLoadTime }})</em>
                 </div><!-- .box-header -->
 
                 <div class="box-body">
@@ -22,12 +23,12 @@
                                 </thead>
                                 <tbody class="hide" v-el:loop>
                                     <tr v-for="message in logs">
-                                        <td style="vertical-align: middle">@{{ message.created_at }}</td>
+                                        <td style="vertical-align: middle">@{{ message.created_at }} UTC</td>
                                         <td style="vertical-align: middle">@{{ message.display_name }}</td>
                                         <td style="vertical-align: middle">@{{{ message.message }}}</td>
                                     </tr>
 
-                                    <tr v-if="logs.length === 0">
+                                    <tr v-if="!logs">
                                         <td colspan="3">No records found.</td>
                                     </tr>
                                 </tbody>

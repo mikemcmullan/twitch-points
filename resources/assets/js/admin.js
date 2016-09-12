@@ -475,38 +475,66 @@ if (document.querySelector('#test')) {
         },
 
         data: {
-            logs: [],
+            rawLogs: [],
             loading: true,
             pagination: {
-                per_page: 100,    // required
-                current_page: 1, // required
+                per_page: 100,
+                current_page: 1,
                 from: 1,
-                to: 12           // required
+                to: 12
+            },
+            loadedTimestamp: 0,
+            dateOptions: {
+                month: 'short',
+                day: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit'
+            }
+        },
+
+        computed: {
+            formatedLoadTime() {
+                const now = new Date();
+
+                return new Date(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(), now.getUTCHours(), now.getUTCMinutes(), now.getUTCSeconds())
+                    .toLocaleDateString('en-CA', this.dateOptions) + ' UTC';
             },
 
-            bttvEmotes: []
+            logs() {
+                return this.$get(`log_page_${this.pagination.current_page}`);
+            }
         },
 
         ready() {
-            let currentPage = /page=(\d+)/.exec(document.location.hash);
+            this.loadedTimestamp = Math.floor(Date.now() / 1000);
 
-            if (currentPage) {
-                currentPage = currentPage[1];
-            }
+            // let currentPage = /page=(\d+)/.exec(document.location.hash);
+            //
+            // if (currentPage) {
+            //     currentPage = currentPage[1];
+            // }
 
-            this.getPage(currentPage || 1);
+            this.getPage(1);
         },
 
         methods: {
             loadData() {
                 this.loading = true;
                 this.$els.loop.className = 'hide';
-                window.location.hash = `#page=${this.pagination.current_page}`
+                // window.location.hash = `#page=${this.pagination.current_page}`
                 this.getPage(this.pagination.current_page);
             },
 
             getPage(page) {
-                this.$http.get(`chat-logs?page=${page}`)
+                if (this.$get(`log_page_${page}`)) {
+                    this.$els.loop.className = '';
+                    this.loading = false;
+                    return;
+                }
+
+                this.$set(`log_page_${page}`, []);
+
+                this.$http.get(`chat-logs?page=${page}&starting-from=${this.loadedTimestamp}`)
                     .then((response) => {
                         this.loading = false;
 
@@ -516,19 +544,12 @@ if (document.querySelector('#test')) {
                         this.pagination.to = response.data.to;
 
                         this.$els.loop.className = '';
-                        this.logs = [];
                         response.data.data.forEach((message) => {
                             const createdAt = new Date(message.created_at);
 
-                            message.created_at = `${createdAt.toLocaleDateString('en-CA', {
-                                month: 'short',
-                                day: '2-digit',
-                                hour: '2-digit',
-                                minute: '2-digit'
-                            })}`;
+                            message.created_at = `${createdAt.toLocaleDateString('en-CA', this.dateOptions)}`;
 
-
-                            this.logs.push(message);
+                            this.$get(`log_page_${page}`).push(message);
                         });
                     });
             }
