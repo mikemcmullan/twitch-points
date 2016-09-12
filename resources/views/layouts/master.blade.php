@@ -65,6 +65,10 @@
                         @can('access-page', [$channel, 'timers'])
                             <li{!! Route::currentRouteName() === 'timers_path' ? ' class="active"' : '' !!}><a href="{!! route('timers_path', [$channel->slug]) !!}"><i class="fa fa-clock-o"></i> <span>Timers</span></a></li>
                         @endcan
+
+                        @can('access-page', [$channel, 'chat-logs'])
+                            <li{!! Route::currentRouteName() === 'chat_logs_path' ? ' class="active"' : '' !!}><a href="{!! route('chat_logs_path', [$channel->slug]) !!}"><i class="fa fa-clock-o"></i> <span>Chat Logs</span></a></li>
+                        @endcan
                     @endif
                 </ul>
             </section><!-- .sidebar -->
