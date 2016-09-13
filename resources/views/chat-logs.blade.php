@@ -40,9 +40,7 @@
                                 </tbody>
                             </table>
 
-                            <div class="text-center">
-                                <pagination :pagination="pagination" :callback="loadData" :offset="3"></pagination>
-                            </div>
+                            <a class="btn btn-default" :disabled="noMoreResults || loading" @click="loadMore()">Load More</a>
                         </div><!-- .col-md-12 -->
                     </div><!-- .row -->
                 </div><!-- .box-body -->
