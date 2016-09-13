@@ -8,7 +8,7 @@
         <div class="col-md-12">
             <div class="box">
                 <div class="box-header with-border">
-                    <h3 class="box-title">Chat Logs (page @{{ pagination.current_page }})</h3>
+                    <h3 class="box-title">Chat Logs</h3>
                     <em class="pull-right">(as of @{{ formatedLoadTime }})</em>
                 </div><!-- .box-header -->
 
