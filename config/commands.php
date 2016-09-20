@@ -50,7 +50,8 @@ return [
             'russianroulette' => [
                 'command' => '!rr',
                 'usage' => '!rr',
-                'description' => 'Russian Roulette',
+                'description' => 'Russian Roulette. Everytime the command is run there is a 1 and 6 chance you will be timed out for 5 minutes.' .
+                                 '  Once this happens the game cannot be played by anyone again for 5 minutes, a user can only play once every 30 seconds.',
                 'level' => 'everyone',
                 'cool_down' => 30,
                 'global_cool_down' => false,
