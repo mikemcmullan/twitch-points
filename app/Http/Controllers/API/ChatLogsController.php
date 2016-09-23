@@ -15,7 +15,7 @@ class ChatLogsController extends Controller
      */
     public function __construct(Request $request)
     {
-        $this->middleware(['jwt.auth', 'auth.api']);
+        // $this->middleware(['jwt.auth', 'auth.api']);
     }
 
     public function index(Channel $channel, Request $request)
