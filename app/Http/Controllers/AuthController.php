@@ -133,13 +133,13 @@ class AuthController extends Controller
      * @param \Pusher $pusher
      * @return Response
      */
-    public function pusher(Request $request, \Pusher $pusher)
+    public function pusher(Request $request, Channel $channel, \Pusher $pusher)
     {
         $data = $request->only(['socket_id', 'channel_name']);
 
         $user = \Auth::user();
 
-        if ($user && $user->hasPermission('giveaway')) {
+        if ($user && $user->can('admin-channel', $channel)) {
             return response($pusher->socket_auth($data['channel_name'], $data['socket_id']));
         }
 

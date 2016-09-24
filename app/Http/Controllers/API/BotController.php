@@ -19,7 +19,7 @@ class BotController extends Controller
      */
     public function __construct(Request $request)
     {
-        $this->middleware(['jwt.auth', 'auth.api']);
+        $this->middleware(['jwt.auth', 'auth.api:bot']);
     }
 
 	public function joinChannel(Channel $channel)

@@ -26,7 +26,7 @@ class CurrencyController extends Controller
      */
     public function __construct(Request $request, ChatterRepository $chatterRepository)
     {
-        $this->middleware('auth', ['except' => ['checkPoints', 'scoreboard']]);
+        $this->middleware(['featureDetection:currency']);
         $this->chatterRepository = $chatterRepository;
     }
 

@@ -27,15 +27,4 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
     {
         return (new static)->where('name', $name)->first();
     }
-
-    public function hasPermission($permission)
-    {
-        $permissions = explode(',', $this->permissions);
-
-        if (array_search($permission, $permissions) !== false) {
-            return true;
-        }
-
-        return false;
-    }
 }

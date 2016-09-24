@@ -21,7 +21,7 @@ class TimersController extends Controller
      */
     public function __construct(Request $request, TimerManager $timerManager)
     {
-        $this->middleware(['jwt.auth', 'auth.api']);
+        $this->middleware(['jwt.auth', 'auth.api:timers']);
         $this->timerManager = $timerManager;
     }
 

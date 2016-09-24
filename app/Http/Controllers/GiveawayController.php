@@ -21,7 +21,7 @@ class GiveawayController extends Controller
      */
     public function __construct(Request $request, Manager $giveawayManager)
     {
-        $this->middleware('auth');
+        $this->middleware(['auth', 'featureDetection:giveaway']);
         $this->giveawayManager = $giveawayManager;
     }
 

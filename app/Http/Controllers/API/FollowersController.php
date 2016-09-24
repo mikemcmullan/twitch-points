@@ -13,7 +13,7 @@ class FollowersController extends Controller
 {
     public function __construct()
     {
-        $this->middleware(['jwt.auth', 'auth.api']);
+        $this->middleware(['jwt.auth', 'auth.api:followers']);
     }
 
     public function store(Request $request, Channel $channel, Manager $followersManager)

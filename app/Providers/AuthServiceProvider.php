@@ -34,8 +34,8 @@ class AuthServiceProvider extends ServiceProvider
             return ! $user->channels->isEmpty();
         });
 
-        $gate->define('access-page', function ($user, $channel, $page) {
-            return $user->hasPermission($page) && $user->can('admin-channel', $channel);
+        $gate->define('access-page', function ($user, $channel, $feature) {
+            return $channel->hasFeature($feature) && $user->can('admin-channel', $channel);
         });
 
         \Auth::provider('custom', function ($app) {

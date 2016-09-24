@@ -131,6 +131,21 @@ class Channel extends Model implements AuthenticatableContract, CanResetPassword
     }
 
     /**
+     * Check if channel has feature.
+     *
+     * @param  string  $feature
+     * @return boolean
+     */
+    public function hasFeature($feature)
+    {
+        if (array_search($feature, $this->getSetting('features', [])) !== false) {
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
      * Get a channel setting.
      *
      * @param $setting

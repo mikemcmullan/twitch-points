@@ -12,7 +12,7 @@ class TimersController extends Controller
 {
     public function __construct()
     {
-
+        $this->middleware(['auth', 'featureDetection:timers']);
     }
 
     public function index(Channel $channel)

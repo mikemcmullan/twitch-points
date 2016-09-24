@@ -53,23 +53,31 @@
         <aside class="main-sidebar">
             <section class="sidebar">
                 <ul class="sidebar-menu">
-                    <li{!! in_array(Route::currentRouteName(), ['scoreboard_path', 'home_path']) ? ' class="active"' : '' !!}><a href="{!! route('scoreboard_path', [$channel->slug]) !!}"><i class="fa fa-money"></i> <span>Scoreboard</span></a></li>
-                    <li{!! Route::currentRouteName() === 'commands_path' ? ' class="active"' : '' !!}><a href="{!! route('commands_path', [$channel->slug]) !!}"><i class="fa fa-list"></i> <span>Commands</span></a></li>
-                    <li{!! Route::currentRouteName() === 'quotes_path' ? ' class="active"' : '' !!}><a href="{!! route('quotes_path', [$channel->slug]) !!}"><i class="fa fa-quote-left"></i> <span>Quotes</span></a></li>
+                    @if ($channel->hasFeature('currency'))
+                        <li{!! Route::currentRouteName() === 'scoreboard_path' ? ' class="active"' : '' !!}><a href="{!! route('scoreboard_path', [$channel->slug]) !!}"><i class="fa fa-money"></i> <span>Scoreboard</span></a></li>
+                    @endif
+
+                    @if ($channel->hasFeature('commands'))
+                        <li{!! Route::currentRouteName() === 'commands_path' ? ' class="active"' : '' !!}><a href="{!! route('commands_path', [$channel->slug]) !!}"><i class="fa fa-list"></i> <span>Commands</span></a></li>
+                    @endif
+
+                    @if ($channel->hasFeature('quotes'))
+                        <li{!! Route::currentRouteName() === 'quotes_path' ? ' class="active"' : '' !!}><a href="{!! route('quotes_path', [$channel->slug]) !!}"><i class="fa fa-quote-left"></i> <span>Quotes</span></a></li>
+                    @endif
 
                     @if ($user)
-                        @can('access-page', [$channel, 'giveaway'])
+                        @if ($channel->hasFeature('giveaway'))
                             <li{!! Route::currentRouteName() === 'giveaway_path' ? ' class="active"' : '' !!}><a href="{!! route('giveaway_path', [$channel->slug]) !!}"><i class="fa fa-gift"></i> <span>Giveaways</span></a></li>
-                        @endcan
+                        @endif
 
-                        @can('access-page', [$channel, 'timers'])
+                        @if ($channel->hasFeature('timers'))
                             <li{!! Route::currentRouteName() === 'timers_path' ? ' class="active"' : '' !!}><a href="{!! route('timers_path', [$channel->slug]) !!}"><i class="fa fa-clock-o"></i> <span>Timers</span></a></li>
                         @endcan
-
-                        @can('access-page', [$channel, 'chat-logs'])
-                            <li{!! Route::currentRouteName() === 'chat_logs_path' ? ' class="active"' : '' !!}><a href="{!! route('chat_logs_path', [$channel->slug]) !!}"><i class="fa fa-clock-o"></i> <span>Chat Logs</span></a></li>
-                        @endcan
                     @endif
+
+                    @if ($channel->hasFeature('chat-logs'))
+                        <li{!! Route::currentRouteName() === 'chat_logs_path' ? ' class="active"' : '' !!}><a href="{!! route('chat_logs_path', [$channel->slug]) !!}"><i class="fa fa-clock-o"></i> <span>Chat Logs</span></a></li>
+                    @endcan
                 </ul>
             </section><!-- .sidebar -->
         </aside><!-- .main-sidebar -->
