@@ -35,11 +35,12 @@ class Manager
             throw new ValidationException($validator);
         }
 
+        $existingFollows = $this->findFollowers($channel, array_pluck($followers, 'id'))->pluck('user_id');
+
         foreach ($followers as $follower) {
             $follower = array_only($follower, ['id', 'username', 'display_name', 'created_at']);
-            $follow = $this->find($channel, $follower['id']);
 
-            if(! $follow) {
+            if($existingFollows->search($follower['id']) === false) {
                 array_push($newFollowers, $follower);
                 Follower::create([
                     'user_id'     => $follower['id'],
@@ -65,6 +66,21 @@ class Manager
             'new' => $newFollowers,
             're'  => $reFollows
         ];
+    }
+
+    /**
+     * Find followers by their twitch user id.
+     *
+     * @param  Channel $channel
+     * @param  int     $userId
+     *
+     * @return null|Follower
+     */
+    protected function findFollowers(Channel $channel, array $ids)
+    {
+        return Follower::whereIn('user_id', $ids)
+            ->where('channel_id', '=', $channel->id)
+            ->get();
     }
 
     /**
