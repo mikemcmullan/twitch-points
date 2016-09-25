@@ -18,6 +18,9 @@ Vue.validator('keywordFormat', {
     }
 })
 
+const FormatTwitchEmotes = require('./TwitchEmotes').default;
+const FormatBTTVEmotes = require('./BTTVEmotes').default;
+
 // Vue.config.debug = true;
 
 // if (document.querySelector('#header-nav')) {
@@ -500,7 +503,13 @@ if (document.querySelector('#test')) {
         ready() {
             this.loadedTimestamp = Math.floor(Date.now() / 1000);
 
-            this.getPage(1);
+            this.twitchEmotes = new FormatTwitchEmotes();
+            this.bttVEmotes = new FormatBTTVEmotes();
+
+            this.bttVEmotes.load(options.channel)
+                .then(() => {
+                    this.getPage(1);
+                });
         },
 
         methods: {
@@ -530,6 +539,14 @@ if (document.querySelector('#test')) {
                         response.data.data.forEach((message) => {
                             const createdAt = new Date(message.created_at);
                             message.created_at = `${createdAt.toLocaleDateString('en-CA', this.dateOptions)}`;
+
+                            message.message = message.message.linkify();
+
+                            if (message.emotes !== null) {
+                                message.message = this.twitchEmotes.formatMessage(message.message, message.emotes);
+                            }
+
+                            message.message = this.bttVEmotes.formatMessage(message.message);
 
                             this.logs.push(message);
                         });
