@@ -1,7 +1,7 @@
 
 export default class FormatTwitchEmotes {
 	makeImage(emoteId) {
-		return `<img class="emoticon" src="http://static-cdn.jtvnw.net/emoticons/v1/${emoteId}/1.0">`
+		return `<img class="emoticon" src="//static-cdn.jtvnw.net/emoticons/v1/${emoteId}/1.0">`
 	}
 
 	parseEmotes(emotesString) {

@@ -14,7 +14,7 @@ export default class FormatBTTVEmotes {
 	}
 
 	makeImage(emoteId) {
-		return `<img class="emoticon" src="http://cdn.betterttv.net/emote/${emoteId}/1x">`;
+		return `<img class="emoticon" src="//cdn.betterttv.net/emote/${emoteId}/1x">`;
 	}
 
 	getEmotes(url) {
@@ -29,6 +29,10 @@ export default class FormatBTTVEmotes {
 					const body = JSON.parse(this.responseText);
 
 					resolve(body.emotes);
+				}
+
+				if (this.readyState == 4 && this.status !== 200) {
+					resolve([]);
 				}
 			}
 
