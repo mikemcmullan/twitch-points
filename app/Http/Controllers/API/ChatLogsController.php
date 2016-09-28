@@ -32,7 +32,7 @@ class ChatLogsController extends Controller
         $messages = \App\ChatLogs::where('channel', $channel->name)
             ->where('created_at', '<', $date)
             ->orderBy('created_at', 'DESC')
-            ->simplePaginate(100);
+            ->simplePaginate(500);
 
         $messages->each(function ($message) use ($twitch, $bttv) {
             unset($message->command_id);
