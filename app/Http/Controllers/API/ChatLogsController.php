@@ -26,9 +26,6 @@ class ChatLogsController extends Controller
             $date = Carbon::now();
         }
 
-        $bttv = new \App\EmoteReplacer\Replacers\BetterTTV($channel);
-        $twitch = new \App\EmoteReplacer\Replacers\Twitch();
-
         $messages = \App\ChatLogs::where('channel', $channel->name)
             ->where('created_at', '<', $date)
             ->orderBy('created_at', 'DESC')
@@ -37,14 +34,9 @@ class ChatLogsController extends Controller
         $messages->each(function ($message) use ($twitch, $bttv) {
             unset($message->command_id);
 
-            // if ($cache = \Cache::get('chatLogMessage-' . md5($message->id))) {
-            //     $message->message = $cache;
-            // } else {
-            //     $message->message = e($message->message);
-            //     $message->message = $twitch->replace($message);
-            //     $message->message = $bttv->replace($message);
-            //     \Cache::put('chatLogMessage-' . md5($message->id), $message->message, 60*60*24);
-            // }
+            if (! $message->display_name) {
+                $message->display_name = $message->username;
+            }
         });
 
         return response($messages);
