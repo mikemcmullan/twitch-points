@@ -31,7 +31,7 @@ class ChatLogsController extends Controller
             ->orderBy('created_at', 'DESC')
             ->simplePaginate(500);
 
-        $messages->each(function ($message) use ($twitch, $bttv) {
+        $messages->each(function ($message) {
             unset($message->command_id);
 
             if (! $message->display_name) {
