@@ -58,7 +58,19 @@ return [
                 'module' => 'RussianRoulette',
                 'response' => 'Congratulations {{ user }}, you are our unlucky winner, see you again in 5 minutes.',
                 'disabled' => false
-            ]
+            ],
+
+            'silence' => [
+                'command' => '!silence',
+                'usage' => '!silence',
+                'description' => 'Silence or unsilence the bot. This means it will not respond to any other commands or display timer messages.',
+                'level' => 'admin',
+                'cool_down' => 10,
+                'global_cool_down' => true,
+                'module' => 'Silence',
+                'response' => '',
+                'disabled' => false
+            ],
         ],
 
         'currency' => [
