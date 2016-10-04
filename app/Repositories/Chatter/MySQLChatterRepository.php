@@ -247,7 +247,7 @@ class MySQLChatterRepository implements ChatterRepository
 
         $exists = new Collection();
 
-        $handle->chunk(100)->each(function ($handles) use (&$exists, $channel) {
+        $handle->chunk(500)->each(function ($handles) use (&$exists, $channel) {
             $result = DB::table('chatters')->where('channel_id', '=', $channel->id)->whereIn('handle', $handles)->get();
             $exists = $exists->merge($result);
         });
