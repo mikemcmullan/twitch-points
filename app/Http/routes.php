@@ -144,6 +144,11 @@ Route::group(['domain' => config('app.api_domain'), 'prefix' => '{channel}', 'na
     /*
      * Currency Routes
      */
+    Route::get('/currency', [
+        'uses'  => 'CurrencyController@index',
+        'as'    => 'api_currency_index_path'
+    ]);
+
     Route::post('/currency', [
         'uses'  => 'CurrencyController@addCurrency',
         'as'    => 'api_currency_add_path'

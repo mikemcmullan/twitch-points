@@ -5,16 +5,12 @@ namespace App\Http\Controllers\API;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use App\Channel;
-use App\Http\Requests;
-use App\Jobs\AddCurrencyJob;
-use App\Jobs\RemoveCurrencyJob;
 use App\Jobs\StopCurrencySystemJob;
 use App\Jobs\StartCurrencySystemJob;
-use Exception;
-use InvalidArgumentException;
-use Tymon\JWTAuth\Token;
-use App\Exceptions\UnknownHandleException;
+use App\Jobs\AddCurrencyJob;
+use App\Jobs\RemoveCurrencyJob;
+use App\Support\ScoreboardCache;
+use App\Channel;
 
 class CurrencyController extends Controller
 {
@@ -25,7 +21,23 @@ class CurrencyController extends Controller
      */
     public function __construct()
     {
-        $this->middleware(['jwt.auth', 'auth.api:currency']);
+        $this->middleware(['jwt.auth', 'auth.api:currency'], ['except' => 'index']);
+    }
+
+    /**
+     * Get currency for all viewers.
+     *
+     * @param  Channel           $channel
+     * @param  Request           $request
+     * @param  ChatterRepository $chatterRepo
+     *
+     * @return \Symfony\Component\HttpFoundation\Response
+     */
+    public function index(Channel $channel, Request $request, ScoreboardCache $scoreboardCache)
+    {
+        $results = $scoreboardCache->paginate($request->get('page', 1))->allForChannel($channel);
+
+        return response()->json($results);
     }
 
     /**
