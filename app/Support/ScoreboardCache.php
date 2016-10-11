@@ -5,6 +5,8 @@ namespace App\Support;
 use App\Channel;
 use Illuminate\Redis\Database;
 use Illuminate\Support\Collection;
+use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Pagination\Paginator;
 
 class ScoreboardCache
 {
@@ -65,11 +67,20 @@ class ScoreboardCache
 
 		// For some unknown reason some installations of php won't let me pass
 		// reference to the mapViewer method directly to the map method.
-		return collect($viewers)->map(function ($handle) use ($channel) {
+		$viewers = collect($viewers)->map(function ($handle) use ($channel) {
 			$viewer = $this->redis->hget("#{$channel->slug}:sb", $handle);
 
 			return $this->mapViewer($viewer);
 		});
+
+		if ($this->perPage > 0) {
+			return new LengthAwarePaginator($viewers, $this->countForChannel($channel), $this->perPage, $this->page, [
+				'path' => Paginator::resolveCurrentPath(),
+				'pageName' => 'page'
+			]);
+		}
+
+		return $viewers;
 	}
 
 	/**
@@ -165,6 +176,7 @@ class ScoreboardCache
 			'rank'		=> $pieces[1],
 			'points'	=> $pieces[2],
 			'minutes'	=> $pieces[3],
+			'time_online' => presentTimeOnline($pieces[3]),
 			'moderator' => (bool) $pieces[4],
 			'administrator' => (bool) $pieces[5]
 		];
