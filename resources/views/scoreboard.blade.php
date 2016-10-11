@@ -7,7 +7,6 @@
 
     @include('partials.flash')
 
-    @if ($page == 1)
     <div class="row">
         @can('admin-channel', $channel)
         <div class="col-md-6">
@@ -139,14 +138,13 @@
         @endif
 
     </div><!-- .row -->
-    @endif
 
     <div class="row">
         <div class="col-md-12">
             <div class="box">
                 <div class="box-header with-border">
                     <h3 class="box-title">Scoreboard</h3>
-                    <em class="pull-right">({{ $count }} records in total)</em>
+                    <em class="pull-right">(@{{ pagination.total }} records in total)</em>
                 </div><!-- .box-header -->
 
                 <div class="box-body">
@@ -163,24 +161,27 @@
                                 </thead>
 
                                 <tbody>
-                                @forelse ($chatters as $chatter)
-                                    <tr>
-                                        <td>{{ $chatter['rank'] or '--'}}</td>
-                                        <td>{{ $chatter['handle'] }} {!! $chatter['moderator'] ? '<span class="label label-primary">MOD</span>' : '' !!}</td>
-                                        <td>{{ presentTimeOnline($chatter['minutes']) }}</td>
-                                        <td>{{ floor($chatter['points']) }}</td>
+                                    <tr v-for="chatter in items">
+                                        <td>@{{ chatter.rank }}</td>
+                                        <td>@{{ chatter.handle }} <span class="label label-primary" v-if="chatter.moderator">MOD</span></td>
+                                        <td>@{{ chatter.time_online }}</td>
+                                        <td>@{{ chatter.points }}</td>
                                     </tr>
-                                @empty
-                                    <tr>
-                                        <td colspan="4">No data available.</td>
+
+                                    <tr v-if="items.length === 0 && loading === false">
+                                        <td colspan="4">No records found.</td>
                                     </tr>
-                                @endforelse
+                                </tbody>
+
+                                <tbody v-if="loading">
+                                    <tr>
+                                        <td colspan="4" class="text-center"><img src="/assets/img/loader.svg" width="32" height="32" alt="Loading..."></td>
+                                    </tr>
                                 </tbody>
                             </table><!-- .body -->
 
-                            <div class="text-center">
-                                {{-- $chatters->links() --}}
-                                {!! $paginator !!}
+                            <div class="text-center" v-if="pagination.total >= pagination.per_page">
+                                <pagination :pagination="pagination" :callback="loadData"></pagination>
                             </div>
                         </div><!-- .col -->
                     </div><!-- .row -->
@@ -191,18 +192,22 @@
 </scection><!-- .content -->
 @endsection
 
-@can('admin-channel', $channel)
-    @section('after-js')
-        <script>
-            var options = {
-                api: {
-                    token: '{{ $apiToken }}',
-                    root: '//{{ config('app.api_domain') }}/{{ $channel->slug }}'
-                },
-                channel: '{{ $channel->slug }}'
-            };
-        </script>
+@section('after-js')
+    <script>
+        var scoreboard = {!! $scoreboard !!};
 
+        var options = {
+            api: {
+                token: '{{ $apiToken }}',
+                root: '//{{ config('app.api_domain') }}/{{ $channel->slug }}'
+            },
+            channel: '{{ $channel->slug }}'
+        };
+    </script>
+
+    @can('admin-channel', $channel)
         <script src="/assets/js/admin.js"></script>
-    @endsection
-@endcan
+    @else
+        <script src="/assets/js/public.js"></script>
+    @endcan
+@endsection

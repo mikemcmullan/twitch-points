@@ -90,6 +90,61 @@ if (document.querySelector('#commands')) {
 }
 
 //------------------------------------------------------------------------------
+// Currency
+//------------------------------------------------------------------------------
+if (document.querySelector('#currency')) {
+    new Vue({
+        el: '#currency',
+
+        data: {
+            items: [],
+            pagination: {
+                total: 0,
+                per_page: 12,
+                current_page: 1,
+                last_page: 0,
+                from: 1,
+                to: 12
+            },
+            loading: false
+        },
+
+        components: {
+            pagination: require('vue-bootstrap-pagination')
+        },
+
+        ready() {
+            const data = scoreboard;
+
+            this.items = data.data;
+            this.pagination.total = data.total;
+            this.pagination.per_page = data.per_page;
+            this.pagination.current_page = data.current_page;
+            this.pagination.last_page = data.last_page;
+            this.pagination.from = data.from;
+            this.pagination.to = data.to;
+        },
+
+        methods: {
+            loadData() {
+                const page = this.pagination.current_page;
+
+                this.items = [];
+                this.loading = true;
+
+                this.$http.get(`currency?page=${page}`)
+                    .then((response) => {
+                        const data = response.data;
+
+                        this.items = data.data;
+                        this.loading = false;
+                    });
+            }
+        }
+    });
+}
+
+//------------------------------------------------------------------------------
 // Quotes
 //------------------------------------------------------------------------------
 if (document.querySelector('#quotes')) {

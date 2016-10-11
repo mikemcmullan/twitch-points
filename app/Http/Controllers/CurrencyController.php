@@ -38,19 +38,20 @@ class CurrencyController extends Controller
     public function scoreboard(Request $request, TrackSessionRepository $trackPointsSession, Channel $channel, ScoreboardCache $scoreboardCache)
     {
         $data = [
-            'handle' => strtolower($request->get('handle')),
-            'chatter' => null,
+            'handle'    => strtolower($request->get('handle')),
+            'chatter'   => null,
         ];
 
+        $api = new \App\Support\CallApi();
+
         if ($data['handle']) {
-            $data['chatter'] = $scoreboardCache->findByHandle($channel, $data['handle']);
+            $response = $api->viewer($channel->name, $data['handle']);
+
+            $data['chatter'] = json_decode($response, true);
         }
 
-        $data['page'] = (int) $request->get('page', 1);
         $data['status'] = (bool) $channel->getSetting('currency.status');
-        $data['chatters'] = $scoreboardCache->paginate($data['page'])->allForChannel($channel);
-        $data['count'] = $scoreboardCache->countForChannel($channel);
-        $data['paginator'] = new Paginator($data['count'], 100, $data['page'], '/scoreboard?page=(:num)');
+        $data['scoreboard'] = $api->currencyScoreboard($channel->name);
 
         return view('scoreboard', $data);
     }
