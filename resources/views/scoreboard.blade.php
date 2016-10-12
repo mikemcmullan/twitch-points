@@ -23,23 +23,39 @@
                         <div class="col-md-12">
                             {!! Form::open(['method' => 'get', 'class' => 'points-results-form']) !!}
                                 <div class="form-group">
-                                    {!! Form::label('handle', 'Chat Handle:'); !!}
-                                    {!! Form::text('handle', $handle, ['class' => 'form-control']) !!}
+                                    <label for="handle">Chat Handle:</label>
+                                    <input type="text" name="handle" id="handle" class="form-control" value="{!! $handle !!}" v-model="handle">
                                     <p class="help-block">Enter your twitch username into the box above and click 'Check {{ $channel->getSetting('currency.name') }}'.</p>
                                 </div>
 
+                                <table class="table table-bordered points-results-table hide" v-el:pointsResults v-show="viewer.points">
+                                    <thead>
+                                    <tr>
+                                        <th>Rank</th>
+                                        <th>Name</th>
+                                        <th>Minutes Online</th>
+                                        <th>Points</th>
+                                    </tr>
+                                    </thead>
+
+                                    <tbody>
+                                        <tr>
+                                            <td>@{{ viewer.rank }}</td>
+                                            <td>@{{ viewer.handle }}</td>
+                                            <td>@{{ viewer.time_online }} <span class="label label-primary" v-if="viewer.moderator">MOD</span></td>
+                                            <td>@{{ viewer.points }}</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+
                                 {!! Form::submit('Check ' . $channel->getSetting('currency.name'), ['class' => 'btn btn-primary', 'id' => 'check-points']) !!}
                             {!! Form::close() !!}
-                            <br>
-                            @if ( ! $chatter && $handle !== '')
-                                <div class="alert alert-warning">
-                                    Handle not found.
-                                </div>
-                            @endif
 
-                            @if ($chatter)
-                                @include("../partials/point-results-table")
-                            @endif
+                            <br>
+
+                            <div class="alert alert-warning" v-if="viewer.error" v-el:invalidHandle>
+                                @{{ viewer.message }}
+                            </div>
                         </div><!-- .col -->
                     </div><!-- .row -->
                 </div><!-- .box-body -->
@@ -152,12 +168,12 @@
                         <div class="col-md-12">
                             <table class="table table-bordered points-results-table">
                                 <thead>
-                                <tr>
-                                    <th>Rank</th>
-                                    <th>Name</th>
-                                    <th>Time Online</th>
-                                    <th>Points</th>
-                                </tr>
+                                    <tr>
+                                        <th>Rank</th>
+                                        <th>Name</th>
+                                        <th>Time Online</th>
+                                        <th>Points</th>
+                                    </tr>
                                 </thead>
 
                                 <tbody>
@@ -195,6 +211,7 @@
 @section('after-js')
     <script>
         var scoreboard = {!! $scoreboard !!};
+        var viewer = {!! $chatter !!}
 
         var options = {
             api: {

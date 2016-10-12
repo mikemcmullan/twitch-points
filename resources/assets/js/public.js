@@ -106,7 +106,9 @@ if (document.querySelector('#currency')) {
                 from: 1,
                 to: 12
             },
-            loading: false
+            loading: false,
+            handle: '',
+            viewer: {}
         },
 
         components: {
@@ -115,6 +117,14 @@ if (document.querySelector('#currency')) {
 
         ready() {
             const data = scoreboard;
+            this.viewer = viewer;
+
+            this.$els.pointsresults.classList.remove('hide');
+            this.$els.invalidHandle.classList.remove('hide');
+
+            if (viewer.handle) {
+                this.handle = viewer.handle;
+            }
 
             this.items = data.data;
             this.pagination.total = data.total;

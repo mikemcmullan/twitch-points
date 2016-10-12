@@ -24,7 +24,7 @@ class CallApi
 
                 return (string) $response->getBody();
             } catch (ClientException $e) {
-                return null; //(string) $e->getResponse()->getBody();
+                return (string) $e->getResponse()->getBody();
             }
         });
     }

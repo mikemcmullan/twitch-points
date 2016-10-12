@@ -39,15 +39,13 @@ class CurrencyController extends Controller
     {
         $data = [
             'handle'    => strtolower($request->get('handle')),
-            'chatter'   => null,
+            'chatter'   => '{}'
         ];
 
         $api = new \App\Support\CallApi();
 
         if ($data['handle']) {
-            $response = $api->viewer($channel->name, $data['handle']);
-
-            $data['chatter'] = json_decode($response, true);
+            $data['chatter'] = $api->viewer($channel->name, $data['handle']);
         }
 
         $data['status'] = (bool) $channel->getSetting('currency.status');
