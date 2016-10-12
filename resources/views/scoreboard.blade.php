@@ -28,7 +28,7 @@
                                     <p class="help-block">Enter your twitch username into the box above and click 'Check {{ $channel->getSetting('currency.name') }}'.</p>
                                 </div>
 
-                                <table class="table table-bordered points-results-table hide" v-el:pointsResults v-show="viewer.points">
+                                <table class="table table-bordered points-results-table hide" v-show="viewer.points">
                                     <thead>
                                     <tr>
                                         <th>Rank</th>
@@ -53,7 +53,7 @@
 
                             <br>
 
-                            <div class="alert alert-warning" v-if="viewer.error" v-el:invalidHandle>
+                            <div class="alert alert-warning" v-if="viewer.error">
                                 @{{ viewer.message }}
                             </div>
                         </div><!-- .col -->

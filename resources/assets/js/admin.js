@@ -303,8 +303,9 @@ if (document.querySelector('#currency')) {
             const data = scoreboard;
             this.viewer = viewer;
 
-            this.$els.pointsresults.classList.remove('hide');
-            this.$els.invalidHandle.classList.remove('hide');
+            document.querySelectorAll('#currency .hide').forEach((item) => {
+                item.classList.remove('hide');
+            });
 
             if (viewer.handle) {
                 this.handle = viewer.handle;

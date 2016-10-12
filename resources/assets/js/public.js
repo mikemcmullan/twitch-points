@@ -120,7 +120,7 @@ if (document.querySelector('#currency')) {
             this.viewer = viewer;
 
             this.$els.pointsresults.classList.remove('hide');
-            this.$els.invalidHandle.classList.remove('hide');
+            this.$els.invalidhandle.classList.remove('hide');
 
             if (viewer.handle) {
                 this.handle = viewer.handle;
