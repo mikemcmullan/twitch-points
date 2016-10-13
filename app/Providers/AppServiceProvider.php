@@ -28,6 +28,10 @@ class AppServiceProvider extends ServiceProvider
             return preg_match('/^[a-z-_\s0-9]+$/i', $value);
         });
 
+        \Validator::extend('boolean_real', function ($attribute, $value, $parameters, $validator) {
+            return $value === true || $value === false;
+        });
+
         view()->composer('*', function($view){
             $view->with('user', \Auth::user());
             $view->with('channel', request()->route()->getParameter('channel'));
