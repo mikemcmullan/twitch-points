@@ -47,8 +47,8 @@ class SettingsController extends Controller
 
             'giveaway.ticket-cost'  => 'required|integer|min:1|max:1000',
             'giveaway.ticket-max'   => 'required|integer|min:1|max:100',
-            'giveaway.started-text' => 'required|max:250',
-            'giveaway.stopped-text' => 'required|max:250',
+            'giveaway.started-text' => 'max:250',
+            'giveaway.stopped-text' => 'max:250',
             'giveaway.keyword'      => 'required|regex:/^!?\w{2,20}$/',
             'giveaway.use-tickets'  => 'required|boolean_real',
 
