@@ -174,7 +174,7 @@ class ScoreboardCache
 		return [
 			'handle' 	=> $pieces[0],
 			'rank'		=> $pieces[1],
-			'points'	=> $pieces[2],
+			'points'	=> floor($pieces[2]),
 			'minutes'	=> $pieces[3],
 			'time_online' => presentTimeOnline($pieces[3]),
 			'moderator' => (bool) $pieces[4],
