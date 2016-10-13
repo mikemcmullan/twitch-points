@@ -9,7 +9,7 @@
                 keyword: '',
                 timeInterval: '',
                 currentStatus: '',
-                syncStatus: '',
+                syncStatus: false,
                 alert: {
                     visible: false,
                     class: {
