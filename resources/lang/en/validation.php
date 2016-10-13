@@ -77,6 +77,8 @@ return [
     "numeric_size_between" => "The :attribute must be between :min and :max.",
     "alpha_dash_space"     => "The :attribute must only contain alpha numeric characters, dashes, underscores or spaces.",
 
+    "boolean_real"          => "The :attribute field must be true or false.",
+
     /*
     |--------------------------------------------------------------------------
     | Custom Validation Language Lines

@@ -31,9 +31,49 @@ class SettingsController extends Controller
         $newSettings = $request->except("/{$channel->slug}/settings");
         $errorBag = new MessageBag();
 
+        $rules = [
+            'active'                => 'required|boolean_real',
+            'title'                 => 'required|min:2|max:20',
+            'rank-mods'             => 'required|boolean_real',
+            'bot.username'          => 'required|max:25',
+            'bot.password'          => 'required|size:36',
+
+            'currency.name'         => 'required|min:2|max:15',
+            'currency.interval'     => 'required|integer|min:1|max:60',
+            'currency.awarded'      => 'required|integer|min:1|max:1000',
+            'currency.sync-status'  => 'required|boolean_real',
+            'currency.keyword'      => 'required|regex:/^!?\w{2,20}$/',
+            'currency.status'       => 'required|boolean_real',
+
+            'giveaway.ticket-cost'  => 'required|integer|min:1|max:1000',
+            'giveaway.ticket-max'   => 'required|integer|min:1|max:100',
+            'giveaway.started-text' => 'required|max:250',
+            'giveaway.stopped-text' => 'required|max:250',
+            'giveaway.keyword'      => 'required|regex:/^!?\w{2,20}$/',
+            'giveaway.use-tickets'  => 'required|boolean_real',
+
+            'followers.alert'       => 'required|boolean_real',
+            'followers.welcome_msg' => 'max:140',
+        ];
+
+        $toValidate = [];
+
         foreach ($newSettings as $setting => $value) {
-            if ($channel->getSetting($setting) === null) {
-                $errorBag->add($setting, 'invalid_setting');
+            if (! isset($rules[$setting])) {
+                $errorBag->add($setting, 'Invalid Setting');
+            } else {
+                array_push($toValidate, $setting);
+            }
+        }
+
+        $validator = \Validator::make(
+            array_only($newSettings, $toValidate),
+            array_only($rules, $toValidate)
+        );
+
+        if ($validator->fails()) {
+            foreach ($validator->errors()->getMessages() as $setting => $msg) {
+                $errorBag->add($setting, $msg);
             }
         }
 
