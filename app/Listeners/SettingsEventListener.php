@@ -35,8 +35,8 @@ class SettingsEventListener
     public function currencyKeywordUpdated(Channel $channel, $oldSetting, $newSetting)
     {
         $this->commandsManager->update($channel, 'currency.get', [
-            'command'   => sprintf(config('commands.system.currency.get.command'), preg_quote($newSetting, '/')),
-            'usage'     => sprintf(config('commands.system.currency.get.usage'), $newSetting)
+            'command'   => str_replace($oldSetting, $newSetting, config('commands.system.currency.get.command')),
+            'usage'     => str_replace($oldSetting, $newSetting, config('commands.system.currency.get.usage'))
         ]);
     }
 
@@ -52,8 +52,8 @@ class SettingsEventListener
     public function giveawayKeywordUpdated(Channel $channel, $oldSetting, $newSetting)
     {
         $this->commandsManager->update($channel, 'giveaway.enter', [
-            'command'   => sprintf(config('commands.system.giveaway.enter.command'), preg_quote($newSetting, '/')),
-            'usage'     => sprintf(config('commands.system.giveaway.enter.usage'), $newSetting)
+            'command'   => str_replace($oldSetting, $newSetting, config('commands.system.giveaway.enter.command')),
+            'usage'     => str_replace($oldSetting, $newSetting, config('commands.system.giveaway.enter.usage'))
         ]);
     }
 
