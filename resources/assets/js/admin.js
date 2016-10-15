@@ -541,7 +541,8 @@ if (document.querySelector('#test')) {
                 month: 'short',
                 day: '2-digit',
                 hour: '2-digit',
-                minute: '2-digit'
+                minute: '2-digit',
+                timeZoneName: 'short'
             }
         },
 
@@ -592,7 +593,9 @@ if (document.querySelector('#test')) {
 
                         response.data.data.forEach((message) => {
                             const createdAt = new Date(message.created_at);
-                            message.created_at = `${createdAt.toLocaleDateString('en-CA', this.dateOptions)}`;
+                            const local = new Date(createdAt.getTime() - createdAt.getTimezoneOffset() * 60000);
+
+                            message.created_at = `${local.toLocaleDateString('en-CA', this.dateOptions)}`;
 
                             message.message = message.message.linkify();
 

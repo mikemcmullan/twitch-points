@@ -23,7 +23,7 @@
                                 </thead>
                                 <tbody class="hide" v-el:loop>
                                     <tr v-for="message in logs">
-                                        <td style="vertical-align: middle">@{{ message.created_at }} UTC</td>
+                                        <td style="vertical-align: middle">@{{ message.created_at }}</td>
                                         <td style="vertical-align: middle">@{{ message.display_name }}</td>
                                         <td style="vertical-align: middle">@{{{ message.message }}}</td>
                                     </tr>
