@@ -550,8 +550,7 @@ if (document.querySelector('#test')) {
             formatedLoadTime() {
                 const now = new Date();
 
-                return new Date(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(), now.getUTCHours(), now.getUTCMinutes(), now.getUTCSeconds())
-                    .toLocaleDateString('en-CA', this.dateOptions) + ' UTC';
+                return now.toLocaleDateString('en-CA', this.dateOptions);
             }
         },
 
