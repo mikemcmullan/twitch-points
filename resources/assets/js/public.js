@@ -1,4 +1,5 @@
 import Vue from 'vue';
+import vuePagination from './components/paginator2.vue';
 
 Vue.use(require('vue-resource'));
 
@@ -112,7 +113,7 @@ if (document.querySelector('#currency')) {
         },
 
         components: {
-            pagination: require('vue-bootstrap-pagination')
+            pagination: vuePagination
         },
 
         ready() {

@@ -1,4 +1,5 @@
 import Vue from 'vue';
+import vuePagination from './components/paginator2.vue';
 
 Vue.use(require('vue-resource'));
 Vue.use(require('vue-validator'));
@@ -16,7 +17,7 @@ Vue.validator('keywordFormat', {
     check: (val) => {
         return /^!?\w{2,20}$/.test(val);
     }
-})
+});
 
 const FormatTwitchEmotes = require('./TwitchEmotes').default;
 const FormatBTTVEmotes = require('./BTTVEmotes').default;
@@ -296,7 +297,7 @@ if (document.querySelector('#currency')) {
 
         components: {
             'currency-settings': currencySettings,
-            pagination: require('vue-bootstrap-pagination')
+            pagination: vuePagination
         },
 
         ready() {
