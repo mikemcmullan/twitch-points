@@ -6,7 +6,8 @@
     "underscore": "^1.8.3"
   },
   "dependencies": {
+    "vue": "^1.0",
     "vue-resource": "^0.7.0",
-    "vue-validator": "2.0.0-alpha.18"
+    "vue-validator": "^2.1"
   }
 }
