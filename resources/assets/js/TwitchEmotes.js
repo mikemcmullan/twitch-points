@@ -1,7 +1,15 @@
 
 export default class FormatTwitchEmotes {
-	makeImage(emoteId) {
-		return `<img class="emoticon" src="//static-cdn.jtvnw.net/emoticons/v1/${emoteId}/1.0">`
+	makeImage() {
+		return '<img class="emoticon" src="//static-cdn.jtvnw.net/emoticons/v1/$1/1.0">';
+	}
+
+	makePlaceHolder(emoteId) {
+		return `$twitch(${emoteId})$`;
+	}
+
+	replacePlaceholders(message) {
+		return message.replace(/\$twitch\(([\d]+)\)\$/g, this.makeImage());
 	}
 
 	parseEmotes(emotesString) {
@@ -31,7 +39,7 @@ export default class FormatTwitchEmotes {
 			// If this is the first emote get the text before emote.
 			if (index === 0) {
 				messageParts.push(message.substr(0, emote.start).trim());
-				messageParts.push(this.makeImage(emote.emote));
+				messageParts.push(this.makePlaceHolder(emote.emote));
 			}
 
 			// Get the previous emote in the array and get the characters
@@ -39,7 +47,7 @@ export default class FormatTwitchEmotes {
 			if (emotes[index-1]) {
 				const length = emote.start - (emotes[index-1].end+1);
 				messageParts.push(message.substr(emotes[index-1].end+1, length).trim());
-				messageParts.push(this.makeImage(emote.emote));
+				messageParts.push(this.makePlaceHolder(emote.emote));
 			}
 
 			if (index === emotes.length-1) {

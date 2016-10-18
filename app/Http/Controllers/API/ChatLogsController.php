@@ -18,26 +18,77 @@ class ChatLogsController extends Controller
         // $this->middleware(['jwt.auth', 'auth.api']);
     }
 
-    public function index(Channel $channel, Request $request)
+    /**
+     * Search chat logs.
+     *
+     * @param  Channel $channel
+     * @param  Request $request
+     * @return \Symfony\Component\HttpFoundation\Response
+     */
+    public function search(Channel $channel, Request $request)
     {
-        try {
-            $date = Carbon::createFromTimestamp($request->get('starting-from', Carbon::now()->timestamp));
-        } catch (\Exception $e) {
-            $date = Carbon::now();
-        }
+        $term = $request->get('term');
+        $limit = (int) $request->get('limit', 500) ?: 500;
 
         $messages = \App\ChatLogs::where('channel', $channel->name)
-            ->where('created_at', '<', $date)
+            ->where('message', 'LIKE', "%{$term}%")
             ->orderBy('created_at', 'DESC')
-            ->simplePaginate(500);
+            ->simplePaginate($limit);
 
-        $messages->each(function ($message) {
-            unset($message->command_id);
+        return response()->json($messages);
+    }
 
-            if (! $message->display_name) {
-                $message->display_name = $message->username;
-            }
-        });
+    /**
+     * Get chat logs around a provided date.
+     *
+     * @param  Channel $channel
+     * @param  Request $request
+     * @return \Symfony\Component\HttpFoundation\Response
+     */
+    public function conversation(Channel $channel, Request $request)
+    {
+        $date = $request->get('date');
+
+        $first = \DB::table('chat_logs')
+            ->where('channel', $channel->name)
+            ->where('created_at', '>=', $date)
+            ->orderBy('created_at', 'asc')
+            ->take(20);
+
+        $second = \DB::table('chat_logs')
+            ->where('channel', $channel->name)
+            ->where('created_at', '<', $date)
+            ->orderBy('created_at', 'desc')
+            ->take(50)
+            ->union($first);
+
+        $results = \DB::table(\DB::raw("({$second->toSql()}) as r"))
+            ->mergeBindings($second)
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        return response()->json(['data' => ($results)]);
+    }
+
+    /**
+     * Get chat logs.
+     *
+     * @param  Channel $channel
+     * @param  Request $request
+     * @return \Symfony\Component\HttpFoundation\Response
+     */
+    public function index(Channel $channel, Request $request)
+    {
+        $date = $request->get('starting-from', Carbon::now()) ?: Carbon::now();
+        $limit = (int) $request->get('limit', 500) ?: 500;
+
+        $direction = in_array($request->get('direction'), ['older', 'newer']) ? $request->get('direction') : 'older';
+        $arrow = $direction === 'older' ? '<' : '>';
+
+        $messages = \App\ChatLogs::where('channel', $channel->name)
+            ->where('created_at', $arrow, $date)
+            ->orderBy('created_at', $direction === 'older' ? 'desc' : 'asc')
+            ->simplePaginate($limit);
 
         return response($messages);
     }

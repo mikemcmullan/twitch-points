@@ -13,12 +13,32 @@ export default class FormatBTTVEmotes {
 		]);
 	}
 
-	makeImage(emoteId) {
-		return `<img class="emoticon" src="//cdn.betterttv.net/emote/${emoteId}/1x">`;
+	makeImage() {
+		return `<img class="emoticon" src="//cdn.betterttv.net/emote/$1/1x">`;
+	}
+
+	makePlaceHolder(emoteId) {
+		return `$bttv(${emoteId})$`;
+	}
+
+	replacePlaceholders(message) {
+		return message.replace(/\$bttv\(([\w\d]+)\)\$/g, this.makeImage());
 	}
 
 	getEmotes(url) {
 		return new Promise((resolve, reject) => {
+			const key = url.replace(/[^a-z0-9]/g, '');
+			const expires = ~~localStorage.getItem(`bttv-expires-${key}`);
+
+			if (expires && expires < Date.now()) {
+				const item = localStorage.getItem(`bttv-${key}`);
+
+				if (item) {
+					resolve(JSON.parse(item).emotes);
+					return;
+				}
+			}
+
 			var xhr = new XMLHttpRequest();
 
 			xhr.timeout = 2000;
@@ -27,6 +47,9 @@ export default class FormatBTTVEmotes {
 			xhr.onreadystatechange = function () {
 				if (this.readyState == 4 && this.status == 200) {
 					const body = JSON.parse(this.responseText);
+
+					localStorage.setItem(`bttv-${key}`, this.responseText);
+					localStorage.setItem(`bttv-expires-${key}`, Date.now()+(60000*1440)); // 24 hour
 
 					resolve(body.emotes);
 				}
@@ -94,7 +117,7 @@ export default class FormatBTTVEmotes {
 
 		while (shouldContinue) {
 			if (this.shouldWeReplace(message, emote.code)) {
-				message = message.replace(emote.code, this.makeImage(emote.id));
+				message = message.replace(emote.code, this.makePlaceHolder(emote.id));
 			} else {
 				shouldContinue = false;
 			}

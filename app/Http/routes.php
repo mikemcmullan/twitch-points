@@ -67,6 +67,16 @@ Route::group(['domain' => config('app.api_domain'), 'prefix' => '{channel}', 'na
          'as'   => 'api_chatLogs_index_path'
      ]);
 
+     Route::get('/chat-logs/search', [
+         'uses' => 'ChatLogsController@search',
+         'as'   => 'api_chatLogs_search_path'
+     ]);
+
+     Route::get('/chat-logs/conversation', [
+         'uses' => 'ChatLogsController@conversation',
+         'as'   => 'api_chatLogs_conversation_path'
+     ]);
+
     /**
      * Timers Routes
      */
