@@ -69,7 +69,11 @@ class Manager extends BasicManager implements BasicManagerInterface
             $where['disabled'] = (bool) $disabled;
         }
 
-        return Command::where($where)->orderBy($orderBy, $orderDirection)->get();
+        return Command::where($where)->orderBy($orderBy, $orderDirection)->get()->map(function ($command) use ($channel) {
+            $command['count'] = $this->getCommandCount($channel, $command->id);
+
+            return $command;
+        });
     }
 
     /**
@@ -84,12 +88,14 @@ class Manager extends BasicManager implements BasicManagerInterface
     {
         $commands = collect();
 
-        collect(config('commands.system', []))->each(function ($comms, $groupKey) use (&$commands, $disabled) {
+        collect(config('commands.system', []))->each(function ($comms, $groupKey) use (&$commands, $disabled, $channel) {
             foreach ($comms as $key => $command) {
 
                 if ($command['disabled'] === true && $disabled == '0') {
                     continue;
                 }
+
+                $command['count'] = $this->getCommandCount($channel, $command['id']);
 
                 $commands->push($command);
             }
@@ -270,5 +276,17 @@ class Manager extends BasicManager implements BasicManagerInterface
         $this->events->fire(new \App\Events\Commands\CommandWasDeleted($channel, $command));
 
         return $command->delete();
+    }
+
+    /**
+     * Get how many times a command was used.
+     *
+     * @param  Channel      $channel
+     * @param  int|string   $commandId
+     * @return int
+     */
+    protected function getCommandCount(Channel $channel, $commandId)
+    {
+        return (int) app('redis')->get("#{$channel->name}:count:{$commandId}");
     }
 }
