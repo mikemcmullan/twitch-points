@@ -166,7 +166,7 @@
                 <div class="box-body">
                     <div class="row">
                         <div class="col-md-12">
-                            <table class="table table-bordered points-results-table">
+                            <table class="table table-bordered points-results-table hide">
                                 <thead>
                                     <tr>
                                         <th>Rank</th>

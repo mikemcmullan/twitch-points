@@ -304,8 +304,8 @@ if (document.querySelector('#currency')) {
             const data = scoreboard;
             this.viewer = viewer;
 
-            document.querySelectorAll('#currency .hide').forEach((item) => {
-                item.classList.remove('hide');
+            Array.apply(null, this.$el.querySelectorAll('.hide')).forEach((elem) => {
+                elem.classList.remove('hide');
             });
 
             if (viewer.handle) {
@@ -530,10 +530,6 @@ if (document.querySelector('#chat-logs')) {
     new Vue({
         el: '#chat-logs',
 
-        components: {
-            pagination: vuePagination
-        },
-
         data: {
             state: 'default',
             page: 0,
@@ -604,7 +600,7 @@ if (document.querySelector('#chat-logs')) {
             this.twitchEmotes = new FormatTwitchEmotes();
             this.bttvEmotes = new FormatBTTVEmotes();
 
-            this.$el.querySelectorAll('.hide').forEach((elem) => {
+            Array.apply(null, nodes).forEach((elem) => {
                 elem.classList.remove('hide');
             });
 

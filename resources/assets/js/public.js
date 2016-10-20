@@ -120,8 +120,8 @@ if (document.querySelector('#currency')) {
             const data = scoreboard;
             this.viewer = viewer;
 
-            document.querySelectorAll('#currency .hide').forEach((item) => {
-                item.classList.remove('hide');
+            Array.apply(null, this.$el.querySelectorAll('.hide')).forEach((elem) => {
+                elem.classList.remove('hide');
             });
 
             if (viewer.handle) {
