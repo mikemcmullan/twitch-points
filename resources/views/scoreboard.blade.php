@@ -166,7 +166,7 @@
                 <div class="box-body">
                     <div class="row">
                         <div class="col-md-12">
-                            <table class="table table-bordered points-results-table hide">
+                            <table class="table table-bordered points-results-table">
                                 <thead>
                                     <tr>
                                         <th>Rank</th>
@@ -176,7 +176,7 @@
                                     </tr>
                                 </thead>
 
-                                <tbody>
+                                <tbody class="hide">
                                     <tr v-for="chatter in items">
                                         <td>@{{ chatter.rank }}</td>
                                         <td>@{{ chatter.handle }} <span class="label label-primary" v-if="chatter.moderator">MOD</span></td>
