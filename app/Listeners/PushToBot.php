@@ -39,7 +39,7 @@ class PushToBot
             return $event->broadcastWith();
         }
 
-        return null;
+        return [];
     }
 
     protected function getType($event)
