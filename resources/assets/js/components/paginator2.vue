@@ -110,7 +110,7 @@
                     return;
                 }
 
-                this.$set(this.pagination, 'current_page', page);
+                this.pagination.current_page = page;
                 this.callback();
             }
         }
