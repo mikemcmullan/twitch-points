@@ -73,11 +73,12 @@
                         @if ($channel->hasFeature('timers'))
                             <li{!! Route::currentRouteName() === 'timers_path' ? ' class="active"' : '' !!}><a href="{!! route('timers_path', [$channel->slug]) !!}"><i class="fa fa-clock-o"></i> <span>Timers</span></a></li>
                         @endcan
+                        
+                        @if ($channel->hasFeature('chat-logs'))
+                        <li{!! Route::currentRouteName() === 'chat_logs_path' ? ' class="active"' : '' !!}><a href="{!! route('chat_logs_path', [$channel->slug]) !!}"><i class="fa fa-clock-o"></i> <span>Chat Logs</span></a></li>
+                        @endcan
                     @endif
 
-                    @if ($channel->hasFeature('chat-logs'))
-                        <li{!! Route::currentRouteName() === 'chat_logs_path' ? ' class="active"' : '' !!}><a href="{!! route('chat_logs_path', [$channel->slug]) !!}"><i class="fa fa-clock-o"></i> <span>Chat Logs</span></a></li>
-                    @endcan
                 </ul>
             </section><!-- .sidebar -->
         </aside><!-- .main-sidebar -->
