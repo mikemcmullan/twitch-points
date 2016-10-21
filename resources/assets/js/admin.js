@@ -600,7 +600,7 @@ if (document.querySelector('#chat-logs')) {
             this.twitchEmotes = new FormatTwitchEmotes();
             this.bttvEmotes = new FormatBTTVEmotes();
 
-            Array.apply(null, nodes).forEach((elem) => {
+            Array.apply(null, this.$el.querySelectorAll('.hide')).forEach((elem) => {
                 elem.classList.remove('hide');
             });
 
