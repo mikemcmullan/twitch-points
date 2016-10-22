@@ -45,13 +45,17 @@ export default class FormatBTTVEmotes {
 			xhr.open('GET', url, true);
 
 			xhr.onreadystatechange = function () {
-				if (this.readyState == 4 && this.status == 200) {
+				if (this.readyState == 4) {
 					const body = JSON.parse(this.responseText);
 
 					localStorage.setItem(`bttv-${key}`, this.responseText);
 					localStorage.setItem(`bttv-expires-${key}`, Date.now()+(60000*1440)); // 24 hour
 
-					resolve(body.emotes);
+					if (this.status == 200) {
+						resolve(body.emotes);
+					} else {
+						resolve([]);
+					}
 				}
 			}
 
