@@ -31,12 +31,15 @@ export default class FormatBTTVEmotes {
 			const expires = ~~localStorage.getItem(`bttv-expires-${key}`);
 
 			if (expires && expires < Date.now()) {
-				const item = localStorage.getItem(`bttv-${key}`);
+				const item = JSON.parse(localStorage.getItem(`bttv-${key}`));
 
-				if (item) {
-					resolve(JSON.parse(item).emotes);
-					return;
+				if (item.emotes) {
+					resolve(item.emotes);
+				} else {
+					resolve([]);
 				}
+
+				return;
 			}
 
 			var xhr = new XMLHttpRequest();
