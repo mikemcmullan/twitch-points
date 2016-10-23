@@ -570,7 +570,7 @@ if (document.querySelector('#chat-logs')) {
             },
 
             showLoadNewer() {
-                if (this.loadingBottom) {
+                if (this.loadingBottom || this.logs.length === 0) {
                     return false;
                 }
 
@@ -582,7 +582,7 @@ if (document.querySelector('#chat-logs')) {
             },
 
             showLoadOlder() {
-                if (this.loadingBottom) {
+                if (this.loadingBottom || this.logs.length === 0) {
                     return false;
                 }
 
