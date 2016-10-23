@@ -13,6 +13,7 @@ use App\Exceptions\InvalidChannelException;
 use App\Contracts\Repositories\TrackSessionRepository;
 use App\Events\ChannelStartedStreaming;
 use App\Events\ChannelStoppedStreaming;
+use App\Events\ChannelUpdatedInfo;
 
 class SyncSystemStatus extends Job implements ShouldQueue
 {
@@ -62,6 +63,10 @@ class SyncSystemStatus extends Job implements ShouldQueue
                     event(new ChannelStartedStreaming($channel));
                     // $this->dispatch(new StartCurrencySystemJob($channel));
                 }
+            }
+
+            if ($channelInfo = $channelStreams->get($channel->name)) {
+                event(new ChannelUpdatedInfo($channel, $channelInfo));
             }
         }
     }
