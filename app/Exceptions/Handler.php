@@ -7,8 +7,9 @@ use fXmlRpc\Exception\HttpException as RrcHttpException;
 use fXmlRpc\Exception\TransportException;
 use App\Exceptions\FileInaccessibleException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+use Illuminate\Validation\ValidationException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
-use Illuminate\Contracts\Validation\ValidationException;
+use Illuminate\Auth\AuthenticationException;
 
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
@@ -52,6 +53,22 @@ class Handler extends ExceptionHandler
     }
 
     /**
+        * Convert an authentication exception into an unauthenticated response.
+        *
+        * @param  \Illuminate\Http\Request  $request
+        * @param  \Illuminate\Auth\AuthenticationException  $exception
+        * @return \Illuminate\Http\Response
+    */
+    protected function unauthenticated($request, AuthenticationException $exception)
+    {
+        if ($request->expectsJson()) {
+            return response()->json(['error' => 'Unauthenticated.'], 401);
+        }
+
+        return redirect()->guest('login');
+    }
+
+    /**
      * Render an exception into an HTTP response.
      *
      * @param  \Illuminate\Http\Request  $request
@@ -88,7 +105,7 @@ class Handler extends ExceptionHandler
                     'error'   => 'Bad Request',
                     'status'  => 400,
                     'message' => [
-                        'validation_errors' => $e->errors()
+                        'validation_errors' => $e->validator->getMessageBag()
                     ]
                 ], 400);
             }

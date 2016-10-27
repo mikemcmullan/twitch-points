@@ -2,9 +2,10 @@
 
 namespace App\Providers;
 
+use App\Channel;
 use App\Exceptions\InvalidChannelException;
-use Illuminate\Routing\Router;
 use Illuminate\Foundation\Support\Providers\RouteServiceProvider as ServiceProvider;
+use Illuminate\Support\Facades\Route;
 
 class RouteServiceProvider extends ServiceProvider
 {
@@ -20,15 +21,12 @@ class RouteServiceProvider extends ServiceProvider
     /**
      * Define your route model bindings, pattern filters, etc.
      *
-     * @param  \Illuminate\Routing\Router  $router
-     * @return void
+     * @internal param Router $router
      */
-    public function boot(Router $router)
+    public function boot()
     {
-        parent::boot($router);
-
-        $router->bind('channel', function ($value) {
-            $channel = \App\Channel::findBySlug($value);
+        Route::bind('channel', function ($value) {
+            $channel = Channel::findBySlug($value);
 
             if (! $channel) {
                 throw new InvalidChannelException;
@@ -36,18 +34,70 @@ class RouteServiceProvider extends ServiceProvider
 
             return $channel;
         });
+
+        parent::boot();
     }
+
 
     /**
      * Define the routes for the application.
      *
-     * @param  \Illuminate\Routing\Router  $router
      * @return void
      */
-    public function map(Router $router)
+    public function map()
     {
-        $router->group(['namespace' => $this->namespace], function ($router) {
-            require app_path('Http/routes.php');
+        $this->mapApiRoutes();
+
+        $this->mapWebRoutes();
+
+        $this->mapAuthRoutes();
+    }
+
+    /**
+     * Define the "web" routes for the application.
+     *
+     * These routes all receive session state, CSRF protection, etc.
+     *
+     * @return void
+     */
+    protected function mapWebRoutes()
+    {
+        Route::group([
+            'domain' => '{channel}.' . config('app.root_domain'),
+            'middleware' => ['bindings', 'web'],
+            'namespace' => $this->namespace,
+        ], function ($router) {
+            require base_path('routes/web.php');
+        });
+    }
+
+    /**
+     * Define the "api" routes for the application.
+     *
+     * These routes are typically stateless.
+     *
+     * @return void
+     */
+    protected function mapApiRoutes()
+    {
+        Route::group([
+            'domain' => config('app.api_domain'),
+            'prefix' => '{channel}',
+            'middleware' => 'api',
+            'namespace' => $this->namespace . '\API'
+        ], function ($router) {
+            require base_path('routes/api.php');
+        });
+    }
+
+    protected function mapAuthRoutes()
+    {
+        Route::group([
+            'domain' => config('app.auth_domain'),
+            'middleware' => 'web',
+            'namespace' => $this->namespace
+        ], function ($router) {
+            require base_path('routes/auth.php');
         });
     }
 }

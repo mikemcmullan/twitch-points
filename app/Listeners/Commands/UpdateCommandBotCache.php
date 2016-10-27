@@ -3,8 +3,6 @@
 namespace App\Listeners\Commands;
 
 use App\Events\Commands\CommandWasUpdated;
-use Illuminate\Queue\InteractsWithQueue;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Redis\Database;
 
 class UpdateCommandBotCache
@@ -22,7 +20,7 @@ class UpdateCommandBotCache
     /**
      * Create the event listener.
      *
-     * @return void
+     * @param Database $redis
      */
     public function __construct(Database $redis)
     {
@@ -32,8 +30,7 @@ class UpdateCommandBotCache
     /**
      * Handle the event.
      *
-     * @param  AppEventsCommandWasUpdated  $event
-     * @return void
+     * @param CommandWasUpdated $event
      */
     public function handle(CommandWasUpdated $event)
     {

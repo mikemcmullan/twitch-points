@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Channel;
 use Illuminate\Console\Command;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use App\Jobs\RemoveOldViewersJob;
@@ -31,7 +32,6 @@ class RemoveOldViewers extends Command
     /**
      * Create a new command instance.
      *
-     * @return void
      */
     public function __construct()
     {
@@ -47,7 +47,7 @@ class RemoveOldViewers extends Command
     {
         $days = $this->option('days');
         $points = $this->option('points');
-        $channel = \App\Channel::findBySlug($this->argument('channel'));
+        $channel = Channel::findBySlug($this->argument('channel'));
 
         if (! $channel) {
             $this->error(sprintf('Invalid channel %s', $this->argument('channel')));

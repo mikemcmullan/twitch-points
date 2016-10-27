@@ -6,20 +6,19 @@ use App\Events\ChannelUpdatedInfo;
 
 class UpdateChannelInfo
 {
-    /**
+    /*
      * Create the event listener.
      *
-     * @return void
      */
     public function __construct()
     {
 
     }
+
     /**
      * Handle the event.
      *
-     * @param  VIPSWereUpdated  $event
-     * @return void
+     * @param ChannelUpdatedInfo $event
      */
     public function handle(ChannelUpdatedInfo $event)
     {

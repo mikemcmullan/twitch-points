@@ -35,10 +35,10 @@
 
             submit() {
                 let request = this.$http.put('settings', {
-                    'currency.interval': this.timeInterval,
-                    'currency.awarded': this.amount,
-                    'currency.sync-status': this.syncStatus,
-                    'currency.keyword': this.keyword
+                    'currency__interval': this.timeInterval,
+                    'currency__awarded': this.amount,
+                    'currency__sync-status': this.syncStatus,
+                    'currency__keyword': this.keyword
                 }, {
                     beforeSend: (request) => {
                         this.saving = true;

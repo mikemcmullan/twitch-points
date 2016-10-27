@@ -3,7 +3,7 @@
 namespace App\Followers;
 use Illuminate\Support\Collection;
 use Validator;
-use Illuminate\Contracts\Validation\ValidationException;
+use Illuminate\Validation\ValidationException;
 use Illuminate\Database\QueryException;
 use App\Follower;
 use App\Channel;
@@ -16,8 +16,9 @@ class Manager
      * added again.
      *
      * @param  Channel $channel
-     * @param  array   $followers
-     * @return array               Contains a list of new and reFollows.
+     * @param  array $followers
+     * @return array Contains a list of new and reFollows.
+     * @throws ValidationException
      */
     public function add(Channel $channel, array $followers)
     {
@@ -72,9 +73,10 @@ class Manager
      * Find followers by their twitch user id.
      *
      * @param  Channel $channel
-     * @param  int     $userId
+     * @param array $ids
+     * @return Follower|null
+     * @internal param int $userId
      *
-     * @return null|Follower
      */
     protected function findFollowers(Channel $channel, array $ids)
     {

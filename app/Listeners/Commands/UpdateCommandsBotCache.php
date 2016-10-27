@@ -29,7 +29,8 @@ class UpdateCommandsBotCache
     /**
      * Create the event listener.
      *
-     * @return void
+     * @param Database $redis
+     * @param CommandManager $commandManager
      */
     public function __construct(Database $redis, CommandManager $commandManager)
     {
@@ -40,8 +41,7 @@ class UpdateCommandsBotCache
     /**
      * Handle the event.
      *
-     * @param  AppEventsCommandWasUpdated  $event
-     * @return void
+     * @param CommandsWereUpdated $event
      */
     public function handle(CommandsWereUpdated $event)
     {

@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Collection;
 use App\Support\BasicManager;
 use App\Contracts\BasicManager as BasicManagerInterface;
 use App\SystemCommandOverrides;
-use Illuminate\Contracts\Validation\ValidationException;
+use Illuminate\Validation\ValidationException;
 use Illuminate\Config\Repository as ConfigRepository;
 
 class Manager extends BasicManager implements BasicManagerInterface
@@ -109,8 +109,8 @@ class Manager extends BasicManager implements BasicManagerInterface
      *
      * @param Channel $channel
      * @param array $data
-     *
      * @return Command
+     * @throws ValidationException
      */
     public function create(Channel $channel, array $data)
     {

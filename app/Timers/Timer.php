@@ -3,7 +3,6 @@
 namespace App\Timers;
 
 use Illuminate\Database\Eloquent\Model;
-use Carbon\Carbon;
 use App\Channel;
 
 class Timer extends Model

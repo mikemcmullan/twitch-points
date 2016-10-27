@@ -26,11 +26,6 @@ class UpdateScoreboardCache extends Command
     protected $description = 'Update the scoreboard cache.';
 
     /**
-     * @var TrackSessionRepository
-     */
-    private $pointsSession;
-
-    /**
      * Create a new command instance.
      */
     public function __construct()

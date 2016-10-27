@@ -2,9 +2,8 @@
 
 namespace App\Providers;
 
-use Illuminate\Contracts\Events\Dispatcher as DispatcherContract;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
-use App\Events\ChannelStartedStreaming;
+use Illuminate\Support\Facades\Event;
 
 class EventServiceProvider extends ServiceProvider
 {
@@ -22,6 +21,10 @@ class EventServiceProvider extends ServiceProvider
         \App\Events\ChannelStoppedStreaming::class => [
             \App\Listeners\Currency\StopCurrencySystem::class,
             \App\Listeners\StopStreamingSession::class
+        ],
+
+        \App\Events\ChannelUpdatedInfo::class => [
+            \App\Listeners\UpdateChannelInfo::class
         ],
 
         \App\Events\ChatListWasDownloaded::class => [
@@ -82,14 +85,13 @@ class EventServiceProvider extends ServiceProvider
     /**
      * Register any other events for your application.
      *
-     * @param  \Illuminate\Contracts\Events\Dispatcher  $events
      * @return void
      */
-    public function boot(DispatcherContract $events)
+    public function boot()
     {
-        parent::boot($events);
+        parent::boot();
 
-        $events->listen('tymon.jwt.absent', function () {
+        Event::listen('tymon.jwt.absent', function () {
             return response()->json([
                 'error' => 'Forbidden',
                 'status'=> 400,
@@ -97,7 +99,7 @@ class EventServiceProvider extends ServiceProvider
             ], 400);
         });
 
-        $events->listen('tymon.jwt.expired', function ($e) {
+        Event::listen('tymon.jwt.expired', function ($e) {
             return response()->json([
                 'error' => 'Forbidden',
                 'status'=> 403,
@@ -105,7 +107,7 @@ class EventServiceProvider extends ServiceProvider
             ], 403);
         });
 
-        $events->listen('tymon.jwt.invalid', function ($e) {
+        Event::listen('tymon.jwt.invalid', function ($e) {
             return response()->json([
                 'error' => 'Forbidden',
                 'status'=> 403,
@@ -113,7 +115,7 @@ class EventServiceProvider extends ServiceProvider
             ], 403);
         });
 
-        $events->listen('tymon.jwt.user_not_found', function () {
+        Event::listen('tymon.jwt.user_not_found', function () {
             return response()->json([
                 'error' => 'Not Found',
                 'status'=> 404,

@@ -5,7 +5,7 @@ namespace App\Quotes;
 use App\Channel;
 use App\Support\BasicManager;
 use Illuminate\Contracts\Validation\Factory;
-use Illuminate\Contracts\Validation\ValidationException;
+use Illuminate\Validation\ValidationException;
 use App\Contracts\BasicManager as BasicManagerInterface;
 
 class Manager extends BasicManager implements BasicManagerInterface

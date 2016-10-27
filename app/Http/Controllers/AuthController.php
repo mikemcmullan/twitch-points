@@ -23,7 +23,6 @@ class AuthController extends Controller
     /**
      * @param Request $request
      * @param TwitchSDKAdapter $twitchSDK
-     * @param Encrypter $encrypter
      *
      * @return \Illuminate\Http\RedirectResponse|Response|\Illuminate\Routing\Redirector
      */

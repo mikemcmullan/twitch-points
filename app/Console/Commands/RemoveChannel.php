@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Channel;
 use Illuminate\Console\Command;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use App\Jobs\RemoveChannelJob;
@@ -27,7 +28,6 @@ class RemoveChannel extends Command
     /**
      * Create a new command instance.
      *
-     * @return void
      */
     public function __construct()
     {
@@ -41,7 +41,7 @@ class RemoveChannel extends Command
      */
     public function handle()
     {
-        $channel = \App\Channel::findBySlug($this->argument('slug'));
+        $channel = Channel::findBySlug($this->argument('slug'));
 
         if (! $channel) {
             $this->error(sprintf('Invalid channel %s', $this->argument('slug')));
@@ -49,7 +49,7 @@ class RemoveChannel extends Command
         }
 
         if ($this->confirm("Are you sure you wish to delete the channel '{$channel->slug}' and all the associated data.")) {
-            $this->dispatch(new \App\Jobs\RemoveChannelJob($channel));
+            $this->dispatch(new RemoveChannelJob($channel));
 
             $this->info('Done');
         }

@@ -2,8 +2,10 @@
 
 namespace App\Console\Commands;
 
+use App\User;
 use Illuminate\Console\Command;
 use Carbon\Carbon;
+use JWTAuth;
 
 class GenerateUserJWTToken extends Command
 {
@@ -27,7 +29,6 @@ class GenerateUserJWTToken extends Command
     /**
      * Create a new command instance.
      *
-     * @return void
      */
     public function __construct()
     {
@@ -43,14 +44,14 @@ class GenerateUserJWTToken extends Command
     {
         $super = (bool) $this->option('super');
         $expires = (int) $this->option('expires');
-        $user = \App\User::findByName($this->argument('user'));
+        $user = User::findByName($this->argument('user'));
 
         if (! $user) {
             $this->error(sprintf('Invalid user %s', $this->argument('user')));
             return;
         }
 
-        $token = \JWTAuth::fromUser($user, [
+        $token = JWTAuth::fromUser($user, [
             'super-user' => $super,
             'exp' => Carbon::now()->addDays($expires)->timestamp
         ]);

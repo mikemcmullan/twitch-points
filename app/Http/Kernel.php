@@ -28,8 +28,11 @@ class Kernel extends HttpKernel
             \Illuminate\Session\Middleware\StartSession::class,
             \Illuminate\View\Middleware\ShareErrorsFromSession::class,
             \App\Http\Middleware\VerifyCsrfToken::class,
+            'bindings',
+            \App\Http\Middleware\SetupBotCommands::class,
         ],
         'api' => [
+            'bindings',
             \App\Http\Middleware\SetupBotCommands::class,
             // 'throttle:60,1'
         ],
@@ -41,6 +44,8 @@ class Kernel extends HttpKernel
      * @var array
      */
     protected $routeMiddleware = [
+        'can' => \Illuminate\Auth\Middleware\Authorize::class,
+        'bindings' => \Illuminate\Routing\Middleware\SubstituteBindings::class,
         'auth' => \App\Http\Middleware\Authenticate::class,
         'auth.basic' => \Illuminate\Auth\Middleware\AuthenticateWithBasicAuth::class,
         'auth.api'  => \App\Http\Middleware\AuthenticateApi::class,

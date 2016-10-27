@@ -45,11 +45,11 @@ class CurrencyController extends Controller
         $api = new \App\Support\CallApi();
 
         if ($data['handle']) {
-            $data['chatter'] = $api->viewer($channel->name, $data['handle']);
+            $data['chatter'] = $api->viewer($channel->slug, $data['handle']);
         }
 
         $data['status'] = (bool) $channel->getSetting('currency.status');
-        $data['scoreboard'] = $api->currencyScoreboard($channel->name);
+        $data['scoreboard'] = $api->currencyScoreboard($channel->slug);
 
         return view('scoreboard', $data);
     }

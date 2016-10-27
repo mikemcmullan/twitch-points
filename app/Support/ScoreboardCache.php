@@ -51,8 +51,8 @@ class ScoreboardCache
 	 * Get all channels viewers from the cache.
 	 *
 	 * @param  Channel $channel
-	 * @return Collection
-	 */
+	 * @return LengthAwarePaginator|Collection
+     */
 	public function allForChannel(Channel $channel)
 	{
 		$start = 0;
@@ -165,7 +165,7 @@ class ScoreboardCache
 	 * Convert the data string to an associative array.
 	 *
 	 * @param  String $string
-	 * @return array
+	 * @return Array
 	 */
 	protected function mapViewer($string)
 	{

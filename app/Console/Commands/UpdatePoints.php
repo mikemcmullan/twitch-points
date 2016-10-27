@@ -44,12 +44,8 @@ class UpdatePoints extends Command
     {
         $startTime = microtime(true);
 
-        try {
-            foreach ($this->getActiveCurrencyChannels() as $channel) {
-                $this->dispatch(new DownloadChatListJob($channel));
-            }
-        } catch (\Exception $e) {
-            dd($e->getMessage());
+        foreach ($this->getActiveCurrencyChannels() as $channel) {
+            $this->dispatch(new DownloadChatListJob($channel));
         }
 
         $end = microtime(true) - $startTime;

@@ -22,7 +22,7 @@ class DeleteCommandFromBotCache
     /**
      * Create the event listener.
      *
-     * @return void
+     * @param Database $redis
      */
     public function __construct(Database $redis)
     {
@@ -32,8 +32,7 @@ class DeleteCommandFromBotCache
     /**
      * Handle the event.
      *
-     * @param  AppEventsCommandWasUpdated  $event
-     * @return void
+     * @param CommandWasDeleted $event
      */
     public function handle(CommandWasDeleted $event)
     {

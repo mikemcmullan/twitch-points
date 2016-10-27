@@ -8,11 +8,10 @@ use GuzzleHttp\Exception\ClientException;
 
 class CallApi
 {
-    public function __construct()
-    {
-
-    }
-
+    /**
+     * @param $url
+     * @return mixed
+     */
     protected function callApi($url)
     {
         return Cache::remember('api:' . md5($url), 1, function () use ($url) {
@@ -29,6 +28,11 @@ class CallApi
         });
     }
 
+    /**
+     * @param $channel
+     * @param int $page
+     * @return mixed
+     */
     public function currencyScoreboard($channel, $page = 1)
     {
         $url = sprintf('/%s/currency?page=%d', $channel, $page);
@@ -36,6 +40,11 @@ class CallApi
         return $this->callApi($url);
     }
 
+    /**
+     * @param $channel
+     * @param $handle
+     * @return mixed
+     */
     public function viewer($channel, $handle)
     {
         $url = sprintf('/%s/viewer?handle=%s', $channel, $handle);

@@ -11,14 +11,21 @@ class ChannelUpdatedInfo extends Event
 {
     use SerializesModels;
 
+    /**
+     * @var Channel
+     */
     public $channel;
 
+    /**
+     * @var array
+     */
     public $info;
 
     /**
      * Create a new event instance.
      *
-     * @return void
+     * @param Channel $channel
+     * @param $info
      */
     public function __construct(Channel $channel, $info)
     {

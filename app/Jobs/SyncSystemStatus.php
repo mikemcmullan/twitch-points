@@ -2,27 +2,18 @@
 
 namespace App\Jobs;
 
-use App\Jobs\Job;
 use App\Channel;
-use Illuminate\Queue\SerializesModels;
-use Illuminate\Queue\InteractsWithQueue;
-use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Foundation\Bus\DispatchesJobs;
 use App\Services\TwitchApi;
-use App\Exceptions\InvalidChannelException;
 use App\Contracts\Repositories\TrackSessionRepository;
 use App\Events\ChannelStartedStreaming;
 use App\Events\ChannelStoppedStreaming;
 use App\Events\ChannelUpdatedInfo;
 
-class SyncSystemStatus extends Job implements ShouldQueue
+class SyncSystemStatus extends Job
 {
-    use InteractsWithQueue, SerializesModels, DispatchesJobs;
-
     /**
      * Create a new job instance.
      *
-     * @return void
      */
     public function __construct()
     {
@@ -32,7 +23,9 @@ class SyncSystemStatus extends Job implements ShouldQueue
     /**
      * Execute the job.
      *
-     * @return void
+     * @param Channel $channel
+     * @param TwitchApi $twitchApi
+     * @param TrackSessionRepository $trackSessionRepo
      */
     public function handle(Channel $channel, TwitchApi $twitchApi, TrackSessionRepository $trackSessionRepo)
     {
@@ -55,13 +48,11 @@ class SyncSystemStatus extends Job implements ShouldQueue
             // status has changed since the last check.
             if (($newStatus && ! $currentChannelStatus) || ($currentChannelStatus && ! $newStatus)) {
                 if ($currentChannelStatus) {
-                    // echo $channel->name . ' ChannelStoppedStreaming';
+                    echo $channel->name . ' ChannelStoppedStreaming' . PHP_EOL;
                     event(new ChannelStoppedStreaming($channel));
-                    // $this->dispatch(new StopCurrencySystemJob($channel));
                 } else {
-                    // echo $channel->name . ' ChannelStartedStreaming';
+                     echo $channel->name . ' ChannelStartedStreaming' . PHP_EOL;
                     event(new ChannelStartedStreaming($channel));
-                    // $this->dispatch(new StartCurrencySystemJob($channel));
                 }
             }
 

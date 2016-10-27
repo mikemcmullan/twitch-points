@@ -5,7 +5,7 @@ namespace App\Http\Controllers\API;
 use Illuminate\Http\Request;
 use Illuminate\Events\Dispatcher;
 use Illuminate\Support\MessageBag;
-use Illuminate\Contracts\Validation\ValidationException;
+use Illuminate\Validation\ValidationException;
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
@@ -20,7 +20,6 @@ class SettingsController extends Controller
     public function __construct(Request $request)
     {
         $this->middleware(['jwt.auth', 'auth.api']);
-        $this->channel = $request->route()->getParameter('channel');
     }
 
     /**
@@ -35,25 +34,25 @@ class SettingsController extends Controller
             'active'                => 'required|boolean_real',
             'title'                 => 'required|min:2|max:20',
             'rank-mods'             => 'required|boolean_real',
-            'bot.username'          => 'required|max:25',
-            'bot.password'          => 'required|size:36',
+            'bot__username'          => 'required|max:25',
+            'bot__password'          => 'required|size:36',
 
-            'currency.name'         => 'required|min:2|max:15',
-            'currency.interval'     => 'required|integer|min:1|max:60',
-            'currency.awarded'      => 'required|integer|min:1|max:1000',
-            'currency.sync-status'  => 'required|boolean_real',
-            'currency.keyword'      => 'required|regex:/^!?\w{2,20}$/',
-            'currency.status'       => 'required|boolean_real',
+            'currency__name'         => 'required|min:2|max:15',
+            'currency__interval'     => 'required|integer|min:1|max:60',
+            'currency__awarded'      => 'required|integer|min:1|max:1000',
+            'currency__sync-status'  => 'required|boolean_real',
+            'currency__keyword'      => 'required|regex:/^!?\w{2,20}$/',
+            'currency__status'       => 'required|boolean_real',
 
-            'giveaway.ticket-cost'  => 'required|integer|min:1|max:1000',
-            'giveaway.ticket-max'   => 'required|integer|min:1|max:100',
-            'giveaway.started-text' => 'max:250',
-            'giveaway.stopped-text' => 'max:250',
-            'giveaway.keyword'      => 'required|regex:/^!?\w{2,20}$/',
-            'giveaway.use-tickets'  => 'required|boolean_real',
+            'giveaway__ticket-cost'  => 'required|integer|min:1|max:1000',
+            'giveaway__ticket-max'   => 'required|integer|min:1|max:100',
+            'giveaway__started-text' => 'max:250',
+            'giveaway__stopped-text' => 'max:250',
+            'giveaway__keyword'      => 'required|regex:/^!?\w{2,20}$/',
+            'giveaway__use-tickets'  => 'required|boolean_real',
 
-            'followers.alert'       => 'required|boolean_real',
-            'followers.welcome_msg' => 'max:140',
+            'followers__alert'       => 'required|boolean_real',
+            'followers__welcome_msg' => 'max:140',
         ];
 
         $toValidate = [];
@@ -81,17 +80,23 @@ class SettingsController extends Controller
             throw new ValidationException($errorBag);
         }
 
+        $originalSettings = $newSettings;
+
         foreach ($newSettings as $setting => $value) {
-            $events->fire("settings.updated.{$setting}", [
+            $key = str_replace('__', '.', $setting);
+            $newSettings[$key] = $value;
+            unset($newSettings[$setting]);
+
+            $events->fire("settings.updated.{$key}", [
                 'channel' => $channel,
-                'old_setting' => $this->channel->getSetting($setting),
+                'old_setting' => $channel->getSetting($key),
                 'new_setting' => $value
             ]);
         }
 
-        $this->channel->setSetting($newSettings);
+        $channel->setSetting($newSettings);
 
-        return response()->json($newSettings, 200);
+        return response()->json($originalSettings, 200);
     }
 
     public function updateNamedRankings(Request $request, Dispatcher $events, Channel $channel)

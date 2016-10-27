@@ -234,10 +234,10 @@ class MySQLChatterRepository implements ChatterRepository
      * Update/Create a chatter.
      *
      * @param Channel $channel
-     * @param string|array $handles
+     * @param $handle
      * @param int $minutes
      * @param int $points
-     * @param Pipeline $pipe
+     * @return array
      */
     public function updateChatter(Channel $channel, $handle, $minutes = 0, $points = 0)
     {
@@ -252,7 +252,7 @@ class MySQLChatterRepository implements ChatterRepository
             $exists = $exists->merge($result);
         });
 
-        $notExists = $handle->diff($exists->lists('handle'));
+        $notExists = $handle->diff($exists->pluck('handle'));
 
         DB::beginTransaction();
 
@@ -290,10 +290,10 @@ class MySQLChatterRepository implements ChatterRepository
      * Update/Create a moderator.
      *
      * @param Channel $channel
-     * @param string|array $handles
+     * @param $handle
      * @param int $minutes
      * @param int $points
-     * @param Pipeline $pipe
+     * @return array
      */
     public function updateModerator(Channel $channel, $handle, $minutes = 0, $points = 0)
     {

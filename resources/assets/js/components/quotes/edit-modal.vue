@@ -61,7 +61,7 @@
                     this.id = null;
                     this.text = null;
                     this.saving = false;
-                    this.$validatorReset();
+                    this.$resetValidation();
                 }, 500);
             });
         },
@@ -114,7 +114,7 @@
                     this.text = timer.text;
                 }
 
-                this.$validatorReset();
+                this.$resetValidation();
 
                 this.modal.modal('toggle');
             },

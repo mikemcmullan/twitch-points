@@ -9,7 +9,7 @@ use App\ChatLogs;
 use App\Support\BasicManager;
 use App\Contracts\BasicManager as BasicManagerInterface;
 use Illuminate\Contracts\Validation\Factory;
-use Illuminate\Contracts\Validation\ValidationException;
+use Illuminate\Validation\ValidationException;
 
 class InvalidIntervalException extends \Exception {}
 
@@ -51,8 +51,8 @@ class Manager extends BasicManager implements BasicManagerInterface
      *
      * @param Channel $channel
      * @param array $data
-     *
      * @return Model
+     * @throws ValidationException
      */
     public function create(Channel $channel, array $data)
     {
@@ -81,8 +81,8 @@ class Manager extends BasicManager implements BasicManagerInterface
      * @param Channel $channel
      * @param int $id
      * @param array $data
-     *
      * @return Model
+     * @throws ValidationException
      */
     public function update(Channel $channel, $id, array $data)
     {
@@ -115,7 +115,8 @@ class Manager extends BasicManager implements BasicManagerInterface
      *
      * @param $interval int\array A single interval or an array of intervals you want to get.
      *
-     * @param \Illuminte\Database\Eloquent\Collection|null
+     * @return
+     * @throws InvalidIntervalException
      */
     public function timers($interval = null)
     {

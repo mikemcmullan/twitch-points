@@ -29,7 +29,7 @@ class RunTimer extends Command
     /**
      * Create a new command instance.
      *
-     * @return void
+     * @param TimerManager $timerManager
      */
     public function __construct(TimerManager $timerManager)
     {

@@ -117,7 +117,7 @@
                     this.lines = 10;
                     this.saving = false;
                     this.message = null;
-                    this.$validatorReset();
+                    this.$resetValidation();
                 }, 500);
             });
         },
@@ -180,7 +180,7 @@
                     this.lines = timer.lines;
                 }
 
-                this.$validatorReset();
+                this.$resetValidation();
 
                 this.modal.modal('toggle');
             },

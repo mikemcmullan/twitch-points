@@ -21,10 +21,9 @@ class NewFollower extends Event
     /**
      * Create a new event instance.
      *
-     * @param Channel   $channel
-     * @param Array     $followers
+     * @param Channel $channel
+     * @param array $followers
      *
-     * @return void
      */
     public function __construct(Channel $channel, $followers)
     {
