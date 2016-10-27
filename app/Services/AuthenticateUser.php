@@ -47,14 +47,14 @@ class AuthenticateUser
     {
         // If error login failed.
         if ($error) {
-            return $listener->loginHasFailed($error);
+            return $listener->loginHasFailed($channel, $error);
         }
 
         $token = $this->twitchSDK->authAccessTokenGet($code);
 
         // If error is returned from twitch the access token will be missing.
         if (! isset($token['access_token'])) {
-            return $listener->loginHasFailed();
+            return $listener->loginHasFailed($channel);
         }
 
         $authUser = $this->twitchSDK->authUserGet($token['access_token']);
@@ -62,7 +62,7 @@ class AuthenticateUser
         $user = $this->userRepo->findByName($channel, $authUser['name']);
 
         if (\Gate::forUser($user)->denies('admin-channel', $channel)) {
-            return $listener->loginHasFailed();
+            return $listener->loginHasFailed($channel);
         }
 
         if ($user['access_token'] !== $token['access_token']) {
@@ -72,6 +72,6 @@ class AuthenticateUser
 
         $this->auth->login($user, true);
 
-        return $listener->userHasLoggedIn($user);
+        return $listener->userHasLoggedIn($channel, $user);
     }
 }

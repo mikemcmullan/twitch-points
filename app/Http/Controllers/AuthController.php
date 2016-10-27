@@ -17,7 +17,7 @@ class AuthController extends Controller
 
     public function __construct(Request $request)
     {
-        $this->channel = $request->route()->getParameter('channel');
+
     }
 
     /**
@@ -69,6 +69,7 @@ class AuthController extends Controller
      * Login a user.
      *
      * @param Request $request
+     * @param Channel $channel
      * @param AuthenticateUser $authUser
      * @return \Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
      */
@@ -76,7 +77,7 @@ class AuthController extends Controller
     {
         if (\Auth::check()) {
             return redirect()
-                ->route('home_path', $this->channel->slug)
+                ->route('home_path', $channel->slug)
                 ->with('message', 'You are already logged in.');
         }
 
@@ -88,47 +89,52 @@ class AuthController extends Controller
 
             return redirect(route('login_proxy_path', ['referer=' . $referer, 'sig=' . $signature, 'expires=' . $expires]));
         } else {
-            return $authUser->execute($this->channel, $request->get('code'), $request->get('error'), $this);
+            return $authUser->execute($channel, $request->get('code'), $request->get('error'), $this);
         }
     }
 
     /**
      * Logout a user.
      *
+     * @param Channel $channel
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function logout()
+    public function logout(Channel $channel)
     {
         \Auth::logout();
 
         return redirect()
-            ->route('home_path', $this->channel->slug)
+            ->route('home_path', $channel->slug)
             ->with('message', 'You have been successfully logged out.');
     }
 
     /**
+     * @param Channel $channel
+     * @param $error
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function loginHasFailed()
+    public function loginHasFailed(Channel $channel, $error)
     {
         return redirect()
-            ->route('home_path', $this->channel->slug)
+            ->route('home_path', $channel->slug)
             ->with('message', 'Sorry, you\'re not allowed to administrate this site.');
     }
 
     /**
+     * @param Channel $channel
      * @param $user
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function userHasLoggedIn($user)
+    public function userHasLoggedIn(Channel $channel, $user)
     {
         return redirect()
-            ->route('home_path', $this->channel->slug)
+            ->route('home_path', $channel->slug)
             ->with('message', 'Login successful.');
     }
 
     /**
      * @param Request $request
+     * @param Channel $channel
      * @param \Pusher $pusher
      * @return Response
      */
