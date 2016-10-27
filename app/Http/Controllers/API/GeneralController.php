@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\API;
 
+use App\Channel;
 use Illuminate\Http\Request;
 use App\Contracts\Repositories\ChatterRepository;
 use App\Http\Controllers\Controller;
@@ -21,19 +22,18 @@ class GeneralController extends Controller
     public function __construct(Request $request, ChatterRepository $chatterRepository)
     {
         $this->chatterRepository = $chatterRepository;
-        $this->channel = $request->route()->getParameter('channel');
     }
 
     /**
      * @return \Symfony\Component\HttpFoundation\Response
      */
-    public function getVIPs()
+    public function getVIPs(Channel $channel)
     {
-        $mods = $this->chatterRepository->allModsForChannel($this->channel);
-        $admins = $this->chatterRepository->allAdminsForChannel($this->channel);
+        $mods = $this->chatterRepository->allModsForChannel($channel);
+        $admins = $this->chatterRepository->allAdminsForChannel($channel);
 
         return response()->json([
-            'owner' => [$this->channel->name],
+            'owner' => [$channel->name],
             'admins' => $admins->keys(),
             'mods' => $mods->keys()
         ]);
