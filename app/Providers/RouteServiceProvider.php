@@ -46,11 +46,11 @@ class RouteServiceProvider extends ServiceProvider
      */
     public function map()
     {
+        $this->mapAuthRoutes();
+
         $this->mapApiRoutes();
 
         $this->mapWebRoutes();
-
-        $this->mapAuthRoutes();
     }
 
     /**
@@ -64,7 +64,7 @@ class RouteServiceProvider extends ServiceProvider
     {
         Route::group([
             'domain' => '{channel}.' . config('app.root_domain'),
-            'middleware' => ['bindings', 'web'],
+            'middleware' => 'web',
             'namespace' => $this->namespace,
         ], function ($router) {
             require base_path('routes/web.php');
@@ -94,7 +94,8 @@ class RouteServiceProvider extends ServiceProvider
     {
         Route::group([
             'domain' => config('app.auth_domain'),
-            'middleware' => 'web',
+            'prefix' => '',
+            'middleware' => 'auth',
             'namespace' => $this->namespace
         ], function ($router) {
             require base_path('routes/auth.php');

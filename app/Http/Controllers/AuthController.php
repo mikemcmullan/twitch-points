@@ -110,10 +110,9 @@ class AuthController extends Controller
 
     /**
      * @param Channel $channel
-     * @param $error
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function loginHasFailed(Channel $channel, $error)
+    public function loginHasFailed(Channel $channel)
     {
         return redirect()
             ->route('home_path', $channel->slug)

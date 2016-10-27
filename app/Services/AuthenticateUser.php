@@ -47,7 +47,7 @@ class AuthenticateUser
     {
         // If error login failed.
         if ($error) {
-            return $listener->loginHasFailed($channel, $error);
+            return $listener->loginHasFailed($channel);
         }
 
         $token = $this->twitchSDK->authAccessTokenGet($code);
