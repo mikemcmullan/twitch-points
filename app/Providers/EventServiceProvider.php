@@ -14,12 +14,10 @@ class EventServiceProvider extends ServiceProvider
      */
     protected $listen = [
         \App\Events\ChannelStartedStreaming::class => [
-            \App\Listeners\Currency\StartCurrencySystem::class,
             \App\Listeners\StartStreamingSession::class
         ],
 
         \App\Events\ChannelStoppedStreaming::class => [
-            \App\Listeners\Currency\StopCurrencySystem::class,
             \App\Listeners\StopStreamingSession::class
         ],
 

@@ -38,6 +38,8 @@ class ProcessChatList
      *
      * @param ChatterRepository $chatterRepository
      * @param ConfigRepository $config
+     * @param Dispatcher $events
+     * @param ScoreboardCache $scoreboardCache
      */
     public function __construct(ChatterRepository $chatterRepository, ConfigRepository $config, Dispatcher $events, ScoreboardCache $scoreboardCache)
     {
@@ -51,6 +53,7 @@ class ProcessChatList
      * Calculate how many minutes have gone by since the system
      * last run.
      *
+     * @param Channel $channel
      * @return int
      */
     private function calculateMinutes(Channel $channel)
@@ -69,17 +72,17 @@ class ProcessChatList
      * Calculate how many points the user has earned based
      * upon how many minutes they've been online.
      *
+     * @param Channel $channel
      * @param $minutes
      * @param $status
-     *
      * @return float
      */
     private function calculatePoints(Channel $channel, $minutes, $status)
     {
         $status = $status === true ? 'online' : 'offline';
 
-        $pointInterval = (int) $channel->getSetting('currency.interval', 0);
-        $pointsAwarded = (int) $channel->getSetting('currency.awarded', 0);
+        $pointInterval = (int) $channel->getSetting("currency.{$status}-interval", 0);
+        $pointsAwarded = (int) $channel->getSetting("currency.{$status}-awarded", 0);
 
         $pointsPerMinute = $pointsAwarded / $pointInterval;
 
