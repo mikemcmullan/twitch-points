@@ -128,7 +128,7 @@
                                         <p class="help-block" v-show="$settingsValidation.onlinetimeinterval.valid">Stream Online</p>
                                     </div>
                                     <div class="col-sm-5">
-                                        {!! Form::number('time-interval', $channel->getSetting('currency.online-interval', 0), ['class' => 'form-control', 'id' => 'control-time-interval-off', 'v-model' => 'offlineTimeInterval', 'v-validate:offlineTimeInterval' => "{ isInteger: true, min: 0, max: 60, required: true }"]) !!}
+                                        {!! Form::number('time-interval', $channel->getSetting('currency.online-interval', 0), ['class' => 'form-control', 'id' => 'control-time-interval-off', 'v-model' => 'offlineTimeInterval', 'v-validate:offlineTimeInterval' => "{ isInteger: true, min: 1, max: 60, required: true }"]) !!}
 
                                         <span class="help-block" v-show="!$settingsValidation.offlinetimeinterval.valid">Time interval must a number and between 0 and 60.</span>
                                         <p class="help-block" v-show="$settingsValidation.offlinetimeinterval.valid">Stream Offline</p>
