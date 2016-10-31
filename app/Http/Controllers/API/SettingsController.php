@@ -42,7 +42,6 @@ class SettingsController extends Controller
             'currency__online-awarded'    => 'required|integer|min:1|max:1000',
             'currency__offline-interval'  => 'required|integer|min:1|max:60',
             'currency__offline-awarded'   => 'required|integer|min:0|max:1000',
-            'currency__sync-status'  => 'required|boolean_real',
             'currency__keyword'      => 'required|regex:/^!?\w{2,20}$/',
             'currency__status'       => 'required|boolean_real',
 
