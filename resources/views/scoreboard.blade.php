@@ -223,8 +223,8 @@
     </script>
 
     @can('admin-channel', $channel)
-        <script src="/assets/js/admin.js"></script>
+        <script src="{{ elixir('assets/js/admin.js') }}"></script>
     @else
-        <script src="/assets/js/public.js"></script>
+        <script src="{{ elixir('assets/js/public.js') }}"></script>
     @endcan
 @endsection

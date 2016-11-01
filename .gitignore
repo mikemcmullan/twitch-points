@@ -7,3 +7,4 @@ Envoy.blade.php
 Capfile
 deploy
 composer.lock
+public/build

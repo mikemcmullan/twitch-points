@@ -102,6 +102,6 @@
             };
         </script>
 
-        <script src="/assets/js/admin.js"></script>
+        <script src="{{ elixir('assets/js/admin.js') }}"></script>
     @endsection
 @endcan

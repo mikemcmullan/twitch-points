@@ -117,5 +117,5 @@
         };
     </script>
 
-    <script src="/assets/js/public.js"></script>
+    <script src="{{ elixir('assets/js/public.js') }}"></script>
 @endsection
