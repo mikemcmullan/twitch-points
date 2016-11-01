@@ -30,10 +30,6 @@ class StopCurrencySystem
      */
     public function handle(ChannelStoppedStreaming $event)
     {
-        if ($event->channel->getSetting('currency.sync-status', false) === false) {
-            return;
-        }
-
         $this->dispatch(new \App\Jobs\StopCurrencySystemJob($event->channel));
     }
 }

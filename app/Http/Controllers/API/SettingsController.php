@@ -38,9 +38,10 @@ class SettingsController extends Controller
             'bot__password'          => 'required|size:36',
 
             'currency__name'         => 'required|min:2|max:15',
-            'currency__interval'     => 'required|integer|min:1|max:60',
-            'currency__awarded'      => 'required|integer|min:1|max:1000',
-            'currency__sync-status'  => 'required|boolean_real',
+            'currency__online-interval'   => 'required|integer|min:1|max:60',
+            'currency__online-awarded'    => 'required|integer|min:1|max:1000',
+            'currency__offline-interval'  => 'required|integer|min:1|max:60',
+            'currency__offline-awarded'   => 'required|integer|min:0|max:1000',
             'currency__keyword'      => 'required|regex:/^!?\w{2,20}$/',
             'currency__status'       => 'required|boolean_real',
 

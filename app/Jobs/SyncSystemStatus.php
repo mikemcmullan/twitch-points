@@ -44,14 +44,14 @@ class SyncSystemStatus extends Job
             $currentChannelStatus = (bool) $trackSessionRepo->findIncompletedSession($channel);
             $newStatus = (bool) $channelStreams->get($channel->name);
 
-            // Only announce if channel has started or stopped streaming if the
+            // Only announce if the channel has started or stopped streaming and if the
             // status has changed since the last check.
             if (($newStatus && ! $currentChannelStatus) || ($currentChannelStatus && ! $newStatus)) {
                 if ($currentChannelStatus) {
-                    echo $channel->name . ' ChannelStoppedStreaming' . PHP_EOL;
+//                    echo $channel->name . ' ChannelStoppedStreaming' . PHP_EOL;
                     event(new ChannelStoppedStreaming($channel));
                 } else {
-                     echo $channel->name . ' ChannelStartedStreaming' . PHP_EOL;
+//                     echo $channel->name . ' ChannelStartedStreaming' . PHP_EOL;
                     event(new ChannelStartedStreaming($channel));
                 }
             }

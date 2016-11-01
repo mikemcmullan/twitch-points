@@ -5,9 +5,11 @@
         data: () => {
             return {
                 saving: false,
-                amount: '',
                 keyword: '',
-                timeInterval: '',
+                onlineAmount: '',
+                onlineTimeInterval: '',
+                offlineAmount: '',
+                offlineTimeInterval: '',
                 currentStatus: '',
                 syncStatus: false,
                 alert: {
@@ -35,8 +37,10 @@
 
             submit() {
                 let request = this.$http.put('settings', {
-                    'currency__interval': this.timeInterval,
-                    'currency__awarded': this.amount,
+                    'currency__online-interval': this.onlineTimeInterval,
+                    'currency__online-awarded': this.onlineAmount,
+                    'currency__offline-interval': this.offlineTimeInterval,
+                    'currency__offline-awarded': this.offlineAmount,
                     'currency__sync-status': this.syncStatus,
                     'currency__keyword': this.keyword
                 }, {

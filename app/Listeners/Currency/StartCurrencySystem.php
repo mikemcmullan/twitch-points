@@ -31,10 +31,6 @@ class StartCurrencySystem
      */
     public function handle(ChannelStartedStreaming $event)
     {
-        if ($event->channel->getSetting('currency.sync-status', false) === false) {
-            return;
-        }
-
         $this->dispatch(new \App\Jobs\StartCurrencySystemJob($event->channel));
     }
 }

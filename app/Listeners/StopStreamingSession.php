@@ -17,7 +17,7 @@ class StopStreamingSession
     /**
      * Create the event listener.
      *
-     * @return void
+     * @param TrackSessionRepository $sessionRepo
      */
     public function __construct(TrackSessionRepository $sessionRepo)
     {
@@ -28,7 +28,7 @@ class StopStreamingSession
      * Handle the event.
      *
      * @param  ChannelStoppedStreaming  $event
-     * @return void
+     * @return bool|int
      */
     public function handle(ChannelStoppedStreaming $event)
     {
