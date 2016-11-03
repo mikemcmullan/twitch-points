@@ -2,12 +2,12 @@
 
 namespace App\Jobs\Giveaway;
 
+use App\Jobs\Job;
 use App\Giveaway\Entry;
 use App\Giveaway\Manager;
 use App\Channel;
-use Illuminate\Contracts\Bus\SelfHandling;
 
-class ClearGiveawayJob implements SelfHandling
+class ClearGiveawayJob extends Job
 {
     /**
      * @var
