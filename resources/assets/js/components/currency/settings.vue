@@ -41,7 +41,6 @@
                     'currency__online-awarded': this.onlineAmount,
                     'currency__offline-interval': this.offlineTimeInterval,
                     'currency__offline-awarded': this.offlineAmount,
-                    'currency__sync-status': this.syncStatus,
                     'currency__keyword': this.keyword
                 }, {
                     beforeSend: (request) => {
