@@ -19,7 +19,8 @@ class Kernel extends ConsoleKernel
         \App\Console\Commands\RemoveOldViewers::class,
         \App\Console\Commands\RunTimer::class,
         \App\Console\Commands\GenerateUserJWTToken::class,
-        \App\Console\Commands\UpdateScoreboardCache::class
+        \App\Console\Commands\UpdateScoreboardCache::class,
+        \App\Console\Commands\UpdateCommandsCache::class
     ];
 
     /**
