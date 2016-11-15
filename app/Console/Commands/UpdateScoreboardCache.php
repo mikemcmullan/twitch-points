@@ -47,7 +47,7 @@ class UpdateScoreboardCache extends Command
                 return $this->info("Channel '{$channelStr}' was not found.");
             }
 
-            $this->info("Updating scoreboard cache for channel '{$channelStr}'.");
+            $this->info("Scoreboard cache has been updated for channel '{$channel->name}'.");
             return $this->dispatch(new UpdateScoreboardCacheJob($channel));
         }
 
