@@ -16,7 +16,7 @@ class UpdateScoreboardCache extends Command
      *
      * @var string
      */
-    protected $signature = 'points:update-scoreboard-cache';
+    protected $signature = 'points:update-scoreboard-cache {channel? : The channel to update the scoreboard cache for.}';
 
     /**
      * The console command description.
@@ -40,7 +40,25 @@ class UpdateScoreboardCache extends Command
      */
     public function handle()
     {
-        foreach ($this->getActiveCurrencyChannels() as $channel) {
+        $channelStr = $this->argument('channel');
+
+        if ($channelStr) {
+            if (! $channel = $this->getChannel($channelStr)) {
+                return $this->info("Channel '{$channelStr}' was not found.");
+            }
+
+            $this->info("Updating scoreboard cache for channel '{$channelStr}'.");
+            return $this->dispatch(new UpdateScoreboardCacheJob($channel));
+        }
+
+        $channels = $this->getActiveCurrencyChannels();
+
+        if ($channels->isEmpty()) {
+            return $this->info('No currency channels active.');
+        }
+
+        $this->info('Updating scoreboard for all active currency channels.');
+        foreach ($channels as $channel) {
             $this->dispatch(new UpdateScoreboardCacheJob($channel));
         }
     }
