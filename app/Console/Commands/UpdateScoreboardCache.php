@@ -57,8 +57,8 @@ class UpdateScoreboardCache extends Command
             return $this->info('No currency channels active.');
         }
 
-        $this->info('Updating scoreboard for all active currency channels.');
         foreach ($channels as $channel) {
+            $this->info("Scoreboard cache has been updated for channel '{$channel->name}'.");
             $this->dispatch(new UpdateScoreboardCacheJob($channel));
         }
     }
