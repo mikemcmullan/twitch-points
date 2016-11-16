@@ -30,8 +30,11 @@ class BotJoinedChannel extends Event
     public function broadcastWith()
     {
         return [
-            'command' => '!join',
-            'response' => $this->channel->getSetting('bot.intro', '')
+            'command'  => '!join',
+            'response' => $this->channel->getSetting('bot.intro', ''),
+            'options'  => [
+                'alwaysJoin' => true
+            ]
         ];
     }
 }
