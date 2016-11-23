@@ -187,7 +187,7 @@ return [
             ],
 
             'options' => [
-                'command' => '^!betting\s?options$',
+                'command' => 'regex:^!betting\s?options$',
                 'usage' => '!betting options',
                 'description' => 'Get options for the current bet.',
                 'level' => 'everyone',
