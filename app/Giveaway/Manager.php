@@ -204,6 +204,14 @@ class Manager
         $useTickets = $entry->getChannel()->getSetting('giveaway.use-tickets');
         $tickets = $entry->getTickets();
 
+        if ($entry->getHandle() == '') {
+            throw new InvalidArgumentException('Handle parameter is missing.');
+        }
+
+        if (! $this->validHandle($entry->getHandle())) {
+            throw new UnknownHandleException('Handle may only contain alpha numeric characters, underscores and be between 2 and 25 characters in length.');
+        }
+
         if ($entry->getChannel()->getSetting('giveaway.use-tickets') === false) {
             $tickets = 1;
         }
@@ -238,5 +246,16 @@ class Manager
         $this->events->fire(new GiveawayWasEntered($entry->getChannel(), $entry->getHandle(), $tickets));
 
         return true;
+    }
+
+    /**
+     * Test whether a handle is valid.
+     *
+     * @param  string  $entry
+     * @return boolean
+     */
+    protected function validHandle($handle)
+    {
+        return preg_match('/^[\d\w]{2,25}$/', $handle);
     }
 }
