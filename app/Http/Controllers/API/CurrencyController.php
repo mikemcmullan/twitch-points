@@ -5,23 +5,25 @@ namespace App\Http\Controllers\API;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use App\Jobs\StopCurrencySystemJob;
-use App\Jobs\StartCurrencySystemJob;
-use App\Jobs\AddCurrencyJob;
-use App\Jobs\RemoveCurrencyJob;
 use App\Support\ScoreboardCache;
 use App\Channel;
+use App\Currency\Manager;
+use Carbon\Carbon;
 
 class CurrencyController extends Controller
 {
     use DispatchesJobs;
 
+    protected $currencyManager;
+
     /**
      *
      */
-    public function __construct()
+    public function __construct(Manager $manager)
     {
         $this->middleware(['jwt.auth', 'auth.api:currency'], ['except' => 'index']);
+
+        $this->currencyManager = $manager;
     }
 
     /**
@@ -52,9 +54,7 @@ class CurrencyController extends Controller
     {
         $data = $request->only(['handle', 'points', 'source']);
 
-        $response = $this->dispatch(new AddCurrencyJob($channel, $data['handle'], $data['points'], $data['source']));
-
-        return response()->json($response);
+        return response()->json($this->currencyManager->addPoints($channel, $data['handle'], $data['points'], $data['source']));
     }
 
     /**
@@ -69,9 +69,7 @@ class CurrencyController extends Controller
     {
         $data = $request->only(['handle', 'points']);
 
-        $response = $this->dispatch(new RemoveCurrencyJob($channel, $data['handle'], $data['points']));
-
-        return response()->json($response);
+        return response()->json($this->currencyManager->removePoints($channel, $data['handle'], $data['points']));
     }
 
     /**
@@ -84,7 +82,9 @@ class CurrencyController extends Controller
      */
     public function startSystem(Request $request, Channel $channel)
     {
-        $this->dispatch(new StartCurrencySystemJob($channel));
+        setLastUpdate($channel, Carbon::now());
+
+        $channel->setSetting('currency.status', true);
 
         return response()->json(['ok' => 'success']);
     }
@@ -99,7 +99,7 @@ class CurrencyController extends Controller
      */
     public function stopSystem(Request $request, Channel $channel)
     {
-        $this->dispatch(new StopCurrencySystemJob($channel));
+        $channel->setSetting('currency.status', false);
 
         return response()->json(['ok' => 'success']);
     }

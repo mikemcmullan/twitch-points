@@ -2,24 +2,22 @@
 
 namespace App\Http\Controllers\API;
 
-use App\Channel;
-use App\Jobs\Giveaway\EnterGiveawayJob;
-use App\Jobs\Giveaway\GetGiveawayEntriesJob;
-use App\Jobs\Giveaway\StartGiveawayJob;
-use App\Jobs\Giveaway\StopGiveawayJob;
-use App\Jobs\Giveaway\ClearGiveawayJob;
-use App\Jobs\Giveaway\SelectGiveawayWinnerJob;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Channel;
+use App\Giveaway\Manager;
+use App\Giveaway\Entry;
 
 class GiveawayController extends Controller
 {
     /**
      *
      */
-    public function __construct()
+    public function __construct(Manager $manager)
     {
         $this->middleware(['jwt.auth', 'auth.api:quotes']);
+
+        $this->giveawayManager = $manager;
     }
 
     /**
@@ -32,7 +30,7 @@ class GiveawayController extends Controller
      */
     public function entries(Request $request, Channel $channel)
     {
-        $entries = $this->dispatch(new GetGiveawayEntriesJob($channel));
+        $entries = $this->giveawayManager->entries($channel, true);
 
         return response()->json($entries);
     }
@@ -50,7 +48,7 @@ class GiveawayController extends Controller
         $handle = $request->get('handle');
         $tickets = $request->get('tickets');
 
-        $response = $this->dispatch(new EnterGiveawayJob($channel, $handle, $tickets));
+        $response = $this->giveawayManager->enter(new Entry($channel, $handle, $tickets));
 
         return response()->json(['status' => $response]);
     }
@@ -63,7 +61,7 @@ class GiveawayController extends Controller
      */
     public function winner(Channel $channel)
     {
-        $winner = $this->dispatch(new SelectGiveawayWinnerJob($channel));
+        $winner = $this->giveawayManager->selectWinner($channel);
 
         return response()->json(['winner' => $winner]);
     }
@@ -75,7 +73,9 @@ class GiveawayController extends Controller
      */
     public function start(Channel $channel)
     {
-        $this->dispatch(new StartGiveawayJob($channel));
+        if (! $this->giveawayManager->isGiveAwayRunning($channel)) {
+            $this->giveawayManager->start($channel);
+        }
 
         return response()->json(['ok' => 'success']);
     }
@@ -88,7 +88,9 @@ class GiveawayController extends Controller
      */
     public function stop(Channel $channel)
     {
-        $this->dispatch(new StopGiveawayJob($channel));
+        if ($this->giveawayManager->isGiveAwayRunning($channel)) {
+            $this->giveawayManager->stop($channel);
+        }
 
         return response()->json(['ok' => 'success']);
     }
@@ -101,7 +103,7 @@ class GiveawayController extends Controller
      */
     public function clear(Channel $channel)
     {
-        $this->dispatch(new ClearGiveawayJob($channel));
+        $this->giveawayManager->clear($channel);
 
         return response()->json(['ok' => 'success']);
     }
