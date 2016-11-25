@@ -24,12 +24,12 @@
         methods: {
             submit() {
                 let request = this.$http.put('settings', {
-                    'giveaway.use-tickets': this.useTickets,
-                    'giveaway.started-text': this.startedText,
-                    'giveaway.stopped-text': this.stoppedText,
-                    'giveaway.ticket-max': this.ticketMax,
-                    'giveaway.ticket-cost': this.ticketCost,
-                    'giveaway.keyword': this.keyword
+                    'giveaway__use-tickets': this.useTickets,
+                    'giveaway__started-text': this.startedText,
+                    'giveaway__stopped-text': this.stoppedText,
+                    'giveaway__ticket-max': this.ticketMax,
+                    'giveaway__ticket-cost': this.ticketCost,
+                    'giveaway__keyword': this.keyword
                 }, {
                     beforeSend: (request) => {
                         this.saving = true;
