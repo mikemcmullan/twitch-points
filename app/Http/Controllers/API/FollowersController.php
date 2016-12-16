@@ -18,7 +18,7 @@ class FollowersController extends Controller
 
     public function store(Request $request, Channel $channel, Manager $followersManager)
     {
-        $followers = $followersManager->add($channel, $request->get('followers', []));
+        $followers = $followersManager->add($channel, (array) $request->get('followers', []));
 
         return response()->json([
             'ok'  => 'success',
