@@ -38,11 +38,16 @@ class NewFollower extends Event
      */
     public function broadcastWith()
     {
-        $names = $this->followers->implode('display_name', ', ');
+        $string = '';
 
-        $defaultString = "{{ followers }}, thanks for the follow" . ($this->followers->count() > 1 ? 's.' : '.');
-        $string = $this->channel->getSetting('followers.welcome_msg', $defaultString);
-        $string = preg_replace('/{{\s?followers\s?}}/', $names, $string);
+        if ($this->channel->getSetting('followers.display-alert-in-chat', false) === true) {
+            $names = $this->followers->implode('display_name', ', ');
+
+            $defaultString = "{{ followers }}, thanks for the follow" . ($this->followers->count() > 1 ? 's.' : '.');
+            $string = $this->channel->getSetting('followers.welcome-msg', $defaultString);
+            $string = preg_replace('/{{\s?followers\s?}}/', $names, $string);
+        }
+
 
         return [
             'response' => $string

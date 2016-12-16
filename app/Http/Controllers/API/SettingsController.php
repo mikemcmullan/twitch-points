@@ -52,8 +52,9 @@ class SettingsController extends Controller
             'giveaway__keyword'      => 'required|regex:/^!?\w{2,20}$/',
             'giveaway__use-tickets'  => 'required|boolean_real',
 
-            'followers__alert'       => 'required|boolean_real',
-            'followers__welcome_msg' => 'max:140',
+            'followers__alert'                  => 'required|boolean_real',
+            'followers__display-alert-in-chat'  => 'required|boolean_real',
+            'followers__welcome-msg'            => 'max:140',
         ];
 
         $toValidate = [];
