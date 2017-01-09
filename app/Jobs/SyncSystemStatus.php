@@ -37,7 +37,7 @@ class SyncSystemStatus extends Job
             return;
         }
 
-        $streams = collect($twitchApi->getStream($channels->pluck('channel_id')->toArray())['streams']);
+        $streams = collect($twitchApi->getStream($channels->pluck('service_id')->toArray())['streams']);
         $channelStreams = $streams->groupBy('channel.name');
 
         foreach ($channels as $channel) {
