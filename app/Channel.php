@@ -40,7 +40,7 @@ class Channel extends Model implements AuthenticatableContract, CanResetPassword
      *
      * @var array
      */
-    protected $fillable = ['name', 'slug', 'display_name', 'settings'];
+    protected $fillable = ['channel_id', 'name', 'slug', 'display_name', 'settings'];
 
     /**
      * @return \Illuminate\Database\Eloquent\Relations\HasMany

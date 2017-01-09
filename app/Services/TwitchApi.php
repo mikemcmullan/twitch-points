@@ -50,12 +50,31 @@ class TwitchApi
     {
         $client = new Client([
             'headers' => [
-                'Accept' => 'application/vnd.twitchtv.v3+json',
+                'Accept' => 'application/vnd.twitchtv.v5+json',
                 'Client-ID' => config('twitch.credentials.client_id')
             ]
         ]);
 
         return $client;
+    }
+
+    /**
+     * Get a users ID by their username.
+     *
+     * @param  string $username
+     * @return int
+     */
+    public function getUserIDByName($username)
+    {
+        $response = $this->httpClient->get('https://api.twitch.tv/kraken/users?login=' . $username);
+
+        $json = json_decode($response->getBody());
+
+        if ($json->_total === 0) {
+            return false;
+        }
+
+        return (int) $json->users[0]->_id;
     }
 
     /**
@@ -66,8 +85,6 @@ class TwitchApi
      */
     public function chatList($channel)
     {
-        $this->getStream($channel);
-
         $attempts = 1;
         $stop = false;
 
@@ -118,44 +135,16 @@ class TwitchApi
     }
 
     /**
-     * Check if a channel exists.
-     *
-     * @param $channelName
-     * @return bool
-     */
-    public function validChannel($channelName)
-    {
-        return $this->getStream($channelName);
-    }
-
-    /**
-     * Check if channel is online.
-     *
-     * @param $channelName
-     * @return bool
-     */
-    public function channelOnline($channelName)
-    {
-        $stream = $this->getStream($channelName);
-
-        if ($stream && $stream['stream'] != null) {
-            return true;
-        }
-
-        return false;
-    }
-
-    /**
      * Fetch channel info from the api.
      *
-     * @param string    $channel    Comma separated list of channels.
+     * @param array    $channelIDs   An array of channel IDs.
      * @return mixed
      */
-    public function getStream($channels)
+    public function getStream($channelIDs)
     {
         try {
-            $response = $this->httpClient->request('GET', 'https://api.twitch.tv/kraken/streams?channel=' . $channels . '&_nocachetp=' . time());
-            return json_decode((string) $response->getBody(), true);
+            $response = $this->httpClient->request('GET', 'https://api.twitch.tv/kraken/streams?channel=' . implode(',', $channelIDs) . '&_nocachetp=' . time());
+            return json_decode($response->getBody(), true);
         } catch (ClientException $e) {
             $this->logger->error('Invalid channel.', ['channel' => $channel]);
             throw new InvalidChannelException($channel);
