@@ -2,13 +2,13 @@
 
 namespace App\Contracts\Repositories;
 
-use App\TrackSession;
+use App\Stream;
 use App\Channel;
 
-interface TrackSessionRepository
+interface StreamRepository
 {
     /**
-     * Create a new track session.
+     * Create a new stream.
      *
      * @param Channel $channel
      *
@@ -17,13 +17,13 @@ interface TrackSessionRepository
     public function create(Channel $channel);
 
     /**
-     * Complete a track session.
+     * Complete a stream.
      *
-     * @param TrackSession $session
+     * @param Stream $stream
      *
      * @return bool|int
      */
-    public function end(TrackSession $session);
+    public function end(Stream $stream);
 
     /**
      * Find uncompleted track sessions for a user.
@@ -32,12 +32,12 @@ interface TrackSessionRepository
      *
      * @return \Illuminate\Database\Eloquent\Collection|static[]
      */
-    public function findIncompletedSession(Channel $channel);
+    public function findIncompletedStream(Channel $channel);
 
     /**
      * Find all uncompleted track sessions.
      *
      * @return \Illuminate\Database\Eloquent\Collection|static[]
      */
-    public function allIncompletedSessions();
+    public function allIncompletedStreams();
 }

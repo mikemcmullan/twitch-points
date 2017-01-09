@@ -5,23 +5,23 @@ namespace App\Listeners;
 use App\Events\ChannelStoppedStreaming;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
-use App\Contracts\Repositories\TrackSessionRepository;
+use App\Contracts\Repositories\StreamRepository;
 
 class StopStreamingSession
 {
     /**
-     * @var TrackSessionRepository
+     * @var StreamRepository
      */
-    protected $sessionRepo;
+    protected $streamRepo;
 
     /**
      * Create the event listener.
      *
-     * @param TrackSessionRepository $sessionRepo
+     * @param StreamRepository $streamRepo
      */
-    public function __construct(TrackSessionRepository $sessionRepo)
+    public function __construct(StreamRepository $streamRepo)
     {
-        $this->sessionRepo = $sessionRepo;
+        $this->streamRepo = $streamRepo;
     }
 
     /**
@@ -32,10 +32,10 @@ class StopStreamingSession
      */
     public function handle(ChannelStoppedStreaming $event)
     {
-        $session = $this->sessionRepo->findIncompletedSession($event->channel);
+        $stream = $this->streamRepo->findIncompletedStream($event->channel);
 
-        if ($session) {
-            return $this->sessionRepo->end($session);
+        if ($stream) {
+            return $this->streamRepo->end($stream);
         }
     }
 }

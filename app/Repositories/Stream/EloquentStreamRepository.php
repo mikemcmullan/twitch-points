@@ -1,29 +1,29 @@
 <?php
 
-namespace App\Repositories\TrackPointsSession;
+namespace App\Repositories\Stream;
 
-use App\TrackSession;
-use App\Contracts\Repositories\TrackSessionRepository as TrackSessionRepositoryInterface;
+use App\Stream;
+use App\Contracts\Repositories\StreamRepository as StreamRepositoryInterface;
 use App\Channel;
 use Carbon\Carbon;
 
-class EloquentTrackSessionRepository implements TrackSessionRepositoryInterface
+class EloquentStreamRepository implements StreamRepositoryInterface
 {
     /**
-     * @var TrackPointsSession
+     * @var Stream
      */
-    private $pointsSession;
+    private $stream;
 
     /**
-     * @param TrackSession $pointsSession
+     * @param Stream $stream
      */
-    public function __construct(TrackSession $pointsSession)
+    public function __construct(Stream $stream)
     {
-        $this->pointsSession = $pointsSession;
+        $this->stream = $stream;
     }
 
     /**
-     * Create a new track session.
+     * Create a stream.
      *
      * @param Channel $channel
      *
@@ -31,23 +31,23 @@ class EloquentTrackSessionRepository implements TrackSessionRepositoryInterface
      */
     public function create(Channel $channel)
     {
-        return $this->pointsSession->create([
+        return $this->stream->create([
             'channel_id' => $channel['id']
         ]);
     }
 
     /**
-     * Complete a track session.
+     * Complete a stream.
      *
-     * @param TrackSession $session
+     * @param Stream $stream
      *
      * @return bool|int
      */
-    public function end(TrackSession $session)
+    public function end(Stream $stream)
     {
-        $streamLength = $session['created_at']->diffInMinutes(Carbon::now());
+        $streamLength = $stream['created_at']->diffInMinutes(Carbon::now());
 
-        return $session->update([
+        return $stream->update([
             'complete' => true,
             'stream_length' => $streamLength
         ]);
@@ -60,9 +60,9 @@ class EloquentTrackSessionRepository implements TrackSessionRepositoryInterface
      *
      * @return \Illuminate\Database\Eloquent\Collection|static[]
      */
-    public function findIncompletedSession(Channel $channel)
+    public function findIncompletedStream(Channel $channel)
     {
-        return $this->pointsSession
+        return $this->stream
             ->with('channel')
             ->where('complete', false)
             ->where('channel_id', $channel['id'])
@@ -74,9 +74,9 @@ class EloquentTrackSessionRepository implements TrackSessionRepositoryInterface
      *
      * @return \Illuminate\Database\Eloquent\Collection|static[]
      */
-    public function allIncompletedSessions()
+    public function allIncompletedStreams()
     {
-        return $this->pointsSession
+        return $this->stream
             ->with('channel')
             ->where('complete', false)
             ->get();

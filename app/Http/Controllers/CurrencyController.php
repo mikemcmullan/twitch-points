@@ -2,16 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Jobs\ToggleSystemJob;
-use App\Support\ScoreboardCache;
-use App\Contracts\Repositories\ChatterRepository;
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
-use App\Contracts\Repositories\TrackSessionRepository;
 use Illuminate\Http\Request;
-use JasonGrimes\Paginator;
 use App\Channel;
-use Cache;
 
 class CurrencyController extends Controller
 {
@@ -24,10 +18,9 @@ class CurrencyController extends Controller
      * @param Request $request
      * @param ChatterRepository $chatterRepository
      */
-    public function __construct(Request $request, ChatterRepository $chatterRepository)
+    public function __construct(Request $request)
     {
         $this->middleware(['featureDetection:currency']);
-        $this->chatterRepository = $chatterRepository;
     }
 
     /**
@@ -35,7 +28,7 @@ class CurrencyController extends Controller
      *
      * @return \Illuminate\View\View
      */
-    public function scoreboard(Request $request, TrackSessionRepository $trackPointsSession, Channel $channel, ScoreboardCache $scoreboardCache)
+    public function scoreboard(Request $request, Channel $channel)
     {
         $data = [
             'handle'    => strtolower($request->get('handle')),

@@ -10,7 +10,7 @@ use App\Exceptions\InvalidChannelException;
 use App\Services\TwitchApi;
 use Illuminate\Events\Dispatcher;
 use App\Channel;
-use App\Contracts\Repositories\TrackSessionRepository;
+use App\Contracts\Repositories\StreamRepository;
 
 class DownloadChatListJob extends Job
 {
@@ -34,13 +34,13 @@ class DownloadChatListJob extends Job
      *
      * @param  TwitchApi $twitchApi
      * @param Dispatcher $events
-     * @param TrackSessionRepository $trackSessionRepo
+     * @param StreamRepository $streamRepo
      * @return array
      */
-     public function handle(TwitchApi $twitchApi, Dispatcher $events, TrackSessionRepository $trackSessionRepo)
+     public function handle(TwitchApi $twitchApi, Dispatcher $events, StreamRepository $streamRepo)
      {
-         $status = (bool) $trackSessionRepo->findIncompletedSession($this->channel);
-         $offlineAwarded = (int)  $this->channel->getSetting('currency.offline-awarded', 0);
+         $status = (bool) $streamRepo->findIncompletedStream($this->channel);
+         $offlineAwarded = (int) $this->channel->getSetting('currency.offline-awarded', 0);
 
          if ($status === false && $offlineAwarded === 0) {
              return [];

@@ -25,11 +25,6 @@ class SyncSystemStatus extends Command
     protected $description = 'Sync the status of the system with the status of the twitch channel.';
 
     /**
-     * @var TrackSessionRepository
-     */
-    protected $trackSessionRepository;
-
-    /**
      * @var TwitchApi
      */
     protected $twitchApi;

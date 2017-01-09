@@ -2,7 +2,6 @@
 
 namespace App\Repositories\Channel;
 
-use App\Contracts\Repositories\TrackSessionRepository;
 use App\Contracts\Repositories\ChannelRepository;
 use App\Channel;
 
@@ -60,7 +59,7 @@ class EloquentChannelRepository implements ChannelRepository
     {
         return $this->channel->where('name', '=', $name)->first();
     }
-    
+
     /**
      * Find a user by their slug.
      *

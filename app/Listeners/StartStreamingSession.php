@@ -5,23 +5,23 @@ namespace App\Listeners;
 use App\Events\ChannelStartedStreaming;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
-use App\Contracts\Repositories\TrackSessionRepository;
+use App\Contracts\Repositories\StreamRepository;
 
 class StartStreamingSession
 {
     /**
-     * @var TrackSessionRepository
+     * @var StreamRepository
      */
-    protected $sessionRepo;
+    protected $streamRepo;
 
     /**
      * Create the event listener.
      *
      * @return void
      */
-    public function __construct(TrackSessionRepository $sessionRepo)
+    public function __construct(StreamRepository $streamRepo)
     {
-        $this->sessionRepo = $sessionRepo;
+        $this->streamRepo = $streamRepo;
     }
 
     /**
@@ -32,10 +32,10 @@ class StartStreamingSession
      */
     public function handle(ChannelStartedStreaming $event)
     {
-        $session = $this->sessionRepo->findIncompletedSession($event->channel);
+        $stream = $this->streamRepo->findIncompletedStream($event->channel);
 
-        if (! $session) {
-            return $this->sessionRepo->create($event->channel);
+        if (! $stream) {
+            return $this->streamRepo->create($event->channel);
         }
     }
 }

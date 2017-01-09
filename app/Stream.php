@@ -4,13 +4,22 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 
-class TrackSession extends Model
+class Stream extends Model
 {
+    /**
+     * Indicates if the IDs are auto-incrementing.
+     *
+     * @var bool
+     */
     public $incrementing = true;
-    
-    protected $table = 'track_points_sessions';
 
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array
+     */
     protected $fillable = ['channel_id', 'complete', 'stream_length'];
+
 
     public function channel()
     {
