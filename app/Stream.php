@@ -25,4 +25,9 @@ class Stream extends Model
     {
         return $this->belongsTo('App\Channel');
     }
+
+    public function metrics()
+    {
+        return $this->hasMany('App\StreamMetric');
+    }
 }

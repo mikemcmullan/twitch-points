@@ -3,6 +3,8 @@
 namespace App\Listeners;
 
 use App\Events\ChannelUpdatedInfo;
+use App\Stream;
+use App\StreamMetric;
 
 class UpdateChannelInfo
 {
@@ -25,8 +27,19 @@ class UpdateChannelInfo
         $channel = $event->channel;
         $info = $event->info->first();
 
-        $channel->viewers = $info['viewers'];
-        $channel->game = $info['game'];
-        $channel->save();
+        $stream = Stream::where('channel_id', $channel->id)
+            ->orderBy('created_at', 'DESC')
+            ->take(1)
+            ->first();
+
+        if ($stream) {
+            $metric = new StreamMetric([
+                'viewers'   => $info['viewers'],
+                'game'      => $info['game'],
+                'title'     => $info['channel']['status']
+            ]);
+
+            $stream->metrics()->save($metric);
+        }
     }
 }
