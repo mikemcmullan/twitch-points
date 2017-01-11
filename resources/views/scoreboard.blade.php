@@ -107,7 +107,7 @@
                                         <span class="help-block" v-show="!$settingsValidation.onlineamount.valid">Amount must a number and between 0 and 1000.</span>
                                         <p class="help-block" v-show="$settingsValidation.onlineamount.valid">Stream Online</p>
                                     </div>
-                                    <div class="col-md-5">
+                                    <div class="col-sm-5">
                                         {!! Form::number('amount', $channel->getSetting('currency.offline-awarded', 0), ['class' => 'form-control', 'id' => 'control-amount-off', 'v-model' => 'offlineAmount', 'v-validate:offlineAmount' => "{ isInteger: true, min: 0, max: 1000, required: true }"]) !!}
 
                                         <span class="help-block" v-show="!$settingsValidation.offlineamount.valid">Amount must a number and between 0 and 1000.</span>
