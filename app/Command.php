@@ -27,7 +27,7 @@ class Command extends Model
      *
      * @var array
      */
-    protected $fillable = ['command', 'pattern', 'level', 'type', 'file', 'response', 'usage', 'description', 'disabled', 'cool_down', 'global_cool_down', 'count'];
+    protected $fillable = ['command', 'level', 'type', 'file', 'response', 'usage', 'description', 'disabled', 'cool_down', 'global_cool_down', 'count'];
 
     /**
      * The attributes that should be casted to native types.
