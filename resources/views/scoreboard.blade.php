@@ -114,7 +114,7 @@
                                         <p class="help-block" v-show="$settingsValidation.offlineamount.valid">Stream Offline</p>
                                     </div>
 
-                                    <div class="col-sm-offset-2 col-md-10">
+                                    <div class="col-sm-offset-2 col-md-10" style="clear: both;">
                                         <p class="help-block">The amount of currency that is awards every interval while the stream is online. Min: 1, max: 1000</p>
                                     </div>
                                 </div><!-- .form-group -->
@@ -134,7 +134,7 @@
                                         <p class="help-block" v-show="$settingsValidation.offlinetimeinterval.valid">Stream Offline</p>
                                     </div>
 
-                                    <div class="col-sm-offset-2 col-md-10">
+                                    <div class="col-sm-offset-2 col-md-10" style="clear: both;">
                                         <p class="help-block">How often is currency awarded while the stream is online? This value is in minutes, min: 1, max: 60</p>
                                     </div>
                                 </div><!-- .form-group -->
