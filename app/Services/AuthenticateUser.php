@@ -65,10 +65,11 @@ class AuthenticateUser
             return $listener->loginHasFailed($channel);
         }
 
-        if ($user['access_token'] !== $token['access_token']) {
-            $user['access_token'] = $token['access_token'];
-            $this->userRepo->update($user);
-        }
+        $this->userRepo->update($user, [
+            'access_token'  => $token['access_token'],
+            'service_id'    => $authUser['_id'],
+            'logo'          => $authUser['logo']
+        ]);
 
         $this->auth->login($user, true);
 
