@@ -3,7 +3,7 @@
 namespace App\Services;
 
 use App\Channel;
-use App\Contracts\Repositories\UserRepository;
+use App\User;
 use Illuminate\Contracts\Auth\Guard;
 
 class AuthenticateUser
@@ -19,20 +19,13 @@ class AuthenticateUser
     private $auth;
 
     /**
-     * @var UserRepository
-     */
-    private $userRepo;
-
-    /**
      * @param TwitchSDKAdapter $twitchSDK
-     * @param UserRepository $userRepo
      * @param Guard $auth
      */
-    public function __construct(TwitchSDKAdapter $twitchSDK, UserRepository $userRepo, Guard $auth)
+    public function __construct(TwitchSDKAdapter $twitchSDK, Guard $auth)
     {
         $this->twitchSDK = $twitchSDK;
         $this->auth = $auth;
-        $this->userRepo = $userRepo;
     }
 
     /**
@@ -59,13 +52,13 @@ class AuthenticateUser
 
         $authUser = $this->twitchSDK->authUserGet($token['access_token']);
 
-        $user = $this->userRepo->findByName($channel, $authUser['name']);
+        $user = User::findByName($authUser['name']);
 
         if (\Gate::forUser($user)->denies('admin-channel', $channel)) {
             return $listener->loginHasFailed($channel);
         }
 
-        $this->userRepo->update($user, [
+        $user->update([
             'access_token'  => $token['access_token'],
             'service_id'    => $authUser['_id'],
             'logo'          => $authUser['logo']
