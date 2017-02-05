@@ -11,6 +11,7 @@ use App\Contracts\BasicManager as BasicManagerInterface;
 use App\SystemCommandOverrides;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Config\Repository as ConfigRepository;
+use Illuminate\Validation\Rule;
 
 class Manager extends BasicManager implements BasicManagerInterface
 {
@@ -118,15 +119,27 @@ class Manager extends BasicManager implements BasicManagerInterface
             return $item !== null;
         });
 
+        $data = array_map(function ($item) {
+            return trim($item);
+        }, $data);
+
         // Validate the request
         $validator = \Validator::make($data, [
-            'command'       => 'required|max:80',
+            'command'       => [
+                'required',
+                'max:40',
+                Rule::unique('commands')->where(function ($query) use ($channel) {
+                    $query->where('channel_id', $channel->id);
+                })
+            ],
             'level'         => 'required|in:everyone,mod,admin,owner',
             'response'      => 'required|max:400',
             'disabled'      => 'sometimes|required|boolean',
             'usage'         => 'sometimes|required|max:50',
             'description'   => 'sometimes|required|max:400',
-            'cool_down'     => 'required|numeric_size_between:0,86400'
+            'cool_down'     => 'required|numeric_size_between:0,300'
+        ], [
+            'command.unique'=> "Command '{$data['command']}' already exists."
         ]);
 
         if ($validator->fails()) {
@@ -165,15 +178,28 @@ class Manager extends BasicManager implements BasicManagerInterface
             return $item !== null;
         });
 
+        $data = array_map(function ($item) {
+            return trim($item);
+        }, $data);
+
         // Validate the request
         $validator = \Validator::make($data, [
-            'command'       => 'sometimes|required|max:80',
+            'command'       => [
+                'sometimes',
+                'required',
+                'max:40',
+                Rule::unique('commands')->where(function ($query) use ($channel) {
+                    $query->where('channel_id', $channel->id);
+                })->ignore($id)
+            ],
             'level'         => 'sometimes|required|in:everyone,mod,admin,owner',
             'response'      => 'sometimes|required|max:400',
             'disabled'      => 'sometimes|required|boolean',
             'usage'         => 'sometimes|required|max:50',
             'description'   => 'sometimes|required|max:400',
             'cool_down'     => 'sometimes|required|numeric_size_between:0,86400'
+        ], [
+            'command.unique'=> "Command '{$data['command']}' already exists."
         ]);
 
         if ($validator->fails()) {
@@ -200,6 +226,10 @@ class Manager extends BasicManager implements BasicManagerInterface
             return $item !== null;
         });
 
+        $data = array_map(function ($item) {
+            return trim($item);
+        }, $data);
+
         // Validate the request
         $validator = \Validator::make($data, [
             'command'       => 'sometimes|required|max:80',
@@ -208,7 +238,7 @@ class Manager extends BasicManager implements BasicManagerInterface
             'disabled'      => 'sometimes|required|boolean',
             'usage'         => 'sometimes|required|max:50',
             'description'   => 'sometimes|required|max:400',
-            'cool_down'     => 'sometimes|required|numeric_size_between:0,86400'
+            'cool_down'     => 'sometimes|required|numeric_size_between:0,300'
         ]);
 
         if ($validator->fails()) {
