@@ -7,54 +7,59 @@
                     <h4 class="modal-title">{{ title }}</h4>
                 </div><!-- .modal-header -->
 
-                <validator name="editValidation">
-                    <form @submit.prevent @submit="save">
-                        <div class="modal-body">
-                            <div class="form-group" v-bind:class="{ 'has-error': !$editValidation.command.valid && $editValidation.command.modified }">
-                                <label for="command-input">Command:</label>
-                                <input type="text" class="form-control" id="command-input" name="command" placeholder="!command" v-model="newCommand.command" v-bind:disabled="disabled.command" v-validate:command="{ minlength: 1, maxlength: 80, required: true }">
+                <form @submit.prevent @submit="save">
+                    <div class="modal-body">
+                        <div class="form-group" v-bind:class="{ 'has-error': errors.has('command') }">
+                            <label for="command-input">Command:</label>
+                            <input type="text" class="form-control" id="command-input" name="command" placeholder="!command" v-model="newCommand.command" v-bind:disabled="disabled.command">
 
-                                <span class="help-block" v-if="!$editValidation.command.valid && $editValidation.command.modified">Command requires a minimum of 1 characters and has a maximum 80 characters.</span>
-                            </div><!-- .form-group -->
+                            <span class="help-block" v-if="errors.has('command')" v-text="errors.get('command')"></span>
+                        </div><!-- .form-group -->
 
-                            <div class="form-group">
-                                <label for="level-input">Level:</label>
-                                <select class="form-control" id="level-input" name="level" v-model="newCommand.level" v-bind:disabled="disabled.level">
-                                    <option value="owner">Owner</option>
-                                    <option value="admin">Admin</option>
-                                    <option value="mod">Mod</option>
-                                    <option value="everyone" selected="selected">Everyone</option>
-                                </select>
-                            </div><!-- .form-group -->
+                        <div class="form-group">
+                            <label for="level-input">Level:</label>
+                            <select class="form-control" id="level-input" name="level" v-model="newCommand.level" v-bind:disabled="disabled.level">
+                                <option value="owner">Owner</option>
+                                <option value="admin">Admin</option>
+                                <option value="mod">Mod</option>
+                                <option value="everyone" selected="selected">Everyone</option>
+                            </select>
+                        </div><!-- .form-group -->
 
-                            <div class="form-group" v-bind:class="{ 'has-error': !$editValidation.cool_down.valid && $editValidation.cool_down.modified }">
-                                <label for="command-cool">Cool Down:</label>
-                                <input type="number" class="form-control" id="command-cool" name="cool_down" placeholder="3" v-model="newCommand.cool_down" v-validate:cool_down="{ numeric_betwen: true, required: true }">
+                        <div class="form-group" v-bind:class="{ 'has-error': errors.has('cool_down') }">
+                            <label for="command-down">Cool Down:</label>
+                            <input type="range" id="cool-down" name="cool_down" min="0" max="300" v-model="newCommand.cool_down">
+                            <span class="help-block">{{ newCommand.cool_down }} seconds</span>
+                            <span class="help-block" v-if="errors.has('cool_down')" v-text="errors.get('cool_down')"></span>
+                            <span class="help-block">The amount of time in seconds before the command can be used again.</span>
+                        </div>
+                        <!--
+                        <div class="form-group">
+                            <label for="command-count">Count</label>
+                            <input type="number" class="form-control" id="command-count" name="count" placeholder="3" v-model="newCommand.count">
+                        </div>
+                        -->
+                        <div class="form-group" v-bind:class="{ 'has-error': errors.has('response') }">
+                            <label for="response-input">Response:</label>
+                            <textarea class="form-control" id="response-input" name="command" rows="4" v-model="newCommand.response" v-bind:disabled="disabled.response" placeholder="This is a response output by the bot when the command is executed."></textarea>
 
-                                <span class="help-block" v-if="!$editValidation.cool_down.valid && $editValidation.cool_down.modified">Cool down must be a number between 0 and 86400.</span>
-                                <span class="help-block">The amount of time in seconds before the command can be used again.</span>
-                            </div>
+                            <span class="help-block" v-if="errors.has('response')" v-text="errors.get('response')"></span>
+                        </div><!-- .form-group -->
+                    </div><!-- .modal-body -->
 
-                            <div class="form-group" v-bind:class="{ 'has-error': !$editValidation.response.valid && $editValidation.response.modified }">
-                                <label for="response-input">Response:</label>
-                                <textarea class="form-control" id="response-input" name="command" rows="4" v-model="newCommand.response" v-bind:disabled="disabled.response" placeholder="This is a response output by the bot when the command is executed." v-validate:response="{ minlength: 2, maxlength: 400, required: true }"></textarea>
-
-                                <span class="help-block" v-if="!$editValidation.response.valid && $editValidation.response.modified">Response requires a minimum of 2 characters and has a maximum 400 characters.</span>
-                            </div><!-- .form-group -->
-                        </div><!-- .modal-body -->
-
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-default" @click="close">Close</button>
-                            <button type="submit" class="btn btn-primary" v-bind:disabled="saving || !$editValidation.valid">{{ saving ? 'Saving...' : 'Save' }}</button>
-                        </div><!-- .modal-footer -->
-                    </form><!-- form -->
-                </validator>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" @click="close">Close</button>
+                        <button type="submit" class="btn btn-primary" v-bind:disabled="saving">{{ saving ? 'Saving...' : 'Save' }}</button>
+                    </div><!-- .modal-footer -->
+                </form><!-- form -->
             </div><!-- .modal-content -->
         </div><!-- .modal-dialog -->
     </div><!-- .modal -->
 </template>
 
 <script>
+    import Errors from '../../forms/Errors';
+
     export default {
         props: {},
 
@@ -66,7 +71,8 @@
                     command: '',
                     level: 'everyone',
                     response: '',
-                    cool_down: 3
+                    cool_down: 3,
+                    count: 0
                 },
                 modal: false,
                 saving: false,
@@ -75,27 +81,9 @@
                     level: false,
                     response: false,
                     cool_down: false
-                }
-            }
-        },
+                },
 
-        validators: {
-            numeric_betwen: {
-                message: '',
-                check: (value) => {
-                    return (! isNaN(value)) && value >= 0 && value <= 86400;
-                }
-            },
-
-            alpha_dash_space: {
-                message: '',
-                check: (value) => {
-                    if (value.length !== 0) {
-                        return /^[a-z-_\s0-9]+$/i.test(value);
-                    }
-
-                    return true;
-                }
+                errors: new Errors()
             }
         },
 
@@ -104,10 +92,12 @@
 
             this.modal.on('hide.bs.modal', () => {
                 setTimeout(() => {
+                    this.errors.clear();
                     this.newCommand.command = '';
                     this.newCommand.level = 'everyone';
                     this.newCommand.response = '';
                     this.newCommand.cool_down = 3;
+                    this.newCommand.count = 0;
                     this.originalCommand = false;
                     this.saving = false;
                     this.disabled.command = false;
@@ -162,6 +152,10 @@
                     data.cool_down = this.newCommand.cool_down;
                 }
 
+                if (! this.disabled.count) {
+                    data.count = this.newCommand.count;
+                }
+
                 if (this.originalCommand === false) {
                     request = this.$http.post('commands', data, {
                         beforeSend: () => {
@@ -181,6 +175,8 @@
 
                     this.close();
                 }, (response) => {
+                    this.errors.record(response.data.message.validation_errors);
+                    // console.log();
                     this.saving = false;
                 });
             },
@@ -192,6 +188,7 @@
                     this.newCommand.cool_down = command.cool_down;
                     this.newCommand.level = command.level;
                     this.newCommand.response = command.response;
+                    this.newCommand.count = command.count;
                 }
 
                 this.modal.modal('toggle');
