@@ -197,9 +197,9 @@ class Manager extends BasicManager implements BasicManagerInterface
             'disabled'      => 'sometimes|required|boolean',
             'usage'         => 'sometimes|required|max:50',
             'description'   => 'sometimes|required|max:400',
-            'cool_down'     => 'sometimes|required|numeric_size_between:0,86400'
+            'cool_down'     => 'sometimes|required|numeric_size_between:0,300'
         ], [
-            'command.unique'=> "Command '{$data['command']}' already exists."
+            'command.unique'=> "Command '" . (isset($data['command']) ? $data['command'] : $command['command']) . "' already exists."
         ]);
 
         if ($validator->fails()) {
