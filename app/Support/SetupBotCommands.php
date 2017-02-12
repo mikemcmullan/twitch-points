@@ -31,8 +31,8 @@ class SetupBotCommands {
             'commands.system.giveaway.enter.usage' =>
                 sprintf(config('commands.system.giveaway.enter.usage'), $channel->getSetting('giveaway.keyword', '!tickets')),
 
-            'commands.system.misc.commands.response' =>
-                sprintf(config('commands.system.misc.commands.response'), route('commands_path', $channel->slug))
+            'commands.system.commands.all.response' =>
+                sprintf(config('commands.system.commands.all.response'), route('commands_path', $channel->slug))
         ]);
 
         // Go through all the commands and add a id and type.

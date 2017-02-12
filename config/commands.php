@@ -11,18 +11,6 @@
 return [
     'system' => [
         'misc' => [
-            'commands' => [
-                'command' => '!commands',
-                'usage' => '!commands',
-                'description' => 'Provides a link to the commands page.',
-                'level' => 'everyone',
-                'cool_down' => 3,
-                'global_cool_down' => true,
-                'module' => 'Simple',
-                'response' => '{{ user }}, you can view all available bot commands here: %s',
-                'disabled' => false
-            ],
-
             'uptime' => [
                 'command' => '!uptime',
                 'usage' => '!uptime',
@@ -69,6 +57,56 @@ return [
                 'global_cool_down' => true,
                 'module' => 'Silence',
                 'response' => '',
+                'disabled' => false
+            ],
+        ],
+
+        'commands' => [
+            'add' => [
+                'command' => '!commands add',
+                'usage' => '!commands add <command> <text>',
+                'description' => 'Add a new command. Example, <code>!command add !ping pong</code>',
+                'level' => 'mod',
+                'cool_down' => 0,
+                'global_cool_down' => false,
+                'module' => 'Commands/Add',
+                'response' => '',
+                'disabled' => false
+            ],
+
+            'edit' => [
+                'command' => '!commands edit',
+                'usage' => '!commands edit <command> <text>',
+                'description' => 'Edit an existing command. Example, <code>!command edit !ping pong2</code>',
+                'level' => 'mod',
+                'cool_down' => 0,
+                'global_cool_down' => false,
+                'module' => 'Commands/Edit',
+                'response' => '',
+                'disabled' => false
+            ],
+
+            'delete' => [
+                'command' => '!commands delete',
+                'usage' => '!commands delete <command> <text>',
+                'description' => 'Delete a command. Example, <code>!command delete !ping</code>',
+                'level' => 'mod',
+                'cool_down' => 0,
+                'global_cool_down' => false,
+                'module' => 'Commands/Delete',
+                'response' => '',
+                'disabled' => false
+            ],
+
+            'all' => [
+                'command' => '!commands',
+                'usage' => '!commands',
+                'description' => 'Provides a link to the commands page.',
+                'level' => 'everyone',
+                'cool_down' => 3,
+                'global_cool_down' => true,
+                'module' => 'Simple',
+                'response' => '{{ user }}, you can view all available bot commands here: %s',
                 'disabled' => false
             ],
         ],
