@@ -173,6 +173,8 @@ class ScoreboardCache
 
 		return [
 			'handle' 	=> $pieces[0],
+			'username'	=> $pieces[0],
+			'display_name' => getDisplayName($pieces[0]),
 			'rank'		=> $pieces[1],
 			'points'	=> floor($pieces[2]),
 			'minutes'	=> $pieces[3],

@@ -194,7 +194,10 @@ class Manager
             'channel' => $channel->name,
             'points' => floor($pointTotal),
             'amount' => floor($points),
-            'source' => $source
+            'source' => $source,
+            'source_display_name' => getDisplayName($source),
+            'username' => $chatter['handle'],
+            'display_name' => getDisplayName($chatter['handle'])
         ]);
     }
 

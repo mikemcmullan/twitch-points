@@ -89,3 +89,33 @@ function getLastUpdate(App\Channel $channel)
         return Carbon\Carbon::parse($lastUpdate);
     }
 }
+
+/**
+ * Try to find the display name for a username.
+ *
+ * @param  string $username
+ * @return string
+ */
+function getDisplayName($username)
+{
+    if (strlen($username) === 0) {
+        return null;
+    }
+
+    if ($name = Cache::get("displayNameMap:{$username}")) {
+        return $name;
+    }
+
+    $name = \App\ChatLogs::select('display_name')
+        ->where('username', $username)
+        ->orderBy('created_at', 'DESC')
+        ->first();
+
+    $name = $name ? $name['display_name'] : $username;
+
+    if ($name !== null) {
+        Cache::put("displayNameMap:{$username}", $name, 44640); // Cache for a month.
+    }
+
+    return $name;
+}

@@ -41,7 +41,7 @@ class ViewerController extends Controller
         $viewer['named_rank'] = (new NamedRankings($channel))->getRank($viewer['points'])['name'];
 
         return response()->json(array_only($viewer, [
-            'handle', 'points', 'minutes', 'rank', 'moderator',
+            'handle', 'username', 'display_name', 'points', 'minutes', 'rank', 'moderator',
             'administrator', 'time_online', 'named_rank'
         ]));
     }
