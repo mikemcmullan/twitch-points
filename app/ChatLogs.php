@@ -37,7 +37,7 @@ class ChatLogs extends Model
     public static function findUniqueUsernames()
     {
         return (new static)->selectRaw('DISTINCT username, display_name')
-            ->orderBy('created_at', 'DESC')
+            ->orderBy('created_at', 'ASC')
             ->get();
     }
 }
