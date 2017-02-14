@@ -106,16 +106,5 @@ function getDisplayName($username)
         return $name;
     }
 
-    $name = \App\ChatLogs::select('display_name')
-        ->where('username', $username)
-        ->orderBy('created_at', 'DESC')
-        ->first();
-
-    $name = $name ? $name['display_name'] : $username;
-
-    if ($name !== null) {
-        Cache::put("displayNameMap:{$username}", $name, 44640); // Cache for a month.
-    }
-
-    return $name;
+    return $username;
 }

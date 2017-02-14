@@ -28,4 +28,16 @@ class ChatLogs extends Model
             ->whereBetween('created_at', [$start->toDateTimeString(), $end->toDateTimeString()])
             ->count();
     }
+
+    /**
+     * Find all the unque usernames along with their display names.
+     *
+     * @return mixed
+     */
+    public static function findUniqueUsernames()
+    {
+        return (new static)->selectRaw('DISTINCT username, display_name')
+            ->orderBy('created_at', 'DESC')
+            ->get();
+    }
 }
