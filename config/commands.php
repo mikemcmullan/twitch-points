@@ -120,7 +120,7 @@ return [
                 'cool_down' => 3,
                 'global_cool_down' => false,
                 'module' => 'GetCurrency',
-                'response' => '{{ handle }} has {{ points }} coins. Rank: {{ rank }} | {{ named_rank }}',
+                'response' => '{{ display_name }} has {{ points }} coins. Rank: {{ rank }} | {{ named_rank }}',
                 'disabled' => false
             ],
 
@@ -132,7 +132,7 @@ return [
                 'cool_down' => 0,
                 'global_cool_down' => false,
                 'module' => 'AlterCurrency',
-                'response' => '{{ handle }} has been awarded {{ amount }} coins.',
+                'response' => '{{ display_name }} has been awarded {{ amount }} coins.',
                 'disabled' => false
             ],
 
@@ -144,7 +144,7 @@ return [
                 'cool_down' => 0,
                 'global_cool_down' => false,
                 'module' => 'AlterCurrency',
-                'response' => '{{ amount }} coins have been removed from {{ handle }}.',
+                'response' => '{{ amount }} coins have been removed from {{ display_name }}.',
                 'disabled' => false
             ],
 
@@ -156,7 +156,7 @@ return [
                 'cool_down' => 3,
                 'global_cool_down' => false,
                 'module' => 'GiveCurrency',
-                'response' => '{{ source }} has given {{ handle }} {{ amount }} coins.',
+                'response' => '{{ source_display_name }} has given {{ display_name }} {{ amount }} coins.',
                 'disabled' => false
             ],
         ],
