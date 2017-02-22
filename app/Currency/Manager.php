@@ -69,7 +69,7 @@ class Manager
     public function getViewer(Channel $channel, $handle)
     {
         if (! $handle) {
-            throw new UnknownHandleException(sprintf('%s is not a valid handle.', $handle));
+            throw new UnknownHandleException(sprintf('Unknown handle %s.', $handle));
         }
 
         $handle = strtolower($handle);
@@ -78,7 +78,7 @@ class Manager
         $chatter = $this->scoreboardCache->findByHandle($channel, $handle);
 
         if (! $chatter) {
-            throw new UnknownHandleException(sprintf('%s is not a valid handle.', $handle));
+            throw new UnknownHandleException(sprintf('Unknown handle %s.', $handle));
         }
 
         return $chatter;
