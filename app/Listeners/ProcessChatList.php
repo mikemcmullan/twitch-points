@@ -110,7 +110,9 @@ class ProcessChatList
             $chatter['points'] += $chatters['points'];
             $chatter['minutes'] += $chatters['minutes'];
 
-            $this->scoreboardCache->addViewer($event->channel, $chatter);
+            if ($chatter['hidden'] === 0) {
+                $this->scoreboardCache->addViewer($event->channel, $chatter);
+            }
         }
 
         foreach ($chatters['new']->merge($mods['new']) as $handle) {
