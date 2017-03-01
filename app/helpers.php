@@ -102,8 +102,18 @@ function getDisplayName($username)
         return null;
     }
 
-    if ($name = Cache::get("displayNameMap:{$username}")) {
-        return $name;
+    $redis = app('redis');
+
+    $userId = $redis->hget('twitch:usernameIdMap', $username);
+
+    if ($userId) {
+        $user = $redis->hget('twitch:chatUsers', $userId);
+
+        if ($user) {
+            $user = json_decode($user, true);
+
+            return $user['display_name'];
+        }
     }
 
     return $username;
