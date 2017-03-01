@@ -11,6 +11,13 @@ trait CurrencyChannels
         return Channel::findByName($name);
     }
 
+    public function getAllCurrencyChannels()
+    {
+        return Channel::all()->filter(function ($channel) {
+            return $channel->getSetting('active', false) == true;
+        });
+    }
+
     public function getActiveCurrencyChannels()
     {
         $channels = Channel::all()->filter(function ($channel) {

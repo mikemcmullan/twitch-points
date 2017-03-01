@@ -42,7 +42,7 @@ class UpdateScoreboardCache extends Command
     {
         $channelStr = $this->argument('channel');
 
-        if ($channelStr) {
+        if ($channelStr && $channelStr !== 'all') {
             if (! $channel = $this->getChannel($channelStr)) {
                 return $this->info("Channel '{$channelStr}' was not found.");
             }
@@ -51,7 +51,11 @@ class UpdateScoreboardCache extends Command
             return $this->dispatch(new UpdateScoreboardCacheJob($channel));
         }
 
-        $channels = $this->getActiveCurrencyChannels();
+        if ($channelStr === 'all') {
+            $channels = $this->getAllCurrencyChannels();
+        } else {
+            $channels = $this->getActiveCurrencyChannels();
+        }
 
         if ($channels->isEmpty()) {
             return $this->info('No currency channels active.');
