@@ -130,9 +130,19 @@ class ScoreboardCache
 		$viewer['administrator'] = array_get($viewer, 'administrator', false);
 		$viewer['moderator'] = array_get($viewer, 'moderator', false);
 
-		$data = sprintf('%s:%s:%s:%s:%s:%s', $viewer['handle'], $viewer['rank'], $viewer['points'], $viewer['minutes'], (int) $viewer['moderator'], (int) $viewer['administrator']);
+		$data = [
+			'username' 		=> $viewer['handle'],
+			'display_name'	=> getDisplayName($viewer['handle']),
+			'rank' 			=> (int) $viewer['rank'],
+			'points'		=> (int) $viewer['points'],
+			'minutes'		=> (int) $viewer['minutes'],
+			'time_online'	=> presentTimeOnline($viewer['minutes']),
+			'moderator' 	=> (bool) $viewer['moderator'],
+			'administrator' => (bool) $viewer['administrator'],
 
-		$this->redis->hset("#{$channel->slug}:sb", $viewer['handle'], $data);
+		];
+
+		$this->redis->hset("#{$channel->slug}:sb", $viewer['handle'], json_encode($data));
 		$this->redis->zadd("#{$channel->slug}:sbIndex", $viewer['rank'], $viewer['handle']);
 	}
 
@@ -169,18 +179,18 @@ class ScoreboardCache
 	 */
 	protected function mapViewer($string)
 	{
-		$pieces = explode(':', $string);
+		$data = json_decode($string, true);
 
 		return [
-			'handle' 	=> $pieces[0],
-			'username'	=> $pieces[0],
-			'display_name' => getDisplayName($pieces[0]),
-			'rank'		=> $pieces[1],
-			'points'	=> floor($pieces[2]),
-			'minutes'	=> $pieces[3],
-			'time_online' => presentTimeOnline($pieces[3]),
-			'moderator' => (bool) $pieces[4],
-			'administrator' => (bool) $pieces[5]
+			'handle' 		=> $data['username'],
+			'username'		=> $data['username'],
+			'display_name' 	=> $data['display_name'],
+			'rank'			=> $data['rank'],
+			'points'		=> floor($data['points']),
+			'minutes'		=> $data['minutes'],
+			'time_online' 	=> $data['time_online'],
+			'moderator' 	=> $data['moderator'],
+			'administrator' => $data['administrator']
 		];
 	}
 }
