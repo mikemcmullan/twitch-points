@@ -38,16 +38,16 @@ class AuthController extends Controller
         if ($args['error']) {
             $redirectArgs = [
                 $slug,
-                "error={$args['error']}",
-                "error_description={$args['error_description']}",
-                "state={$args['state']}"
+                'error'             => $args['error'],
+                'error_description' => $args['error_description'],
+                'state'             => $args['state']
             ];
         } else {
             $redirectArgs = [
                 $slug,
-                "code={$args['code']}",
-                "scope={$args['scope']}",
-                "state={$args['state']}"
+                'code'  => $args['code'],
+                'scope' => $args['scope'],
+                'state' => $args['state']
             ];
         }
 
