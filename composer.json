@@ -20,7 +20,9 @@
 		"pusher/pusher-php-server": "^2.2",
 		"tymon/jwt-auth": "^0.5.6",
 		"bschmitt/laravel-amqp": "dev-master",
-		"mtdowling/supervisor-event": "^1.0"
+		"mtdowling/supervisor-event": "^1.0",
+		"socialiteproviders/manager": "^2.0",
+		"socialiteproviders/twitch": "^2.0"
 	},
 	"require-dev": {
 		"fzaninotto/faker": "~1.4",

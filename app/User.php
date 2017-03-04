@@ -27,4 +27,9 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
     {
         return (new static)->where('name', $name)->first();
     }
+
+    public static function findByServiceId($id)
+    {
+        return (new static)->where('service_id', $id)->first();
+    }
 }

@@ -160,6 +160,7 @@ return [
         App\Providers\SupervisorServiceProvider::class,
         Tymon\JWTAuth\Providers\JWTAuthServiceProvider::class,
         Bschmitt\Amqp\AmqpServiceProvider::class,
+        SocialiteProviders\Manager\ServiceProvider::class,
     ],
 
     /*
@@ -214,6 +215,7 @@ return [
         'JWTAuth'   => Tymon\JWTAuth\Facades\JWTAuth::class,
         'JWTFactory'=> Tymon\JWTAuth\Facades\JWTFactory::class,
         'Amqp'      => Bschmitt\Amqp\Facades\Amqp::class,
+        'Socialite' => Laravel\Socialite\Facades\Socialite::class,
 
     ],
 

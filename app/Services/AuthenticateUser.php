@@ -5,6 +5,8 @@ namespace App\Services;
 use App\Channel;
 use App\User;
 use Illuminate\Contracts\Auth\Guard;
+use Socialite;
+use Gate;
 
 class AuthenticateUser
 {
@@ -36,32 +38,21 @@ class AuthenticateUser
      *
      * @return \Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
      */
-    public function execute(Channel $channel, $code, $error, $listener)
+    public function execute(Channel $channel, $listener)
     {
-        // If error login failed.
-        if ($error) {
-            return $listener->loginHasFailed($channel);
-        }
+        $authUser = Socialite::driver('twitch')->user();
+        $user = User::findByServiceId($authUser->id);
 
-        $token = $this->twitchSDK->authAccessTokenGet($code);
-
-        // If error is returned from twitch the access token will be missing.
-        if (! isset($token['access_token'])) {
-            return $listener->loginHasFailed($channel);
-        }
-
-        $authUser = $this->twitchSDK->authUserGet($token['access_token']);
-
-        $user = User::findByName($authUser['name']);
-
-        if (\Gate::forUser($user)->denies('admin-channel', $channel)) {
+        if (Gate::forUser($user)->denies('admin-channel', $channel)) {
             return $listener->loginHasFailed($channel);
         }
 
         $user->update([
-            'access_token'  => $token['access_token'],
-            'service_id'    => $authUser['_id'],
-            'logo'          => $authUser['logo']
+            'name'          => $authUser->name,
+            'display_name'  => $authUser->nickname,
+            'email'         => $authUser->email,
+            'access_token'  => $authUser->token,
+            'logo'          => $authUser->avatar
         ]);
 
         $this->auth->login($user, true);

@@ -38,5 +38,11 @@ return [
         'key'    => env('PUSHER_KEY'),
         'secret' => env('PUSHER_SECRET'),
         'app_id' => env('PUSHER_APP_ID')
+    ],
+
+    'twitch' => [
+        'client_id' => env('TWITCH_CLIENT_ID'),
+        'client_secret' => env('TWITCH_CLIENT_SECRET'),
+        'redirect' => env('TWITCH_REDIRECT_URI'),
     ]
 ];
