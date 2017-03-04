@@ -28,41 +28,30 @@ class AuthController extends Controller
      */
     public function loginProxy(Request $request, TwitchSDKAdapter $twitchSDK)
     {
-        if (! $request->get('code') && ! $request->get('error')) {
-            $data    = $request->only(['referer', 'sig', 'expires']);
-            $url     = $twitchSDK->authLoginURL('user_read');
+        $args = $request->only(['code', 'scope', 'state', 'error', 'error_description']);
+        $slug = cache()->get('authState:' . $args['state']);
 
-            $response    = new Response(view('login-proxy', compact('url')));
-            $response->header('Location', $url);
-            $response->withCookie(cookie('referer', $data['referer'], 60));
-            $response->withCookie(cookie('sig', $data['sig'], 60));
-            $response->withCookie(cookie('expires', $data['expires'], 60));
-
-            return $response;
+        if (! $slug) {
+            return response('Unable to complete the login process, a possible reason could be the login process took to long. Please start again.', 403);
         }
 
-        $referer = $request->cookie('referer');
-        $sig     = $request->cookie('sig');
-        $expires   = $request->cookie('expires');
-
-        try {
-            $future = Carbon::createFromTimestamp($expires)->isFuture();
-        } catch (\Exception $e) {
-            return response('Error, invalid nonce.');
+        if ($args['error']) {
+            $redirectArgs = [
+                $slug,
+                "error={$args['error']}",
+                "error_description={$args['error_description']}",
+                "state={$args['state']}"
+            ];
+        } else {
+            $redirectArgs = [
+                $slug,
+                "code={$args['code']}",
+                "scope={$args['scope']}",
+                "state={$args['state']}"
+            ];
         }
 
-        if (! $future) {
-            return response('Error, to much time has past since the authentication process began.');
-        }
-
-        $key = config('app.key');
-        $signature = hash_hmac('sha256', $referer . $key . $expires, $key);
-
-        if ($signature !== $sig) {
-            return response('Error, signature mismatch.');
-        }
-
-        return redirect($referer  . '?' . $request->getQueryString());
+        return redirect()->route('login_callback_path', $redirectArgs);
     }
 
     /**
@@ -73,7 +62,7 @@ class AuthController extends Controller
      * @param AuthenticateUser $authUser
      * @return \Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
      */
-    public function login(Request $request, Channel $channel, AuthenticateUser $authUser)
+    public function login(Request $request, Channel $channel)
     {
         if (\Auth::check()) {
             return redirect()
@@ -81,16 +70,28 @@ class AuthController extends Controller
                 ->with('message', 'You are already logged in.');
         }
 
-        if (! $request->get('code') && ! $request->get('error')) {
-            $referer = $request->url();
-            $expires = Carbon::now()->addMinutes(5)->timestamp;
-            $key = config('app.key');
-            $signature = hash_hmac('sha256', $referer . $key . $expires, $key);
+        $redirect = \Socialite::driver('twitch')->redirect();
+        cache()->put('authState:' . session()->get('state'), $channel->slug, 15);
 
-            return redirect(route('login_proxy_path', ['referer=' . $referer, 'sig=' . $signature, 'expires=' . $expires]));
-        } else {
-            return $authUser->execute($channel, $request->get('code'), $request->get('error'), $this);
+        return $redirect;
+    }
+
+    /**
+     * After receiving the oauth code from twitch complete the oauth flow
+     * and login the user.
+     *
+     * @param  Request          $request
+     * @param  Channel          $channel
+     * @param  AuthenticateUser $authUser
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function loginCallback(Request $request, Channel $channel, AuthenticateUser $authUser)
+    {
+        if ($error = $request->get('error')) {
+            return $this->loginHasFailed($channel, $error);
         }
+
+        return $authUser->execute($channel, $this);
     }
 
     /**
@@ -112,11 +113,21 @@ class AuthController extends Controller
      * @param Channel $channel
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function loginHasFailed(Channel $channel)
+    public function loginHasFailed(Channel $channel, $error = false)
     {
+        switch ($error) {
+            case 'access_denied':
+                $errorMsg = 'Sorry, you have not allowed us access to your twitch profile.';
+                break;
+
+            default:
+                $errorMsg = 'Sorry, you\'re not allowed to administrate this site.';
+                break;
+        }
+
         return redirect()
             ->route('home_path', $channel->slug)
-            ->with('message', 'Sorry, you\'re not allowed to administrate this site.');
+            ->with('message', $errorMsg);
     }
 
     /**

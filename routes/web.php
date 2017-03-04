@@ -64,6 +64,11 @@ Route::get('/login', [
     'as'    => 'login_path'
 ]);
 
+Route::get('/login/callback', [
+    'uses'  => 'AuthController@loginCallback',
+    'as'    => 'login_callback_path'
+]);
+
 Route::get('/logout', [
     'uses'  => 'AuthController@logout',
     'as'    => 'logout_path'

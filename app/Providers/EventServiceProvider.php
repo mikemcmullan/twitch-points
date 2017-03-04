@@ -68,7 +68,11 @@ class EventServiceProvider extends ServiceProvider
 
         \App\Events\NewFollower::class => [
             \App\Listeners\PushToBot::class
-        ]
+        ],
+
+        \SocialiteProviders\Manager\SocialiteWasCalled::class => [
+            'SocialiteProviders\Twitch\TwitchExtendSocialite@handle',
+        ],
     ];
 
     /**
