@@ -90,13 +90,7 @@ function getLastUpdate(App\Channel $channel)
     }
 }
 
-/**
- * Try to find the display name for a username.
- *
- * @param  string $username
- * @return string
- */
-function getDisplayName($username)
+function getUserFromRedis($username)
 {
     if (strlen($username) === 0) {
         return null;
@@ -112,8 +106,25 @@ function getDisplayName($username)
         if ($user) {
             $user = json_decode($user, true);
 
-            return $user['display_name'];
+            return $user;
         }
+    }
+
+    return null;
+}
+
+/**
+ * Try to find the display name for a username.
+ *
+ * @param  string $username
+ * @return string
+ */
+function getDisplayName($username)
+{
+    $user = getUserFromRedis($username);
+
+    if ($user) {
+        return $user['display_name'];
     }
 
     return $username;

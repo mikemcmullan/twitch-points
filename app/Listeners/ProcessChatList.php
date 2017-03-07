@@ -106,7 +106,7 @@ class ProcessChatList
         $chatters     = $this->chatterRepository->updateChatter($event->channel, $chattersList, $minutes, $points);
         $mods         = $this->chatterRepository->updateModerator($event->channel, $modList, $minutes, $points);
 
-        foreach ($chatters['existing']->merge($mods['existing']) as $chatter) {
+        foreach ($chatters['existing'] as $chatter) {
             $chatter['points'] += $chatters['points'];
             $chatter['minutes'] += $chatters['minutes'];
 
@@ -115,12 +115,32 @@ class ProcessChatList
             }
         }
 
-        foreach ($chatters['new']->merge($mods['new']) as $handle) {
+        foreach ($mods['existing'] as $chatter) {
+            $chatter['points'] += $chatters['points'];
+            $chatter['minutes'] += $chatters['minutes'];
+
+            if ($chatter['hidden'] === 0) {
+                $this->scoreboardCache->addViewer($event->channel, $chatter);
+            }
+        }
+
+        foreach ($chatters['new'] as $handle) {
             $chatter = [
-                'handle'        => $handle,
+                'handle'        => $handle['username'],
                 'points'        => $chatters['points'],
                 'minutes'       => $chatters['minutes'],
-                'moderator'     => $mods['new']->search($handle) !== false
+                'moderator'     => false
+            ];
+
+            $this->scoreboardCache->addViewer($event->channel, $chatter);
+        }
+
+        foreach ($mods['new'] as $handle) {
+            $chatter = [
+                'handle'        => $handle['username'],
+                'points'        => $chatters['points'],
+                'minutes'       => $chatters['minutes'],
+                'moderator'     => true
             ];
 
             $this->scoreboardCache->addViewer($event->channel, $chatter);

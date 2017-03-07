@@ -119,7 +119,7 @@ class ScoreboardCache
 	public function addViewer(Channel $channel, $viewer)
 	{
 		if (! isset($viewer['rank'])) {
-			$viewer['rank'] = $this->redis->zscore("#{$channel->slug}:sbIndex", $viewer['handle']);
+			$viewer['rank'] = $this->redis->zscore("#{$channel->slug}:sbIndex", $viewer['username']);
 
 			if (! $viewer['rank']) {
 				$viewer['rank'] = $this->redis->zrevrange("#{$channel->slug}:sbIndex", 0, 0, 'WITHSCORES');
@@ -131,19 +131,18 @@ class ScoreboardCache
 		$viewer['moderator'] = array_get($viewer, 'moderator', false);
 
 		$data = [
-			'username' 		=> $viewer['handle'],
-			'display_name'	=> getDisplayName($viewer['handle']),
+			'username' 		=> $viewer['username'],
+			'display_name'	=> $viewer['display_name'] ? $viewer['display_name'] : $viewer['username'],
 			'rank' 			=> (int) $viewer['rank'],
 			'points'		=> (int) $viewer['points'],
 			'minutes'		=> (int) $viewer['minutes'],
 			'time_online'	=> presentTimeOnline($viewer['minutes']),
 			'moderator' 	=> (bool) $viewer['moderator'],
 			'administrator' => (bool) $viewer['administrator'],
-
 		];
 
-		$this->redis->hset("#{$channel->slug}:sb", $viewer['handle'], json_encode($data));
-		$this->redis->zadd("#{$channel->slug}:sbIndex", $viewer['rank'], $viewer['handle']);
+		$this->redis->hset("#{$channel->slug}:sb", $viewer['username'], json_encode($data));
+		$this->redis->zadd("#{$channel->slug}:sbIndex", $viewer['rank'], $viewer['username']);
 	}
 
 	/**
