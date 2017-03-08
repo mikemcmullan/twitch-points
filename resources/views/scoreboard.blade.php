@@ -23,8 +23,8 @@
                         <div class="col-md-12">
                             {!! Form::open(['method' => 'get', 'class' => 'points-results-form']) !!}
                                 <div class="form-group">
-                                    <label for="handle">Chat Handle:</label>
-                                    <input type="text" name="handle" id="handle" class="form-control" value="{!! $handle !!}" v-model="handle">
+                                    <label for="username">Chat Username:</label>
+                                    <input type="text" name="username" id="username" class="form-control" value="{!! $username !!}" v-model="username">
                                     <p class="help-block">Enter your twitch username into the box above and click 'Check {{ $channel->getSetting('currency.name') }}'.</p>
                                 </div>
 
@@ -41,7 +41,7 @@
                                     <tbody>
                                         <tr>
                                             <td>@{{ viewer.rank }}</td>
-                                            <td>@{{ viewer.handle }}</td>
+                                            <td>@{{ viewer.display_name }}</td>
                                             <td>@{{ viewer.time_online }} <span class="label label-primary" v-if="viewer.moderator">MOD</span></td>
                                             <td>@{{ viewer.points }}</td>
                                         </tr>
@@ -200,7 +200,7 @@
                                 <tbody class="hide">
                                     <tr v-for="chatter in items">
                                         <td>@{{ chatter.rank }}</td>
-                                        <td>@{{ chatter.handle }} <span class="label label-primary" v-if="chatter.moderator">MOD</span></td>
+                                        <td>@{{ chatter.display_name }} <span class="label label-primary" v-if="chatter.moderator">MOD</span></td>
                                         <td>@{{ chatter.time_online }}</td>
                                         <td>@{{ chatter.points }}</td>
                                     </tr>

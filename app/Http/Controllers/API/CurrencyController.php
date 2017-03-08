@@ -52,9 +52,9 @@ class CurrencyController extends Controller
      */
     public function addCurrency(Request $request, Channel $channel)
     {
-        $data = $request->only(['handle', 'points', 'source']);
+        $data = $request->only(['username', 'amount', 'source']);
 
-        return response()->json($this->currencyManager->addPoints($channel, $data['handle'], $data['points'], $data['source']));
+        return response()->json($this->currencyManager->addPoints($channel, $data['username'], $data['amount'], $data['source']));
     }
 
     /**
@@ -67,9 +67,9 @@ class CurrencyController extends Controller
      */
     public function removeCurrency(Request $request, Channel $channel)
     {
-        $data = $request->only(['handle', 'points']);
+        $data = $request->only(['username', 'amount']);
 
-        return response()->json($this->currencyManager->removePoints($channel, $data['handle'], $data['points']));
+        return response()->json($this->currencyManager->removePoints($channel, $data['username'], $data['amount']));
     }
 
     /**

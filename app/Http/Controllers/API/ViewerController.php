@@ -28,13 +28,13 @@ class ViewerController extends Controller
      */
     public function getViewer(Request $request, Channel $channel, Manager $manager)
     {
-        $handle = $request->get('handle');
+        $username = $request->get('username');
 
-        if (! $handle) {
-            throw new InvalidArgumentException('Handle is a required parameter.');
+        if (! $username) {
+            throw new InvalidArgumentException('Username is a required parameter.');
         }
 
-        $viewer = $manager->getViewer($channel, $handle);
+        $viewer = $manager->getViewer($channel, $username);
         $viewer['channel'] = $channel->name;
         $viewer['points'] = floor($viewer['points']);
         $viewer['time_online'] = presentTimeOnline($viewer['minutes']);

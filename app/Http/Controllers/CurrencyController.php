@@ -31,14 +31,14 @@ class CurrencyController extends Controller
     public function scoreboard(Request $request, Channel $channel)
     {
         $data = [
-            'handle'    => strtolower($request->get('handle')),
+            'username'  => strtolower($request->get('username')),
             'chatter'   => '{}'
         ];
 
         $api = new \App\Support\CallApi();
 
-        if ($data['handle']) {
-            $data['chatter'] = $api->viewer($channel->slug, $data['handle']);
+        if ($data['username']) {
+            $data['chatter'] = $api->viewer($channel->slug, $data['username']);
         }
 
         $data['status'] = (bool) $channel->getSetting('currency.status');

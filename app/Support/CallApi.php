@@ -47,7 +47,7 @@ class CallApi
      */
     public function viewer($channel, $handle)
     {
-        $url = sprintf('/%s/viewer?handle=%s', $channel, $handle);
+        $url = sprintf('/%s/viewer?username=%s', $channel, $handle);
 
         return $this->callApi($url);
     }
