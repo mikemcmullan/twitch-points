@@ -108,7 +108,7 @@ if (document.querySelector('#currency')) {
                 to: 12
             },
             loading: false,
-            handle: '',
+            username: '',
             viewer: {}
         },
 
@@ -124,8 +124,8 @@ if (document.querySelector('#currency')) {
                 elem.classList.remove('hide');
             });
 
-            if (viewer.handle) {
-                this.handle = viewer.handle;
+            if (viewer.username) {
+                this.username = viewer.username;
             }
 
             this.items = data.data;
