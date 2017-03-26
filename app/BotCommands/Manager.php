@@ -120,7 +120,7 @@ class Manager extends BasicManager implements BasicManagerInterface
         });
 
         $data = array_map(function ($item) {
-            return trim($item);
+            return is_bool($item) ? $item : trim($item);
         }, $data);
 
         // Validate the request
@@ -179,7 +179,7 @@ class Manager extends BasicManager implements BasicManagerInterface
         });
 
         $data = array_map(function ($item) {
-            return trim($item);
+            return is_bool($item) ? $item : trim($item);
         }, $data);
 
         // Validate the request
@@ -227,7 +227,7 @@ class Manager extends BasicManager implements BasicManagerInterface
         });
 
         $data = array_map(function ($item) {
-            return trim($item);
+            return is_bool($item) ? $item : trim($item);
         }, $data);
 
         // Validate the request
