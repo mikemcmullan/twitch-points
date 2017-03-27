@@ -6,6 +6,7 @@ use App\Http\Requests;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Channel;
+use App\Contracts\Repositories\StreamRepository;
 
 class CurrencyController extends Controller
 {
@@ -28,11 +29,12 @@ class CurrencyController extends Controller
      *
      * @return \Illuminate\View\View
      */
-    public function scoreboard(Request $request, Channel $channel)
+    public function scoreboard(Request $request, Channel $channel, StreamRepository $streamRepo)
     {
         $data = [
             'username'  => strtolower($request->get('username')),
-            'chatter'   => '{}'
+            'chatter'   => '{}',
+            'streaming' => (bool) $streamRepo->findIncompletedStream($channel)
         ];
 
         $api = new \App\Support\CallApi();

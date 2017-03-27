@@ -73,100 +73,70 @@
                     <div class="box-body">
                         <named-rankings-modal :ranks='{!! json_encode($channel->getSetting('named-rankings', [])) !!}'></named-rankings-modal>
 
-                        <validator name="settingsValidation">
-                            <form class="form-horizontal" @submit.prevent @submit="submit" novalidate>
-                                <div class="form-group">
-                                    <label for="control-amount" class="col-sm-2 control-label">Status</label>
-                                    <div class="col-sm-10">
-                                        <label class="radio-inline">
-                                            {!! Form::radio('current-status', 'on', $status, ['v-model' => 'currentStatus']) !!} On
-                                        </label>
+                        <div class="callout callout-warning clearfix" v-if="!currencyStatus">
+                            Currency system is disabled, no currency is being awarded.
+                            <a class="btn btn-xs btn-primary pull-right" @click="enableCurrency()" style="text-decoration: none">Enable</a>
+                        </div>
 
-                                        <label class="radio-inline">
-                                            {!! Form::radio('current-status', 'off', !$status, ['v-model' => 'currentStatus']) !!} Off
-                                        </label>
-                                    </div>
-                                </div><!-- .form-group -->
+                        <form class="form-horizontal" @submit.prevent @submit="submit" novalidate>
 
-                                <div class="form-group" v-bind:class="{ 'has-error': !$settingsValidation.keyword.valid }">
-                                    <label for="control-keyword" class="col-sm-2 control-label">Keyword</label>
-                                    <div class="col-sm-10">
+                            <div class="form-group">
+                                <div class="col-sm-offset-2 col-md-10">
+                                    <em>Currency is only awarded while the stream is online.</em>
+                                </div>
+                            </div>
 
-                                        <input type="text" name="keyword" id="control-keyword" class="form-control" v-model="keyword" value="{{ $channel->getSetting('currency.keyword') }}" v-validate:keyword="{ keywordFormat: true }">
+                            <div class="form-group" v-bind:class="{ 'has-error': errors.has('currency__name') }">
+                                <label for="currency-name" class="col-sm-2 control-label">Name</label>
 
-                                        <span class="help-block" v-show="!$settingsValidation.keyword.valid">Keyword must be a single word and may be prepended with a !, maximum of 20 chatacters.</span>
-                                        <span class="help-block">Viewers will enter this keyword to check how much {{ lcfirst($channel->getSetting('currency.name')) }} they have.</span>
-                                    </div>
-                                </div><!-- .form-group -->
+                                <div class="col-sm-10">
+                                    <input type="text" name="currency-name" id="currency-name" class="form-control" v-model="currencyName">
 
-                                <div class="form-group" v-bind:class="{ 'has-error': !$settingsValidation.onlineamount.valid || !$settingsValidation.offlineamount.valid }">
-                                    <label for="control-amount-pm" class="col-sm-2 control-label">Amount</label>
-                                    <div class="col-sm-5">
-                                        {!! Form::number('amount', $channel->getSetting('currency.online-awarded', 0), ['class' => 'form-control', 'id' => 'control-amount-on', 'v-model' => 'onlineAmount', 'v-validate:onlineAmount' => "{ isInteger: true, min: 1, max: 1000, required: true }"]) !!}
+                                    <span class="help-block" v-if="errors.has('currency__name')" v-text="errors.get('currency__name')"></span>
+                                    <span class="help-block">The name of your currency, 15 characters max.</span>
+                                </div>
+                            </div><!-- .form-group -->
 
-                                        <span class="help-block" v-show="!$settingsValidation.onlineamount.valid">Amount must a number and between 0 and 1000.</span>
-                                        <p class="help-block" v-show="$settingsValidation.onlineamount.valid">Stream Online</p>
-                                    </div>
-                                    <div class="col-sm-5">
-                                        {!! Form::number('amount', $channel->getSetting('currency.offline-awarded', 0), ['class' => 'form-control', 'id' => 'control-amount-off', 'v-model' => 'offlineAmount', 'v-validate:offlineAmount' => "{ isInteger: true, min: 0, max: 1000, required: true }"]) !!}
+                            <div class="form-group" v-bind:class="{ 'has-error': errors.has('currency__keyword') }">
+                                <label for="control-keyword" class="col-sm-2 control-label">Command</label>
+                                <div class="col-sm-10">
+                                    <input type="text" name="keyword" id="control-keyword" class="form-control" v-model="keyword" value="{{ $channel->getSetting('currency.keyword') }}">
 
-                                        <span class="help-block" v-show="!$settingsValidation.offlineamount.valid">Amount must a number and between 0 and 1000.</span>
-                                        <p class="help-block" v-show="$settingsValidation.offlineamount.valid">Stream Offline</p>
-                                    </div>
+                                    <span class="help-block" v-if="errors.has('currency__keyword')" v-text="errors.get('currency__keyword')"></span>
+                                    <span class="help-block">Viewers will enter this command to check how much {{ lcfirst($channel->getSetting('currency.name')) }} they have. Must be a single word and may be preceeded by a !.</span>
+                                </div>
+                            </div><!-- .form-group -->
 
-                                    <div class="col-sm-offset-2 col-md-10" style="clear: both;">
-                                        <p class="help-block">The amount of currency that is awards every interval while the stream is online. Min: 1, max: 1000</p>
-                                    </div>
-                                </div><!-- .form-group -->
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label">Rate</label>
 
-                                <div class="form-group" v-bind:class="{ 'has-error': !$settingsValidation.onlinetimeinterval.valid || !$settingsValidation.offlinetimeinterval.valid }">
-                                    <label for="control-time-interval-on" class="col-sm-2 control-label">Time Interval</label>
-                                    <div class="col-sm-5">
-                                        {!! Form::number('time-interval', $channel->getSetting('currency.online-interval', 0), ['class' => 'form-control', 'id' => 'control-time-interval-on', 'v-model' => 'onlineTimeInterval', 'v-validate:onlineTimeInterval' => "{ isInteger: true, min: 1, max: 60, required: true }"]) !!}
-
-                                        <span class="help-block" v-show="!$settingsValidation.onlinetimeinterval.valid">Time interval must a number and between 0 and 60.</span>
-                                        <p class="help-block" v-show="$settingsValidation.onlinetimeinterval.valid">Stream Online</p>
-                                    </div>
-                                    <div class="col-sm-5">
-                                        {!! Form::number('time-interval', $channel->getSetting('currency.offline-interval', 0), ['class' => 'form-control', 'id' => 'control-time-interval-off', 'v-model' => 'offlineTimeInterval', 'v-validate:offlineTimeInterval' => "{ isInteger: true, min: 1, max: 60, required: true }"]) !!}
-
-                                        <span class="help-block" v-show="!$settingsValidation.offlinetimeinterval.valid">Time interval must a number and between 0 and 60.</span>
-                                        <p class="help-block" v-show="$settingsValidation.offlinetimeinterval.valid">Stream Offline</p>
-                                    </div>
-
-                                    <div class="col-sm-offset-2 col-md-10" style="clear: both;">
-                                        <p class="help-block">How often is currency awarded while the stream is online? This value is in minutes, min: 1, max: 60</p>
-                                    </div>
-                                </div><!-- .form-group -->
-
-                                {{--
-                                <div class="form-group">
-                                    <div class="col-sm-offset-2 col-sm-10">
-                                        <div class="checkbox">
-                                            <label>
-                                                {!! Form::checkbox('sync-status', 'yes', $channel->getSetting('currency.sync-status'), ['v-model' => 'syncStatus']) !!} Sync Status
-                                            </label>
-                                            <p class="help-block">Should the currency system sync with the status of the stream?</p>
+                                <div class="col-sm-10">
+                                    <div class="currency-rate-slider">
+                                        <div class="left">
+                                            <small>1 / 10 mins</small>
+                                        </div>
+                                        <div class="slider">
+                                            <div id="currencyRateSliderOnline"></div>
+                                            <span class="rating-string">
+                                                <strong>@{{ currencyRateString }}</strong>
+                                            </span>
+                                        </div>
+                                        <div class="right">
+                                            <small>10 / 1 mins</small>
                                         </div>
                                     </div>
-                                </div><!-- .form-group -->
-                                --}}
+                                </div>
+                            </div><!-- .form-group -->
 
-                                <div class="form-group">
-                                    <div class="col-sm-offset-2 col-sm-10">
-                                        <a @click="openRankingsModal()" class="btn btn-default">Edit Rankings</a>
+                            <div class="form-group">
+                                <div class="col-sm-offset-2 col-sm-10">
+                                    <button type="submit" class="btn btn-primary" v-bind:disabled="saving">Save</button>
+                                    <a @click="openRankingsModal()" class="btn btn-default">Edit Rankings</a>
+                                    <a v-show="alert.visible" class="animated btn btn-link" v-bind:class="alert.class" role="alert" transition="fade" stagger="2000">@{{ alert.text }}</a>
 
-                                        <p class="help-block"></p>
-                                    </div>
-                                </div><!-- .form-group -->
-
-                                <div class="form-group">
-                                    <div class="col-sm-offset-2 col-sm-10">
-                                        <button type="submit" class="btn btn-primary" v-bind:disabled="saving || !$settingsValidation.valid">Save</button>
-                                        <a v-show="alert.visible" class="animated btn btn-link" v-bind:class="alert.class" role="alert" transition="fade" stagger="2000">@{{ alert.text }}</a>
-                                    </div>
-                                </div><!-- .form-group -->
-                            </validator>
+                                    <a class="btn btn-link pull-right" v-if="currencyStatus" @click="disableCurrency()">Disable Currency</a>
+                                </div>
+                            </div><!-- .form-group -->
                         </form>
                     </div><!-- .box-body -->
                 </div><!-- .box -->
@@ -233,6 +203,11 @@
     <script>
         var scoreboard = {!! $scoreboard !!};
         var viewer = {!! $chatter !!}
+        var streaming = {{ $streaming ? 'true' : 'false' }};
+        var currencyName = '{{ $channel->getSetting('currency.name') }}';
+        var onlineAmount = '{{ $channel->getSetting('currency.online-awarded') }}';
+        var onlineTimeInterval = '{{ $channel->getSetting('currency.online-interval') }}';
+        var currencyStatus = {{ $channel->getSetting('currency.status') ? 'true' : 'false' }};
 
         var options = {
             api: {
@@ -243,7 +218,9 @@
         };
     </script>
 
+
     @can('admin-channel', $channel)
+        <script src="{{ elixir('assets/js/admin-vendor.js') }}"></script>
         <script src="{{ elixir('assets/js/admin.js') }}"></script>
     @else
         <script src="{{ elixir('assets/js/public.js') }}"></script>

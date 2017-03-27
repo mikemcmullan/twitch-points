@@ -10,7 +10,7 @@
 
     <!-- Bootstrap -->
     <link media="all" type="text/css" rel="stylesheet" href="{{ elixir('assets/css/style.css') }}">
-    <link media="all" type="text/css" rel="stylesheet" href="{{ elixir('assets/css/AdminLTE.css') }}">
+    <link media="all" type="text/css" rel="stylesheet" href="{{ elixir('assets/css/vendor.css') }}">
 
     <!--[if lt IE 9]>
         <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
@@ -102,7 +102,7 @@
 
     </div><!-- .wrapper -->
 
-    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.2/js/bootstrap.min.js"></script>
     <script>
         var screenSizes = {

@@ -17,3 +17,35 @@
 .highlight-message {
 	background: orange;
 }
+
+
+.currency-rate-slider {
+	padding: 10px 80px 0;
+
+    position: relative;
+	text-align: center;
+
+	.left,
+	.right {
+		position: absolute;
+		top: 8px;
+		width: 80px;
+	}
+
+	.left {
+		left: 0;
+	}
+
+	.right {
+		right: 0;
+	}
+
+	.max-slider-handle {
+		display: none;
+	}
+
+	.rating-string {
+		display: inline-block;
+		padding-top: 8px;
+	}
+}
