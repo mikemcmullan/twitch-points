@@ -62,7 +62,9 @@ class ProcessChatList
         setLastUpdate($channel, Carbon::now());
 
         if ($lastUpdate instanceof Carbon) {
-            return Carbon::now()->diffInMinutes($lastUpdate);
+            $mins = Carbon::now()->diffInMinutes($lastUpdate);
+
+            return $mins <= 10 ? $mins : 0;
         }
 
         return 0;

@@ -72,7 +72,7 @@ function presentTimeOnline($minutes)
  */
 function setLastUpdate(App\Channel $channel, Carbon\Carbon $time)
 {
-    return Cache::forever("#{$channel->name}:lastUpdate", $time->second(0)->toDateTimeString());
+    return Cache::forever("{$channel->id}:lastUpdate", $time->second(0)->toDateTimeString());
 }
 
 /**
@@ -83,7 +83,7 @@ function setLastUpdate(App\Channel $channel, Carbon\Carbon $time)
  */
 function getLastUpdate(App\Channel $channel)
 {
-    $lastUpdate = Cache::get("#{$channel->name}:lastUpdate");
+    $lastUpdate = Cache::get("{$channel->id}:lastUpdate");
 
     if ($lastUpdate) {
         return Carbon\Carbon::parse($lastUpdate);
