@@ -10,7 +10,7 @@
                 <validator name="validation">
                     <form @submit.prevent @submit="save">
                         <div class="modal-body">
-                            <p>If you would like to assign names to different point groups fill in the form below. Once a viewer has reached the starting amount
+                            <p>If you would like to assign names to different currency groups fill in the form below. Once a viewer has reached the starting amount
                                 of points they will be given that rank.</p>
 
                             <div class="alert alert-danger" v-if="errorText.length !== 0">
