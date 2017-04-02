@@ -28,7 +28,8 @@
 
                         <div class="form-group" v-bind:class="{ 'has-error': errors.has('cool_down') }">
                             <label for="command-down">Cool Down:</label>
-                            <input type="range" id="cool-down" name="cool_down" min="0" max="300" v-model="newCommand.cool_down">
+
+                            <div id="commandCooldownSlider"></div>
                             <span class="help-block">{{ newCommand.cool_down }} seconds</span>
                             <span class="help-block" v-if="errors.has('cool_down')" v-text="errors.get('cool_down')"></span>
                             <span class="help-block">The amount of time in seconds before the command can be used again.</span>
@@ -103,8 +104,12 @@
                     this.disabled.command = false;
                     this.disabled.level = false;
                     this.disabled.response = false;
+
+                    this.coolDownSlider.noUiSlider.set(this.newCommand.cool_down);
                 }, 500);
             });
+
+            this.setupCoolDownSlider();
         },
 
         events: {
@@ -132,6 +137,25 @@
         },
 
         methods: {
+            setupCoolDownSlider() {
+                const coolDownSlider = document.getElementById('commandCooldownSlider');
+
+                noUiSlider.create(coolDownSlider, {
+                    start: this.newCommand.cool_down,
+                    step: 1,
+                    range: {
+                        min: 3,
+                        max: 300
+                    }
+                });
+
+                coolDownSlider.noUiSlider.on('update', (values, handle) => {
+                    this.newCommand.cool_down = ~~values[0];
+                });
+
+                this.coolDownSlider = coolDownSlider;
+            },
+
             save() {
                 let request,
                     data = {};
@@ -176,7 +200,6 @@
                     this.close();
                 }, (response) => {
                     this.errors.record(response.data.message.validation_errors);
-                    // console.log();
                     this.saving = false;
                 });
             },
@@ -189,6 +212,8 @@
                     this.newCommand.level = command.level;
                     this.newCommand.response = command.response;
                     this.newCommand.count = command.count;
+
+                    this.coolDownSlider.noUiSlider.set(command.cool_down);
                 }
 
                 this.modal.modal('toggle');

@@ -10,27 +10,24 @@
                 <validator name="editValidation">
                     <form @submit.prevent @submit="save">
                         <div class="modal-body">
-                            <div class="form-group" v-bind:class="{ 'has-error': !$editValidation.text.valid && $editValidation.text.modified }">
+                            <div class="form-group" v-bind:class="{ 'has-error': errors.has('text') }">
                                 <label for="message-input">Quote Text:</label>
                                 <textarea
                                     class="form-control"
                                     id="text-input"
                                     name="text"
                                     rows="4"
+                                    maxlength="500"                                    
                                     v-model="text"
-                                    v-bind:disabled=""
-                                    placeholder=""
-                                    v-validate:text="{ maxlength: 500, required: true }"
                                 ></textarea>
 
-                                <span class="help-block" v-if="$editValidation.text.required && $editValidation.text.modified">Message is required.</span>
-                                <span class="help-block" v-if="$editValidation.text.maxlength">Text cannot be longer than 500 characters.</span>
+                                <span class="help-block" v-if="errors.has('text')" v-text="errors.get('text')"></span>
                             </div><!-- .form-group -->
                         </div><!-- .modal-body -->
 
                         <div class="modal-footer">
                             <button type="button" class="btn btn-default" @click="close">Close</button>
-                            <button type="submit" class="btn btn-primary" v-bind:disabled="saving || !$editValidation.valid">{{ saving ? 'Saving...' : 'Save' }}</button>
+                            <button type="submit" class="btn btn-primary" v-bind:disabled="saving">{{ saving ? 'Saving...' : 'Save' }}</button>
                         </div><!-- .modal-footer -->
                     </form><!-- form -->
                 </validator>
@@ -40,6 +37,8 @@
 </template>
 
 <script>
+    import Errors from '../../forms/Errors';
+
     export default {
         props: {},
 
@@ -49,7 +48,8 @@
                 modal: false,
                 saving: false,
                 id: null,
-                text: null
+                text: null,
+                errors: new Errors()
             }
         },
 
@@ -61,7 +61,7 @@
                     this.id = null;
                     this.text = null;
                     this.saving = false;
-                    this.$resetValidation();
+                    this.errors.clear();
                 }, 500);
             });
         },
@@ -101,10 +101,12 @@
 
                 request.then((response) => {
                     this.$parent.updateOrAddToTable(response.data);
-
+                    this.errors.clear();
                     this.close();
                 }, (response) => {
+                    this.errors.clear();
                     this.saving = false;
+                    this.errors.record(response.data.message.validation_errors);
                 });
             },
 
@@ -113,8 +115,6 @@
                     this.id = timer.id;
                     this.text = timer.text;
                 }
-
-                this.$resetValidation();
 
                 this.modal.modal('toggle');
             },

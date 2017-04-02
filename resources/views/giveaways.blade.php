@@ -65,72 +65,70 @@
                     </div><!-- .box-header -->
 
                     <div class="box-body" id="giveaway-settings">
-                        <validator name="settingsValidation">
-                            <form @submit.prevent @submit="submit" novalidate>
-                                <!-- <div class="form-group">
-                                    <label for="giveaway-type">Type</label><br>
-                                    <div class="btn-group">
-                                        <button type="button" class="btn btn-default" @click="setType('regular')" v-bind:class="{ 'btn-active': type === 'regular' }">Regular</button>
-                                        <button type="button" class="btn btn-default" @click="setType('currency')" v-bind:class="{ 'btn-active': type === 'currency' }">Currency Based</button>
-                                    </div>
-                                </div> -->
-
-                                <div class="form-group" v-bind:class="{ 'has-error': !$settingsValidation.keyword.valid }">
-                                    <label for="giveaway-keyword">Keyword</label>
-                                    {!! Form::text('keyword', $channel->getSetting('giveaway.keyword'), ['id' => 'giveaway-keyword', 'class' => 'form-control', 'v-model' => 'keyword', 'v-validate:keyword' => "{ keywordFormat: true }"]) !!}
-
-                                    <span class="help-block" v-show="!$settingsValidation.keyword.valid">Keyword must be a single word and may be prepended with a !, maximum of 20 chatacters.</span>
-
-                                    <span class="help-block" v-if="useTickets">Viewers would use this keyword + the amount of tickets to enter the giveaway. ex, <code>@{{ keyword }} #-of-tickets</code></span>
-                                    <span class="help-block" v-if="!useTickets">Viewers would use this keyword to enter the giveaway. ex, <code>@{{ keyword }}</code></span>
-                                </div><!-- .form-group -->
-
-                                <div class="form-group">
-                                    <div class="checkbox">
-                                        <label>
-                                            {!! Form::checkbox('use-tickets', 'yes', $channel->getSetting('giveaway.use-tickets'), ['v-model' => 'useTickets']) !!} Use tickets?
-                                        </label>
-                                        <p class="help-block">Should viewers be required to buy tickets using currency to enter the giveaway?</p>
-                                    </div>
+                        <form @submit.prevent @submit="submit" novalidate>
+                            <!-- <div class="form-group">
+                                <label for="giveaway-type">Type</label><br>
+                                <div class="btn-group">
+                                    <button type="button" class="btn btn-default" @click="setType('regular')" v-bind:class="{ 'btn-active': type === 'regular' }">Regular</button>
+                                    <button type="button" class="btn btn-default" @click="setType('currency')" v-bind:class="{ 'btn-active': type === 'currency' }">Currency Based</button>
                                 </div>
+                            </div> -->
 
+                            <div class="form-group" v-bind:class="{ 'has-error': errors.has('giveaway__keyword') }">
+                                <label for="giveaway-keyword">Keyword</label>
+                                {!! Form::text('keyword', $channel->getSetting('giveaway.keyword'), ['id' => 'giveaway-keyword', 'class' => 'form-control', 'v-model' => 'keyword']) !!}
 
-                                <div class="form-group" v-show="useTickets" v-bind:class="{ 'has-error': !$settingsValidation.ticketcost.valid }">
-                                    <label for="giveaway-ticket-cost">Ticket Cost:</label>
-                                    {!! Form::number('time-interval', $channel->getSetting('giveaway.ticket-cost'), ['class' => 'form-control', 'id' => 'giveaway-ticket-cost', 'min' => 0, 'max' => 1000, 'v-model' => 'ticketCost', 'v-validate:ticketCost' => "{ isInteger: true, min: 0, max: 1000, required: true }"]) !!}
+                                <span class="help-block" v-if="errors.has('giveaway__keyword')" v-text="errors.get('giveaway__keyword')"></span>
 
-                                    <span class="help-block" v-show="!$settingsValidation.ticketcost.valid">Ticket cost must a number and between 0 and 1000.</span>
-                                    <span class="help-block">How many 1UPs will a ticket cost. Max 1000</span>
+                                <span class="help-block" v-if="useTickets">Viewers would use this keyword + the amount of tickets to enter the giveaway. ex, <code>@{{ keyword }} #-of-tickets</code></span>
+                                <span class="help-block" v-if="!useTickets">Viewers would use this keyword to enter the giveaway. ex, <code>@{{ keyword }}</code></span>
+                            </div><!-- .form-group -->
+
+                            <div class="form-group">
+                                <div class="checkbox">
+                                    <label>
+                                        {!! Form::checkbox('use-tickets', 'yes', $channel->getSetting('giveaway.use-tickets'), ['v-model' => 'useTickets']) !!} Use tickets?
+                                    </label>
+                                    <p class="help-block">Should viewers be required to buy tickets using currency to enter the giveaway?</p>
                                 </div>
+                            </div>
 
-                                <div class="form-group" v-show="useTickets" v-bind:class="{ 'has-error': !$settingsValidation.ticketmax.valid }">
-                                    <label for="giveaway-ticket-max">Ticket Max:</label>
-                                    {!! Form::number('time-interval', $channel->getSetting('giveaway.ticket-max'), ['class' => 'form-control', 'id' => 'giveaway-ticket-max', 'min' => 0, 'max' => 100, 'v-model' => 'ticketMax', 'v-validate:ticketMax' => "{ isInteger: true, min: 0, max: 100, required: true }"]) !!}
 
-                                    <span class="help-block" v-show="!$settingsValidation.ticketmax.valid">Ticket max must be a number between 0 and 100.</span>
-                                    <span class="help-block">The maximum amount of tickets a user may purchase. Max 100.</span>
-                                </div>
+                            <div class="form-group" v-show="useTickets" v-bind:class="{ 'has-error': errors.has('giveaway__ticket-cost') }">
+                                <label for="giveaway-ticket-cost">Ticket Cost:</label>
+                                {!! Form::number('time-interval', $channel->getSetting('giveaway.ticket-cost'), ['class' => 'form-control', 'id' => 'giveaway-ticket-cost', 'min' => 0, 'max' => 1000, 'v-model' => 'ticketCost']) !!}
 
-                                <div class="form-group" v-bind:class="{ 'has-error': !$settingsValidation.startedtext.valid }">
-                                    <label for="giveaway-started">Giveaway Started Text</label>
-                                    {!! Form::textarea('started-text', $channel->getSetting('giveaway.started-text'), ['cols' => 30, 'rows' => 3, 'class' => 'form-control', 'id' => 'giveaway-started', 'v-model' => 'startedText', 'v-validate:startedText' => "{ maxlength: 250 }"]) !!}
+                                <span class="help-block" v-if="errors.has('giveaway__ticket-cost')" v-text="errors.get('giveaway__ticket-cost')"></span>
+                                <span class="help-block">How many 1UPs will a ticket cost. Max 1000</span>
+                            </div>
 
-                                    <span class="help-block" v-show="!$settingsValidation.startedtext.valid">Started text cannot be longer than 250 characters.</span>
-                                    <span class="help-block">The bot will display this message when the giveaway starts. Max characters 250.</span>
-                                </div>
+                            <div class="form-group" v-show="useTickets" v-bind:class="{ 'has-error': errors.has('giveaway__ticket-max') }">
+                                <label for="giveaway-ticket-max">Ticket Max:</label>
+                                {!! Form::number('time-interval', $channel->getSetting('giveaway.ticket-max'), ['class' => 'form-control', 'id' => 'giveaway-ticket-max', 'min' => 0, 'max' => 100, 'v-model' => 'ticketMax']) !!}
 
-                                <div class="form-group" v-bind:class="{ 'has-error': !$settingsValidation.stoppedtext.valid  }">
-                                    <label for="giveaway-stopped">Giveaway Stopped Text</label>
-                                    {!! Form::textarea('stopped-text', $channel->getSetting('giveaway.stopped-text'), ['cols' => 30, 'rows' => 3, 'class' => 'form-control', 'id' => 'giveaway-stopped', 'v-model' => 'stoppedText', 'v-validate:stoppedText' => "{ maxlength: 250 }"]) !!}
+                                <span class="help-block" v-if="errors.has('giveaway__ticket-max')" v-text="errors.get('giveaway__ticket-max')"></span>
+                                <span class="help-block">The maximum amount of tickets a user may purchase. Max 100.</span>
+                            </div>
 
-                                    <span class="help-block" v-show="!$settingsValidation.stoppedtext.valid">Stopped text cannot be longer than 250 characters.</span>
-                                    <span class="help-block">The bot will display this message when the giveaway is stopped. Max characters 250.</span>
-                                </div>
-                                
-                                <button type="submit" class="btn btn-primary" v-bind:disabled="saving || !$settingsValidation.valid">Save</button>
-                                <span v-show="alert.visible" class="animated btn" v-bind:class="alert.class" role="alert" transition="fade" stagger="2000">@{{ alert.text }}</span>
-                            </form>
-                        </validator>
+                            <div class="form-group" v-bind:class="{ 'has-error': errors.has('giveaway__started-text') }">
+                                <label for="giveaway-started">Giveaway Started Text</label>
+                                {!! Form::textarea('started-text', $channel->getSetting('giveaway.started-text'), ['cols' => 30, 'rows' => 3, 'class' => 'form-control', 'id' => 'giveaway-started', 'v-model' => 'startedText']) !!}
+
+                                <span class="help-block" v-if="errors.has('giveaway__started-text')" v-text="errors.get('giveaway__started-text')"></span>
+                                <span class="help-block">The bot will display this message when the giveaway starts. Max characters 250.</span>
+                            </div>
+
+                            <div class="form-group" v-bind:class="{ 'has-error': errors.has('giveaway__stopped-text') }">
+                                <label for="giveaway-stopped">Giveaway Stopped Text</label>
+                                {!! Form::textarea('stopped-text', $channel->getSetting('giveaway.stopped-text'), ['cols' => 30, 'rows' => 3, 'class' => 'form-control', 'id' => 'giveaway-stopped', 'v-model' => 'stoppedText']) !!}
+
+                                <span class="help-block" v-if="errors.has('giveaway__stopped-text')" v-text="errors.get('giveaway__stopped-text')"></span>
+                                <span class="help-block">The bot will display this message when the giveaway is stopped. Max characters 250.</span>
+                            </div>
+
+                            <button type="submit" class="btn btn-primary" v-bind:disabled="saving">Save</button>
+                            <span v-show="alert.visible" class="animated btn" v-bind:class="alert.class" role="alert" transition="fade" stagger="2000">@{{ alert.text }}</span>
+                        </form>
                     </div><!-- .box-body -->
                 </div><!-- .box -->
             </giveaway-settings>
@@ -160,6 +158,7 @@
 
         <script src="//js.pusher.com/3.0/pusher.min.js"></script>
         <script src="//cdnjs.cloudflare.com/ajax/libs/jQuery-slimScroll/1.3.7/jquery.slimscroll.min.js"></script>
+        <script src="{{ elixir('assets/js/admin-vendor.js') }}"></script>
         <script src="{{ elixir('assets/js/admin.js') }}"></script>
     @endsection
 @endif

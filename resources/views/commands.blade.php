@@ -143,6 +143,7 @@
 
         <script src="//js.pusher.com/3.0/pusher.min.js"></script>
         <script src="//cdnjs.cloudflare.com/ajax/libs/jQuery-slimScroll/1.3.7/jquery.slimscroll.min.js"></script>
+        <script src="{{ elixir('assets/js/admin-vendor.js') }}"></script>
         <script src="{{ elixir('assets/js/admin.js') }}"></script>
     @endsection
 @endif

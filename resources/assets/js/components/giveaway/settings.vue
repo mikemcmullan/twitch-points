@@ -1,4 +1,6 @@
 <script>
+    import Errors from '../../forms/Errors';
+
     export default {
         data: () => {
             return {
@@ -17,7 +19,9 @@
                         'text-danger': false
                     },
                     text: ''
-                }
+                },
+
+                errors: new Errors()
             }
         },
 
@@ -40,11 +44,15 @@
                     this.saving = false;
                     this.alert.visible = true;
                     this.alert.text = 'Settings saved.';
+                    this.errors.clear();
 
                     setTimeout(() => {
                         this.alert.visible = false;
                     }, 2000);
                 }, (response) => {
+                    this.saving = false;
+                    this.errors.clear();
+                    this.errors.record(response.data.message.validation_errors);
                     if (response.status === 401 || response.status === 403) {
                         alert('There was a problem authenticating with the api. Please refresh the page.');
                     }

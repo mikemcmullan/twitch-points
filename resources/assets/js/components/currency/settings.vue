@@ -59,20 +59,7 @@
             this.onlineAmount = startValue.amount;
             this.onlineTimeInterval = startValue.interval;
 
-            const rangeSlider = document.getElementById('currencyRateSliderOnline');
-
-            noUiSlider.create(rangeSlider, {
-                start: startValue,
-                step: 1,
-                range: {
-                    min: 0,
-                    max: 18
-                }
-            });
-
-            rangeSlider.noUiSlider.on('update', (values, handle) => {
-                this.currencyRate = ~~values[0];
-            });
+            this.setupCurrencyRateSlider(startValue);
 
             this.currencyRateString = this.makeCurrencyRateString();
         },
@@ -89,6 +76,23 @@
         },
 
         methods: {
+            setupCurrencyRateSlider(startValue) {
+                const rangeSlider = document.getElementById('currencyRateSliderOnline');
+
+                noUiSlider.create(rangeSlider, {
+                    start: startValue,
+                    step: 1,
+                    range: {
+                        min: 0,
+                        max: 18
+                    }
+                });
+
+                rangeSlider.noUiSlider.on('update', (values, handle) => {
+                    this.currencyRate = ~~values[0];
+                });
+            },
+
             openRankingsModal() {
                 this.$broadcast('openRankingsModal');
             },
@@ -125,7 +129,6 @@
                 }, {
                     beforeSend: (request) => {
                         this.saving = true;
-                        this.errors.clear();
                     }
                 });
 
@@ -133,6 +136,7 @@
                     this.saving = false;
                     this.alert.visible = true;
                     this.alert.text = 'Settings saved.';
+                    this.errors.clear();
 
                     setTimeout(() => {
                         this.alert.visible = false;
@@ -142,6 +146,7 @@
                         alert('There was a problem authenticating with the api. Please refresh the page.');
                     }
 
+                    this.errors.clear();
                     this.errors.record(response.data.message.validation_errors);
                     this.saving = false;
                 });
