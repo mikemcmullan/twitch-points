@@ -134,9 +134,7 @@ if (document.querySelector('#commands')) {
             },
 
             customCommands() {
-                return this.commands.filter((command) => {
-                    return command.type === 'custom';
-                });
+                return this.commandGroups.custom;
             },
 
             systemCommands() {

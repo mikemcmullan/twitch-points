@@ -41,7 +41,7 @@
                         </thead>
 
                         <tbody class="hide" v-el:loop>
-                            <tr v-for="command in commandGroups.custom | searchCommands searchKeyword | limitBy itemsPerPage itemsIndex" :class="{ 'command-disabled': command.disabled }">
+                            <tr v-for="command in customCommands | searchCommands searchKeyword | limitBy itemsPerPage itemsIndex" :class="{ 'command-disabled': command.disabled }">
                                 <td>
                                     <button class="btn label label-danger" :disabled="disableDisableBtn" @click="disableCommand(command.id)"  v-if="command.disabled">Disabled</button>
                                     <button class="btn label label-primary" :disabled="disableDisableBtn" @click="disableCommand(command.id)" v-if="!command.disabled">Enabled</button>
