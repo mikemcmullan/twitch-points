@@ -69,31 +69,38 @@
                 </div><!-- .box-header -->
 
                 <div class="box-body">
-                    <table class="table table-bordered table-striped" id="system-commands-table">
-                        <thead>
-                            <th stlye="width: 30%">Command</th>
-                            <th style="width: 10%" class="hidden-sm hidden-xs">Level</th>
-                            <th style="width: 60%" class="hidden-sm hidden-xs">Description</th>
-                        </thead>
-
-                        <tbody class="hide" v-el:loop2>
-                            <tr v-for="command in commands | filterBy 'system' in 'type'">
-                                <td>@{{ command.usage }}</td>
-                                <td class="hidden-sm hidden-xs">@{{ command.level.capitalize() }}</td>
-                                <td class="hidden-sm hidden-xs">@{{{ command.description }}}</td>
-                            </tr>
-
-                            <tr v-if="systemCommands.length === 0">
-                                <td colspan="3">No system commands available.</td>
-                            </tr>
-                        </tbody>
-
-                        <tbody v-if="loading2">
+                    <table class="table table-bordered" v-if="loading2">
+                        <tbody>
                             <tr>
                                 <td colspan="3" class="text-center"><img src="/assets/img/loader.svg" width="32" height="32" alt="Loading..."></td>
                             </tr>
                         </tbody>
-                    </table><!-- .table -->
+                    </table>
+
+                    <div class="box box-solid system-commands-box hide" v-for="name in commandGroupNames">
+                        <div class="box-header">
+                            <strong>@{{ name.capitalize() }}</strong>
+                        </div>
+
+                        <div class="box-body">
+                            <table class="table table-bordered table-striped system-commands-table">
+                                <thead>
+                                    <th stlye="width: 30%">Command</th>
+                                    <th style="width: 10%" class="hidden-sm hidden-xs">Level</th>
+                                    <th style="width: 60%" class="hidden-sm hidden-xs">Description</th>
+                                </thead>
+
+                                <tbody>
+                                    <tr v-for="command in commandGroups[name]">
+                                        <td>@{{ command.usage }}</td>
+                                        <td class="hidden-sm hidden-xs">@{{ command.level.capitalize() }}</td>
+                                        <td class="hidden-sm hidden-xs">@{{{ command.description }}}</td>
+                                    </tr>
+                                </tbody>
+                            </table><!-- .table -->
+                        </div><!-- .box-body -->
+                    </div>
+
 
                 </div><!-- .box-body -->
             </div><!-- .box -->

@@ -26,7 +26,10 @@ if (document.querySelector('#commands')) {
             itemsIndex: 0,
             searchKeyword: '',
             searchCount: 0,
-            isSearching: false
+            isSearching: false,
+
+            commandGroups: {},
+            commandGroupNames: []
         },
 
         filters: {
@@ -84,8 +87,24 @@ if (document.querySelector('#commands')) {
                     this.commands = this.commands.concat(response.data);
                     this.loading2 = false;
 
-                    this.$els.loop2.className = '';
-                })
+                    response.data.forEach((com) => {
+                        const group = com.id.split('.')[0];
+
+                        if (this.commandGroups[group] === undefined) {
+                            this.commandGroups[group] = [com];
+                        } else {
+                            this.commandGroups[group].push(com);
+                        }
+                    });
+
+                    this.commandGroupNames = Object.keys(this.commandGroups);
+
+                    Vue.nextTick(() => {
+                        Array.apply(null, this.$el.querySelectorAll('.system-commands-box.hide')).forEach((elem) => {
+                            elem.classList.remove('hide');
+                        });
+                    });
+                });
         }
     });
 }

@@ -41,7 +41,7 @@
                         </thead>
 
                         <tbody class="hide" v-el:loop>
-                            <tr v-for="command in commands | filterBy 'custom' in 'type' | searchCommands searchKeyword | limitBy itemsPerPage itemsIndex" :class="{ 'command-disabled': command.disabled }">
+                            <tr v-for="command in commandGroups.custom | searchCommands searchKeyword | limitBy itemsPerPage itemsIndex" :class="{ 'command-disabled': command.disabled }">
                                 <td>
                                     <button class="btn label label-danger" :disabled="disableDisableBtn" @click="disableCommand(command.id)"  v-if="command.disabled">Disabled</button>
                                     <button class="btn label label-primary" :disabled="disableDisableBtn" @click="disableCommand(command.id)" v-if="!command.disabled">Enabled</button>
@@ -54,7 +54,7 @@
                                     <button type="button" @click="deleteCommandModal(command.id)" class="btn btn-danger btn-xs" title="Delete Command"><i class="fa fa-trash-o"></i></button>
                                 </td>
                             </tr>
-                            <tr v-if="customCommands.length === 0 || noSearchResults">
+                            <tr v-if="commandGroups.custom === 0 || noSearchResults">
                                 <td colspan="5">No records found.</td>
                             </tr>
                         </tbody>
@@ -86,37 +86,42 @@
                 </div><!-- .box-header -->
 
                 <div class="box-body">
-                    <table class="table table-bordered table-striped" id="system-commands-table">
-                        <thead>
-                            <th style="width: 7%">Status</th>
-                            <th stlye="width: 25%">Command</th>
-                            <th style="width: 10%" class="hidden-sm hidden-xs">Level</th>
-                            <th style="width: 48%" class="hidden-sm hidden-xs">Description</th>
-                        </thead>
-
-                        <tbody class="hide" v-el:loop2>
-                            <tr v-for="command in commands | filterBy 'system' in 'type'">
-                                <td>
-                                    <button class="btn label label-danger" :disabled="disableDisableBtn" @click="disableCommand(command.id)" v-if="command.disabled">Disabled</button>
-                                    <button class="btn label label-primary" :disabled="disableDisableBtn" @click="disableCommand(command.id)" v-if="!command.disabled">Enabled</button>
-                                </td>
-                                <td>@{{ command.usage }}</td>
-                                <td class="hidden-sm hidden-xs">@{{ command.level.capitalize() }}</td>
-                                <td class="hidden-sm hidden-xs">@{{{ command.description }}}</td>
-                            </tr>
-
-                            <tr v-if="systemCommands.length === 0">
-                                <td colspan="4">No system commands available.</td>
-                            </tr>
-                        </tbody>
-
-                        <tbody v-if="loading2">
+                    <table class="table table-bordered" v-if="loading2">
+                        <tbody>
                             <tr>
-                                <td colspan="4" class="text-center"><img src="/assets/img/loader.svg" width="32" height="32" alt="Loading..."></td>
+                                <td colspan="3" class="text-center"><img src="/assets/img/loader.svg" width="32" height="32" alt="Loading..."></td>
                             </tr>
                         </tbody>
-                    </table><!-- .table -->
+                    </table>
 
+                    <div class="box box-solid system-commands-box hide" v-for="name in commandGroupNames">
+                        <div class="box-header">
+                            <strong>@{{ name.capitalize() }}</strong>
+                        </div><!-- .box-header -->
+
+                        <div class="box-body">
+                            <table class="table table-bordered table-striped system-commands-table">
+                                <thead>
+                                    <th style="width: 7%">Status</th>
+                                    <th stlye="width: 25%">Command</th>
+                                    <th style="width: 10%" class="hidden-sm hidden-xs">Level</th>
+                                    <th style="width: 48%" class="hidden-sm hidden-xs">Description</th>
+                                </thead>
+
+                                <tbody>
+                                    <tr v-for="command in commandGroups[name]">
+                                        <td>
+                                            <button class="btn label label-danger" :disabled="disableDisableBtn" @click="disableCommand(command.id)" v-if="command.disabled">Disabled</button>
+                                            <button class="btn label label-primary" :disabled="disableDisableBtn" @click="disableCommand(command.id)" v-if="!command.disabled">Enabled</button>
+                                        </td>
+                                        <td>@{{ command.usage }}</td>
+                                        <td class="hidden-sm hidden-xs">@{{ command.level.capitalize() }}</td>
+                                        <td class="hidden-sm hidden-xs">@{{{ command.description }}}</td>
+                                    </tr>
+                                </tbody>
+                            </table><!-- .table -->
+                        </div><!-- .box-body -->
+                    </div><!-- .box -->
                 </div><!-- .box-body -->
             </div><!-- .box -->
         </div><!-- .col -->

@@ -122,7 +122,10 @@ if (document.querySelector('#commands')) {
             itemsIndex: 0,
             searchKeyword: '',
             searchCount: 0,
-            isSearching: false
+            isSearching: false,
+
+            commandGroups: { custom: [] },
+            commandGroupNames: []
         },
 
         computed: {
@@ -146,26 +149,48 @@ if (document.querySelector('#commands')) {
         ready() {
             this.$http.get('commands?type=custom')
                 .then((response) => {
-                    this.commands = this.commands.concat(response.data);
+                    this.commandGroups.custom = this.commands.concat(response.data);
                     this.loading = false;
 
                     this.$els.loop.className = '';
-                })
+                });
 
                 this.$http.get('commands?type=system&orderBy=order&orderDirection=ASC')
                     .then((response) => {
-                        this.commands = this.commands.concat(response.data);
                         this.loading2 = false;
 
-                        this.$els.loop2.className = '';
-                    })
+                        response.data.forEach((com) => {
+                            const group = com.id.split('.')[0];
+
+                            if (this.commandGroups[group] === undefined) {
+                                this.commandGroupNames.push(group);
+                                this.$set(`commandGroups.${group}`, [com])
+                            } else {
+                                this.commandGroups[group].push(com);
+                            }
+                        });
+
+                        Vue.nextTick(() => {
+                            Array.apply(null, this.$el.querySelectorAll('.system-commands-box.hide')).forEach((elem) => {
+                                elem.classList.remove('hide');
+                            });
+                        });
+                    });
         },
 
         methods: {
             _getCommand(value, key = 'id') {
-                return this.commands.find((command) => {
-                    return command[key] == value;
-                });
+                let command;
+
+                for (let group in this.commandGroups) {
+                    this.commandGroups[group].forEach((cmd) => {
+                        if (cmd[key] == value) {
+                            command = cmd;
+                        }
+                    });
+                }
+
+                return command;
             },
 
             newCustomCommandModal() {
@@ -196,24 +221,30 @@ if (document.querySelector('#commands')) {
             },
 
             deleteFromCommandsTable(command) {
-                let index = this.commands.findIndex((row) => {
+                let index = this.commandGroups.custom.findIndex((row) => {
                     return row.id === command.id
                 });
 
                 if (index !== -1) {
-                    this.commands.splice(index, 1);
+                    this.commandGroups.custom.splice(index, 1);
                 }
             },
 
             updateOrAddToCommandsTable(command) {
-                let index = this.commands.findIndex((row) => {
+                let group = isNaN(command.id) ? command.id.split('.')[0] : 0;
+
+                if (this.commandGroups[group] === undefined) {
+                    group = 'custom';
+                }
+
+                let index = this.commandGroups[group].findIndex((row) => {
                     return row.id === command.id
                 });
 
                 if (index !== -1) {
-                    this.commands.splice(index, 1, command);
+                    this.commandGroups[group].splice(index, 1, command);
                 } else {
-                    this.commands.unshift(command);
+                    this.commandGroups[group].unshift(command);
                 }
             }
         }
