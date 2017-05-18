@@ -54,7 +54,7 @@
                                     <button type="button" @click="deleteCommandModal(command.id)" class="btn btn-danger btn-xs" title="Delete Command"><i class="fa fa-trash-o"></i></button>
                                 </td>
                             </tr>
-                            <tr v-if="commandGroups.custom === 0 || noSearchResults">
+                            <tr v-if="customCommands.length === 0 || noSearchResults">
                                 <td colspan="5">No records found.</td>
                             </tr>
                         </tbody>
