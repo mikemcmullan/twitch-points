@@ -149,6 +149,9 @@
                 giveaway: {
                     status: '{{ $status }}'
                 },
+                echo: {
+                    url: '{{ config('services.echo.url') }}'
+                },
                 pusher: {
                     key: '{{ config('services.pusher.key') }}'
                 },
@@ -157,6 +160,7 @@
         </script>
 
         <script src="//js.pusher.com/3.0/pusher.min.js"></script>
+        <script src="{{ config('services.echo.url') }}/socket.io/socket.io.js"></script>
         <script src="//cdnjs.cloudflare.com/ajax/libs/jQuery-slimScroll/1.3.7/jquery.slimscroll.min.js"></script>
         <script src="{{ elixir('assets/js/admin-vendor.js') }}"></script>
         <script src="{{ elixir('assets/js/admin.js') }}"></script>

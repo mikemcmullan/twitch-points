@@ -40,6 +40,6 @@ class GiveawayWasCleared extends Event implements ShouldBroadcast
      */
     public function broadcastOn()
     {
-        return ['private-' . $this->channel->name];
+        return [$this->channel->name];
     }
 }

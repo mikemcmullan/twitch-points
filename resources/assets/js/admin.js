@@ -1,5 +1,6 @@
 import Vue from 'vue';
 import vuePagination from './components/paginator2.vue';
+import Echo from 'laravel-echo';
 
 Vue.use(require('vue-resource'));
 Vue.use(require('vue-validator'));
@@ -257,14 +258,19 @@ import giveawaySettings from './components/giveaway/settings.vue';
 import giveawayControlPanel from './components/giveaway/control-panel.vue';
 
 if (document.querySelector('#giveaway')) {
-    const pusher = new Pusher(options.pusher.key, {
-        encrypted: true,
-        authEndPoints: '/pusher/auth',
-        auth: {
-            headers: {
-                'X-CSRF-TOKEN': options.csrf_token
-            }
-        }
+    // const pusher = new Pusher(options.pusher.key, {
+    //     encrypted: true,
+    //     authEndPoints: '/pusher/auth',
+    //     auth: {
+    //         headers: {
+    //             'X-CSRF-TOKEN': options.csrf_token
+    //         }
+    //     }
+    // });
+
+    const echo = new Echo({
+        broadcaster: 'socket.io',
+        host: options.echo.url,
     });
 
     new Vue({
@@ -287,15 +293,23 @@ if (document.querySelector('#giveaway')) {
         },
 
         ready() {
-            let channel = pusher.subscribe(`private-${options.channel}`);
-
-            channel.bind('giveaway.was-cleared', (data) => {
+            echo.listen(options.channel, '.giveaway.was-cleared', (data) => {
                 this.$broadcast('clearEntries');
             });
 
-            channel.bind('giveaway.was-entered', (data) => {
+            echo.listen(options.channel, '.giveaway.was-entered', (data) => {
                 this.$broadcast('newEntry', { handle: data.handle, tickets: data.tickets });
             });
+
+            // let channel = pusher.subscribe(`private-${options.channel}`);
+
+            // channel.bind('giveaway.was-cleared', (data) => {
+            //     this.$broadcast('clearEntries');
+            // });
+            //
+            // channel.bind('giveaway.was-entered', (data) => {
+            //     this.$broadcast('newEntry', { handle: data.handle, tickets: data.tickets });
+            // });
         }
     });
 }

@@ -59,6 +59,6 @@ class GiveawayWasStarted extends Event
      */
     public function broadcastOn()
     {
-        return ['private-' . $this->channel->name];
+        return [$this->channel->name];
     }
 }
