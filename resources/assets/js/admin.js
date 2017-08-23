@@ -345,6 +345,12 @@ if (document.querySelector('#currency')) {
             'edit-currency-modal': editCurrencyModal,
         },
 
+        computed: {
+            unknownUsername() {
+                return Object.keys(window.viewer).length === 0;
+            }
+        },
+
         ready() {
             const data = scoreboard;
             this.viewer = viewer;

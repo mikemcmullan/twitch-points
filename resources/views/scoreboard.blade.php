@@ -62,8 +62,8 @@
 
                             <br>
 
-                            <div class="alert alert-warning" v-if="viewer.error">
-                                @{{ viewer.message }}
+                            <div class="alert alert-warning" v-if="unknownUsername">
+                                Unknown username.
                             </div>
                         </div><!-- .col -->
                     </div><!-- .row -->
@@ -215,8 +215,8 @@
 
 @section('after-js')
     <script>
-        var scoreboard = {!! json_encode($scoreboard) !!};
-        var viewer = {!! json_encode($chatter) !!}
+        var scoreboard = {!! $scoreboard !!};
+        var viewer = {!! $chatter !!}
         var streaming = {{ $streaming ? 'true' : 'false' }};
         var currencyName = '{{ $channel->getSetting('currency.name') }}';
         var onlineAmount = '{{ $channel->getSetting('currency.online-awarded') }}';
