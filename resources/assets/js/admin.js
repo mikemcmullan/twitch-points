@@ -318,6 +318,7 @@ if (document.querySelector('#giveaway')) {
 // Currency
 //------------------------------------------------------------------------------
 import currencySettings from './components/currency/settings.vue';
+import editCurrencyModal from './components/currency/edit-modal.vue';
 
 if (document.querySelector('#currency')) {
     new Vue({
@@ -340,7 +341,8 @@ if (document.querySelector('#currency')) {
 
         components: {
             'currency-settings': currencySettings,
-            pagination: vuePagination
+            pagination: vuePagination,
+            'edit-currency-modal': editCurrencyModal,
         },
 
         ready() {
@@ -378,6 +380,10 @@ if (document.querySelector('#currency')) {
                         this.items = data.data;
                         this.loading = false;
                     });
+            },
+
+            editCurrencyModal(username, state) {
+                this.$broadcast('openEditCurrencyModal', username, state);
             }
         }
     });

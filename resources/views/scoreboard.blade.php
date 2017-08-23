@@ -21,6 +21,10 @@
                 <div class="box-body">
                     <div class="row">
                         <div class="col-md-12">
+                            @can('admin-channel', $channel)
+                            <edit-currency-modal></edit-currency-modal>
+                            @endcan
+
                             {!! Form::open(['method' => 'get', 'class' => 'points-results-form']) !!}
                                 <div class="form-group">
                                     <label for="username">Chat Username:</label>
@@ -43,7 +47,12 @@
                                             <td>@{{ viewer.rank }}</td>
                                             <td>@{{ viewer.display_name }}</td>
                                             <td>@{{ viewer.time_online }} <span class="label label-primary" v-if="viewer.moderator">MOD</span></td>
-                                            <td>@{{ viewer.points }}</td>
+                                            <td>
+                                                @{{ viewer.points }}
+                                                @can('admin-channel', $channel)
+                                                <a href="#" @click.prevent="editCurrencyModal(username)">+/-</a>
+                                                @endcan
+                                            </td>
                                         </tr>
                                     </tbody>
                                 </table>
@@ -172,7 +181,12 @@
                                         <td>@{{ chatter.rank }}</td>
                                         <td>@{{ chatter.display_name }} <span class="label label-primary" v-if="chatter.moderator">MOD</span></td>
                                         <td>@{{ chatter.time_online }}</td>
-                                        <td>@{{ chatter.points }}</td>
+                                        <td>
+                                            @{{ chatter.points }}
+                                            @can('admin-channel', $channel)
+                                                <a href="#" @click.prevent="editCurrencyModal(chatter.username)">+/-</a>
+                                            @endcan
+                                        </td>
                                     </tr>
 
                                     <tr v-if="items.length === 0 && loading === false">
@@ -201,8 +215,8 @@
 
 @section('after-js')
     <script>
-        var scoreboard = {!! $scoreboard !!};
-        var viewer = {!! $chatter !!}
+        var scoreboard = {!! json_encode($scoreboard) !!};
+        var viewer = {!! json_encode($chatter) !!}
         var streaming = {{ $streaming ? 'true' : 'false' }};
         var currencyName = '{{ $channel->getSetting('currency.name') }}';
         var onlineAmount = '{{ $channel->getSetting('currency.online-awarded') }}';

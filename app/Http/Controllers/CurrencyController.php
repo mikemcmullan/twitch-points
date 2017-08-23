@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Channel;
 use App\Contracts\Repositories\StreamRepository;
+use App\Support\ScoreboardCache;
 
 class CurrencyController extends Controller
 {
@@ -29,7 +30,7 @@ class CurrencyController extends Controller
      *
      * @return \Illuminate\View\View
      */
-    public function scoreboard(Request $request, Channel $channel, StreamRepository $streamRepo)
+    public function scoreboard(Request $request, Channel $channel, StreamRepository $streamRepo, ScoreboardCache $scoreboardCache)
     {
         $data = [
             'username'  => strtolower($request->get('username')),
@@ -37,14 +38,12 @@ class CurrencyController extends Controller
             'streaming' => (bool) $streamRepo->findIncompletedStream($channel)
         ];
 
-        $api = new \App\Support\CallApi();
-
         if ($data['username']) {
-            $data['chatter'] = $api->viewer($channel->slug, $data['username']);
+            $data['chatter'] = $scoreboardCache->findByHandle($channel, $data['username']);
         }
 
         $data['status'] = (bool) $channel->getSetting('currency.status');
-        $data['scoreboard'] = $api->currencyScoreboard($channel->slug);
+        $data['scoreboard'] = $scoreboardCache->paginate($request->get('page', 1))->allForChannel($channel);
 
         return view('scoreboard', $data);
     }
