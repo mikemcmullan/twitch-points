@@ -38,8 +38,11 @@ class CurrencyController extends Controller
             'streaming' => (bool) $streamRepo->findIncompletedStream($channel)
         ];
 
-        if ($data['username'] && $chatter = $scoreboardCache->findByHandle($channel, $data['username'])) {
-            $data['chatter'] = json_encode($chatter);
+        if ($data['username']) {
+            $chatter = $scoreboardCache->findByHandle($channel, $data['username']);
+            $error = ['error' => 'Not Found', 'message' => 'Unknown username.'];
+
+            $data['chatter'] = json_encode($chatter ? $chatter : $error);
         }
 
         $data['status'] = (bool) $channel->getSetting('currency.status');

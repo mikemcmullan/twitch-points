@@ -62,8 +62,8 @@
 
                             <br>
 
-                            <div class="alert alert-warning" v-if="unknownUsername">
-                                Unknown username.
+                            <div class="alert alert-warning" v-if="viewer.error">
+                                @{{ viewer.message }}
                             </div>
                         </div><!-- .col -->
                     </div><!-- .row -->
