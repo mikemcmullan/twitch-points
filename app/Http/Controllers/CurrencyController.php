@@ -38,12 +38,12 @@ class CurrencyController extends Controller
             'streaming' => (bool) $streamRepo->findIncompletedStream($channel)
         ];
 
-        if ($data['username']) {
-            $data['chatter'] = $scoreboardCache->findByHandle($channel, $data['username']);
+        if ($data['username'] && $chatter = $scoreboardCache->findByHandle($channel, $data['username'])) {
+            $data['chatter'] = json_encode($chatter);
         }
 
         $data['status'] = (bool) $channel->getSetting('currency.status');
-        $data['scoreboard'] = $scoreboardCache->paginate($request->get('page', 1))->allForChannel($channel);
+        $data['scoreboard'] = json_encode($scoreboardCache->paginate($request->get('page', 1))->allForChannel($channel));
 
         return view('scoreboard', $data);
     }
