@@ -71,6 +71,7 @@ class PushToBot
         $outEvent = array_merge([
             'source'    => 'web',
             'channel'   => "#{$event->channel->name}",
+            'channelId' => "{$event->channel->service_id}",
             'bot'       => $event->channel->bot->name,
             'module'    => $this->getModuleName($event),
             'byPassAuth'=> true
