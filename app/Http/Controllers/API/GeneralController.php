@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Contracts\Repositories\ChatterRepository;
 use App\Http\Controllers\Controller;
 use App\Http\Requests;
+use App\Support\ActiveChatters;
 
 class GeneralController extends Controller
 {
@@ -37,5 +38,10 @@ class GeneralController extends Controller
             'admins' => $admins->keys(),
             'mods' => $mods->keys()
         ]);
+    }
+
+    public function getActiveChatters(Channel $channel, ActiveChatters $activeChatters)
+    {
+        return response()->json($activeChatters->get($channel));
     }
 }

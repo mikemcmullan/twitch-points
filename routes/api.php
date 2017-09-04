@@ -17,6 +17,14 @@ Route::post('/followers', [
     'uses' => 'FollowersController@store'
 ]);
 
+/**
+ * Chatters Routes
+ */
+Route::get('/chatters/active', [
+    'uses'  => 'GeneralController@getActiveChatters',
+    'as'    => 'api_active_chatters'
+]);
+
 /*
  * Commands Routes
  */
@@ -214,4 +222,9 @@ Route::post('/bot/join', [
 Route::post('/bot/leave', [
     'uses'  => 'BotController@leaveChannel',
     'as'    => 'api_bot_leave_channel_path'
+]);
+
+Route::post('/bot/publish', [
+    'uses'  => 'BotController@publish',
+    'as'    => 'api_bot_publish'
 ]);
