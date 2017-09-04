@@ -116,6 +116,21 @@
                                 </div>
                             </div><!-- .form-group -->
 
+                            <div class="form-group" v-bind:class="{ 'has-error': errors.has('currency__active-minutes') }">
+                                <div class="col-sm-offset-2 col-sm-10">
+                                    <div class="checkbox">
+                                        <label>
+                                            <input type="checkbox" v-model="activeChatters"{{ $channel->getSetting('currency.source') === 'active' ? ' checked=checked' : '' }}> Only award points to active chatters?
+                                        </label>
+                                    </div>
+
+                                    <div v-if="activeChatters" style="padding-left: 20px; padding-top: 10px">
+                                        Chatter must send a message every <input v-model="activeChattersMins" type="number" style="display: inline; width: 50px; padding-left: 5px; padding-right: 5px; text-align: center" class="form-control" min="1" max="60" value="{{ $channel->getSetting('currency.active-minutes', 15) }}"> minutes to remain active.
+                                        <span class="help-block" v-if="errors.has('currency__active-minutes')">Number must be between 0 and 60.</span>
+                                    </div>
+                                </div>
+                            </div><!-- .form-group -->
+
                             <div class="form-group">
                                 <label class="col-sm-2 control-label">Rate</label>
 

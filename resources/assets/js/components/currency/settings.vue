@@ -15,6 +15,8 @@
                 offlineAmount: 0,
                 offlineTimeInterval: 1,
                 syncStatus: false,
+                activeChatters: false,
+                activeChattersMins: 15,
                 alert: {
                     visible: false,
                     class: {
@@ -125,7 +127,9 @@
                     'currency__online-awarded': this.onlineAmount,
                     'currency__offline-interval': this.offlineTimeInterval,
                     'currency__offline-awarded': this.offlineAmount,
-                    'currency__keyword': this.keyword
+                    'currency__keyword': this.keyword,
+                    'currency__source': this.activeChatters ? 'active' : 'tmi',
+                    'currency__active-minutes': this.activeChattersMins
                 }, {
                     beforeSend: (request) => {
                         this.saving = true;
