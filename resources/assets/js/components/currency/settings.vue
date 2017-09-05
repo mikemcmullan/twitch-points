@@ -128,8 +128,8 @@
                     'currency__offline-interval': this.offlineTimeInterval,
                     'currency__offline-awarded': this.offlineAmount,
                     'currency__keyword': this.keyword,
-                    'currency__source': this.activeChatters ? 'active' : 'tmi',
-                    'currency__active-minutes': this.activeChattersMins
+                    'currency__only-active-chatters': this.activeChatters,
+                    'currency__active-minutes': ~~this.activeChattersMins
                 }, {
                     beforeSend: (request) => {
                         this.saving = true;

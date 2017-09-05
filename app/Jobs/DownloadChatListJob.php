@@ -21,6 +21,11 @@ class DownloadChatListJob extends Job
     public $channel;
 
     /**
+     * @var array
+     */
+    protected $activeChatters = [];
+
+    /**
      * Create a new job instance.
      *
      * @param $channel
@@ -28,6 +33,28 @@ class DownloadChatListJob extends Job
      public function __construct(Channel $channel)
      {
          $this->channel = $channel;
+     }
+
+     /**
+      * Test if a name is an active chatter.
+      *
+      * @param  string $name
+      * @return bool
+      */
+     public function filterActiveChatters($name)
+     {
+         return in_array($name, $this->activeChatters['chatters']);
+     }
+
+     /**
+      * Test if a name is an active moderator.
+      *
+      * @param  string $name
+      * @return bool
+      */
+     public function filterActiveModerators($name)
+     {
+         return in_array($name, $this->activeChatters['moderators']);
      }
 
     /**
@@ -40,17 +67,19 @@ class DownloadChatListJob extends Job
      */
      public function handle(TwitchApi $twitchApi, Dispatcher $events, StreamRepository $streamRepo, ActiveChatters $activeChatters)
      {
-         $status = (bool) $streamRepo->findIncompletedStream($this->channel);
-         $offlineAwarded = (int) $this->channel->getSetting('currency.offline-awarded', 0);
+         $status            = (bool) $streamRepo->findIncompletedStream($this->channel);
+         $offlineAwarded    = (int) $this->channel->getSetting('currency.offline-awarded', 0);
 
          if ($status === false && $offlineAwarded === 0) {
              return [];
          }
 
-         if ($this->channel->getSetting('currency.source', 'tmi') === 'tmi') {
-             $chatList = $twitchApi->chatList($this->channel['name']);
-         } else {
-             $chatList = $activeChatters->get($this->channel);
+         $chatList = $twitchApi->chatList($this->channel['name']);
+         $this->activeChatters = $activeChatters->get($this->channel);
+
+         if ($this->channel->getSetting('currency.only-active-chatters', false) === true) {
+             $chatList['moderators'] = array_filter($chatList['moderators'], [$this, 'filterActiveModerators']);
+             $chatList['chatters']   = array_filter($chatList['chatters'], [$this, 'filterActiveChatters']);
          }
 
          $events->fire(new ChatListWasDownloaded($this->channel, $chatList, $status));

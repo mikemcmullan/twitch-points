@@ -120,7 +120,7 @@
                                 <div class="col-sm-offset-2 col-sm-10">
                                     <div class="checkbox">
                                         <label>
-                                            <input type="checkbox" v-model="activeChatters"{{ $channel->getSetting('currency.source') === 'active' ? ' checked=checked' : '' }}> Only award points to active chatters?
+                                            <input type="checkbox" v-model="activeChatters"{{ $channel->getSetting('currency.only-active-chatters', false) === true ? ' checked=checked' : '' }}> Only award points to active chatters?
                                         </label>
                                     </div>
 
