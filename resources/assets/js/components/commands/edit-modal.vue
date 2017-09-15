@@ -22,6 +22,7 @@
                                 <option value="owner">Owner</option>
                                 <option value="admin">Admin</option>
                                 <option value="mod">Mod</option>
+                                <option value="sub">Subscriber</option>
                                 <option value="everyone" selected="selected">Everyone</option>
                             </select>
                         </div><!-- .form-group -->

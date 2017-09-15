@@ -132,7 +132,7 @@ class Manager extends BasicManager implements BasicManagerInterface
                     $query->where('channel_id', $channel->id);
                 })
             ],
-            'level'         => 'required|in:everyone,mod,admin,owner',
+            'level'         => 'required|in:everyone,sub,mod,admin,owner',
             'response'      => 'required|max:400',
             'disabled'      => 'sometimes|required|boolean',
             'usage'         => 'sometimes|required|max:50',
@@ -192,7 +192,7 @@ class Manager extends BasicManager implements BasicManagerInterface
                     $query->where('channel_id', $channel->id);
                 })->ignore($id)
             ],
-            'level'         => 'sometimes|required|in:everyone,mod,admin,owner',
+            'level'         => 'sometimes|required|in:everyone,sub,mod,admin,owner',
             'response'      => 'sometimes|required|max:400',
             'disabled'      => 'sometimes|required|boolean',
             'usage'         => 'sometimes|required|max:50',
@@ -233,7 +233,7 @@ class Manager extends BasicManager implements BasicManagerInterface
         // Validate the request
         $validator = \Validator::make($data, [
             'command'       => 'sometimes|required|max:80',
-            'level'         => 'sometimes|required|in:everyone,mod,admin,owner',
+            'level'         => 'sometimes|required|in:everyone,sub,mod,admin,owner',
             'response'      => 'sometimes|required|max:400',
             'disabled'      => 'sometimes|required|boolean',
             'usage'         => 'sometimes|required|max:50',
