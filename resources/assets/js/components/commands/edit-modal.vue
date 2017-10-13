@@ -35,12 +35,14 @@
                             <span class="help-block" v-if="errors.has('cool_down')" v-text="errors.get('cool_down')"></span>
                             <span class="help-block">The amount of time in seconds before the command can be used again.</span>
                         </div>
-                        <!--
-                        <div class="form-group">
+
+                        <div class="form-group" v-bind:class="{ 'has-error': errors.has('count') }">
                             <label for="command-count">Count</label>
                             <input type="number" class="form-control" id="command-count" name="count" placeholder="3" v-model="newCommand.count">
+
+                            <span class="help-block" v-if="errors.has('count')" v-text="errors.get('count')"></span>
                         </div>
-                        -->
+
                         <div class="form-group" v-bind:class="{ 'has-error': errors.has('response') }">
                             <label for="response-input">Response:</label>
                             <textarea class="form-control" id="response-input" name="command" rows="4" v-model="newCommand.response" v-bind:disabled="disabled.response" placeholder="This is a response output by the bot when the command is executed."></textarea>
@@ -178,7 +180,7 @@
                 }
 
                 if (! this.disabled.count) {
-                    data.count = this.newCommand.count;
+                    data.count = ~~this.newCommand.count;
                 }
 
                 if (this.originalCommand === false) {

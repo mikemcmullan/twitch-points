@@ -137,7 +137,8 @@ class Manager extends BasicManager implements BasicManagerInterface
             'disabled'      => 'sometimes|required|boolean',
             'usage'         => 'sometimes|required|max:50',
             'description'   => 'sometimes|required|max:400',
-            'cool_down'     => 'required|numeric_size_between:0,300'
+            'cool_down'     => 'required|numeric_size_between:0,300',
+            'count'         => 'sometimes|required|numeric_size_between:0,1000000'
         ], [
             'command.unique'=> "Command '{$data['command']}' already exists."
         ]);
@@ -146,9 +147,14 @@ class Manager extends BasicManager implements BasicManagerInterface
             throw new ValidationException($validator);
         }
 
+        $count = $data['count'];
+        unset($data['count']);
+
         $data['type']    = 'custom';
 
         $created = $channel->commands()->create($data);
+        $created->count = $count;
+        $this->updateCommandCount($channel, $created->id, $count);
 
         if (! $created->disabled) {
             $this->events->fire(new \App\Events\Commands\CommandWasUpdated($channel, $created));
@@ -197,7 +203,8 @@ class Manager extends BasicManager implements BasicManagerInterface
             'disabled'      => 'sometimes|required|boolean',
             'usage'         => 'sometimes|required|max:50',
             'description'   => 'sometimes|required|max:400',
-            'cool_down'     => 'sometimes|required|numeric_size_between:0,300'
+            'cool_down'     => 'sometimes|required|numeric_size_between:0,300',
+            'count'         => 'sometimes|required|numeric_size_between:0,1000000'
         ], [
             'command.unique'=> "Command '" . (isset($data['command']) ? $data['command'] : $command['command']) . "' already exists."
         ]);
@@ -205,6 +212,11 @@ class Manager extends BasicManager implements BasicManagerInterface
         if ($validator->fails()) {
             throw new ValidationException($validator);
         }
+
+        $count = $data['count'];
+        unset($data['count']);
+
+        $this->updateCommandCount($channel, $id, $count);
 
         $command->fill($data);
         $command->save();
@@ -214,6 +226,8 @@ class Manager extends BasicManager implements BasicManagerInterface
         } else {
             $this->events->fire(new \App\Events\Commands\CommandWasUpdated($channel, $command));
         }
+
+        $command->count = $count;
 
         return $command;
     }
@@ -303,6 +317,8 @@ class Manager extends BasicManager implements BasicManagerInterface
     {
         $command = $this->get($channel, $id);
 
+        $this->deleteCommandCount($channel, $id);
+
         $this->events->fire(new \App\Events\Commands\CommandWasDeleted($channel, $command));
 
         return $command->delete();
@@ -318,5 +334,30 @@ class Manager extends BasicManager implements BasicManagerInterface
     protected function getCommandCount(Channel $channel, $commandId)
     {
         return (int) app('redis')->get("#{$channel->name}:count:{$commandId}");
+    }
+
+    /**
+     * Update how many times a command has been used.
+     *
+     * @param  Channel      $channel
+     * @param  int|string   $commandId
+     * @param  int|string   $newCount
+     * @return int
+     */
+    protected function updateCommandCount(Channel $channel, $commandId, $newCount)
+    {
+        return app('redis')->set("#{$channel->name}:count:{$commandId}", (int) $newCount);
+    }
+
+    /**
+     * Delete how many times a command has been used.
+     *
+     * @param  Channel      $channel
+     * @param  int|string   $commandId
+     * @return int
+     */
+    protected function deleteCommandCount(Channel $channel, $commandId)
+    {
+        return app('redis')->del("#{$channel->name}:count:{$commandId}");
     }
 }
