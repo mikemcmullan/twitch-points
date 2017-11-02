@@ -5,6 +5,11 @@ Route::get('/viewer', [
     'as'    => 'api_points_path'
 ]);
 
+Route::delete('/viewer/{id}', [
+    'uses'  => 'ViewerController@deleteViewer',
+    'as'    => 'api_viewer_delete_path'
+]);
+
 Route::get('/vips', [
     'uses'  => 'GeneralController@getVIPs',
     'as'    => 'api_vips_path'

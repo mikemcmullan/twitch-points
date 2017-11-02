@@ -23,6 +23,7 @@
                         <div class="col-md-12">
                             @can('admin-channel', $channel)
                             <edit-currency-modal></edit-currency-modal>
+                            <delete-chatter-modal></delete-chatter-modal>
                             @endcan
 
                             {!! Form::open(['method' => 'get', 'class' => 'points-results-form']) !!}
@@ -50,7 +51,16 @@
                                             <td>
                                                 @{{ viewer.points }}
                                                 @can('admin-channel', $channel)
-                                                <a href="#" @click.prevent="editCurrencyModal(username)">+/-</a>
+                                                <div class="pull-right">
+                                                    <a href="#" @click.prevent="editCurrencyModal(viewer.username)">
+                                                        <i class="fa fa-plus" aria-hidden="true"></i>
+                                                        <i class="fa fa-minus" aria-hidden="true"></i>
+                                                    </a>
+                                                    &nbsp;
+                                                    <a href="#" @click.prevent="deleteChatterModal(viewer.username)">
+                                                        <i class="fa fa-trash" aria-hidden="true"></i>
+                                                    </a>
+                                                </div>
                                                 @endcan
                                             </td>
                                         </tr>
@@ -199,7 +209,16 @@
                                         <td>
                                             @{{ chatter.points }}
                                             @can('admin-channel', $channel)
-                                                <a href="#" @click.prevent="editCurrencyModal(chatter.username)">+/-</a>
+                                            <div class="pull-right">
+                                                <a href="#" @click.prevent="editCurrencyModal(chatter.username)">
+                                                    <i class="fa fa-plus" aria-hidden="true"></i>
+                                                    <i class="fa fa-minus" aria-hidden="true"></i>
+                                                </a>
+                                                &nbsp;
+                                                <a href="#" @click.prevent="deleteChatterModal(chatter.username)">
+                                                    <i class="fa fa-trash" aria-hidden="true"></i>
+                                                </a>
+                                            </div>
                                             @endcan
                                         </td>
                                     </tr>

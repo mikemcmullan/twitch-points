@@ -146,6 +146,18 @@ class ScoreboardCache
 	}
 
 	/**
+	 * Delete a viewer from the cache.
+	 *
+	 * @param  Channel $channel
+	 * @param  string $username
+	 */
+	public function deleteViewer(Channel $channel, $username)
+	{
+		$this->redis->hdel("#{$channel->slug}:sb", $username);
+		$this->redis->zrem("#{$channel->slug}:sbIndex", $username);
+	}
+
+	/**
 	 * Clear the cache for the channel.
 	 *
 	 * @param  Channel $channel

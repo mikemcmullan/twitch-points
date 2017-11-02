@@ -8,16 +8,29 @@ use App\Channel;
 use App\Http\Controllers\Controller;
 use InvalidArgumentException;
 use App\Support\NamedRankings;
+use App\Support\ScoreboardCache;
 use App\Currency\Manager;
+use App\Contracts\Repositories\ChatterRepository;
 
 class ViewerController extends Controller
 {
     /**
+     * @var Manager
+     */
+    protected $currencyManager;
+
+    /**
+     * @var ChatterRepository
+     */
+    private $chatterRepository;
+
+    /**
      *
      */
-    public function __construct()
+    public function __construct(Manager $manager, ChatterRepository $chatterRepository)
     {
-
+        $this->currencyManager = $manager;
+        $this->chatterRepository = $chatterRepository;
     }
 
     /**
@@ -44,5 +57,27 @@ class ViewerController extends Controller
             'handle', 'username', 'display_name', 'points', 'minutes', 'rank', 'moderator',
             'administrator', 'time_online', 'named_rank'
         ]));
+    }
+
+    /**
+     * @param  Request $request
+     * @param  Channel $channel
+     * @param  Manager $manager
+     *
+     * @return \Symfony\Component\HttpFoundation\Response
+     */
+    public function deleteViewer(Channel $channel, ScoreboardCache $scoreboardCache, $username)
+    {
+        $viewer = $this->currencyManager->getViewer($channel, $username);
+
+        $deleted = $this->chatterRepository->deleteChatter($channel, $viewer['username']);
+
+        if ($deleted) {
+            $scoreboardCache->deleteViewer($channel, $viewer['username']);
+        }
+
+        return response()->json([
+            'success' => $deleted ? 'true' : 'false'
+        ]);
     }
 }

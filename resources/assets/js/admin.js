@@ -319,6 +319,7 @@ if (document.querySelector('#giveaway')) {
 //------------------------------------------------------------------------------
 import currencySettings from './components/currency/settings.vue';
 import editCurrencyModal from './components/currency/edit-modal.vue';
+import deleteChatterModal from './components/currency/delete-modal.vue';
 
 if (document.querySelector('#currency')) {
     new Vue({
@@ -343,6 +344,7 @@ if (document.querySelector('#currency')) {
             'currency-settings': currencySettings,
             pagination: vuePagination,
             'edit-currency-modal': editCurrencyModal,
+            'delete-chatter-modal': deleteChatterModal,
         },
 
         ready() {
@@ -384,6 +386,10 @@ if (document.querySelector('#currency')) {
 
             editCurrencyModal(username, state) {
                 this.$broadcast('openEditCurrencyModal', username, state);
+            },
+
+            deleteChatterModal(username) {
+                this.$broadcast('openDeleteChatterModal', username);
             }
         }
     });
