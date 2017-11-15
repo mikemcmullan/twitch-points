@@ -44,7 +44,7 @@ return [
                 'cool_down' => 30,
                 'global_cool_down' => false,
                 'module' => 'RussianRoulette',
-                'response' => 'Congratulations {{ user }}, you are our unlucky winner, see you again in 5 minutes.',
+                'response' => 'Congratulations {{ display_name }}, you are our unlucky winner, see you again in 5 minutes.',
                 'disabled' => false
             ],
 
