@@ -106,7 +106,7 @@ return [
                 'cool_down' => 3,
                 'global_cool_down' => true,
                 'module' => 'Simple',
-                'response' => '{{ user }}, you can view all available bot commands here: %s',
+                'response' => '{{ display_name }}, you can view all available bot commands here: %s',
                 'disabled' => false
             ],
         ],
