@@ -44,7 +44,7 @@ return [
                 'cool_down' => 30,
                 'global_cool_down' => false,
                 'module' => 'RussianRoulette',
-                'response' => 'Congratulations {{ display_name }}, you are our unlucky winner, see you again in 5 minutes.',
+                'response' => 'Congratulations {{ user }}, you are our unlucky winner, see you again in 5 minutes.',
                 'disabled' => false
             ],
 
@@ -106,7 +106,7 @@ return [
                 'cool_down' => 3,
                 'global_cool_down' => true,
                 'module' => 'Simple',
-                'response' => '{{ display_name }}, you can view all available bot commands here: %s',
+                'response' => '$(user), you can view all available bot commands here: %s',
                 'disabled' => false
             ],
         ],
