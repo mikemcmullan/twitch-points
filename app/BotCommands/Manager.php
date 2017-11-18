@@ -213,10 +213,12 @@ class Manager extends BasicManager implements BasicManagerInterface
             throw new ValidationException($validator);
         }
 
-        $count = $data['count'];
-        unset($data['count']);
+        if (isset($data['count'])) {
+            $count = $data['count'];
+            unset($data['count']);
 
-        $this->updateCommandCount($channel, $id, $count);
+            $this->updateCommandCount($channel, $id, $count);
+        }
 
         $command->fill($data);
         $command->save();
@@ -227,7 +229,9 @@ class Manager extends BasicManager implements BasicManagerInterface
             $this->events->fire(new \App\Events\Commands\CommandWasUpdated($channel, $command));
         }
 
-        $command->count = $count;
+        if (isset($count)) {
+            $command->count = $count;
+        }
 
         return $command;
     }
