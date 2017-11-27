@@ -17,6 +17,7 @@
                 syncStatus: false,
                 activeChatters: false,
                 activeChattersMins: 15,
+                doubleCurrency: false,
                 alert: {
                     visible: false,
                     class: {
@@ -129,7 +130,8 @@
                     'currency__offline-awarded': this.offlineAmount,
                     'currency__keyword': this.keyword,
                     'currency__only-active-chatters': this.activeChatters,
-                    'currency__active-minutes': ~~this.activeChattersMins
+                    'currency__active-minutes': ~~this.activeChattersMins,
+                    'currency__active-chatters-double': this.doubleCurrency
                 }, {
                     beforeSend: (request) => {
                         this.saving = true;

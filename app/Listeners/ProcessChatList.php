@@ -92,28 +92,25 @@ class ProcessChatList
     }
 
     /**
-     * Handle the event.
+     * Update the chatters.
      *
-     * @param  ChatListWasDownloaded  $event
+     * @param  Channel $channel
+     * @param  array   $chatList
+     * @param  int     $minutes
+     * @param  float   $points
      * @return void
      */
-    public function handle(ChatListWasDownloaded $event)
+    private function updateChatters(Channel $channel, $chatList, $minutes, $points)
     {
-        $minutes = $this->calculateMinutes($event->channel);
-        $points = $this->calculatePoints($event->channel, $minutes, $event->status);
-
-        $chattersList = $event->chatList['chatters'];
-        $modList      = $event->chatList['moderators'];
-
-        $chatters     = $this->chatterRepository->updateChatter($event->channel, $chattersList, $minutes, $points);
-        $mods         = $this->chatterRepository->updateModerator($event->channel, $modList, $minutes, $points);
+        $chatters = $this->chatterRepository->updateChatter($channel, $chatList['chatters'], $minutes, $points);
+        $mods     = $this->chatterRepository->updateModerator($channel, $chatList['moderators'], $minutes, $points);
 
         foreach ($chatters['existing'] as $chatter) {
             $chatter['points'] += $chatters['points'];
             $chatter['minutes'] += $chatters['minutes'];
 
             if ($chatter['hidden'] === 0) {
-                $this->scoreboardCache->addViewer($event->channel, $chatter);
+                $this->scoreboardCache->addViewer($channel, $chatter);
             }
         }
 
@@ -122,7 +119,7 @@ class ProcessChatList
             $chatter['minutes'] += $chatters['minutes'];
 
             if ($chatter['hidden'] === 0) {
-                $this->scoreboardCache->addViewer($event->channel, $chatter);
+                $this->scoreboardCache->addViewer($channel, $chatter);
             }
         }
 
@@ -134,7 +131,7 @@ class ProcessChatList
                 'moderator'     => false
             ];
 
-            $this->scoreboardCache->addViewer($event->channel, $chatter);
+            $this->scoreboardCache->addViewer($channel, $chatter);
         }
 
         foreach ($mods['new'] as $handle) {
@@ -145,7 +142,33 @@ class ProcessChatList
                 'moderator'     => true
             ];
 
-            $this->scoreboardCache->addViewer($event->channel, $chatter);
+            $this->scoreboardCache->addViewer($channel, $chatter);
+        }
+    }
+
+    /**
+     * Handle the event.
+     *
+     * @param  ChatListWasDownloaded  $event
+     * @return void
+     */
+    public function handle(ChatListWasDownloaded $event)
+    {
+        $minutes = $this->calculateMinutes($event->channel);
+        $points = $this->calculatePoints($event->channel, $minutes, $event->status);
+
+        $doublePoints = (bool) $event->channel->getSetting('currency.active-chatters-double', false);
+        $onlyActive = (bool) $event->channel->getSetting('currency.only-active-chatters', false);
+        $activePoints = $points;
+
+        if (!$onlyActive && $doublePoints) {
+            $activePoints = $points*2;
+        }
+
+        $this->updateChatters($event->channel, $event->chatList['active'], $minutes, $doublePoints ? $points*2 : $points);
+
+        if ($onlyActive === false) {
+            $this->updateChatters($event->channel, $event->chatList['online'], $minutes, $points);
         }
 
         $this->events->fire(new VIPsWereUpdated($event->channel));

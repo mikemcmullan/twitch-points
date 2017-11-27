@@ -35,28 +35,6 @@ class DownloadChatListJob extends Job
          $this->channel = $channel;
      }
 
-     /**
-      * Test if a name is an active chatter.
-      *
-      * @param  string $name
-      * @return bool
-      */
-     public function filterActiveChatters($name)
-     {
-         return in_array($name, $this->activeChatters['chatters']);
-     }
-
-     /**
-      * Test if a name is an active moderator.
-      *
-      * @param  string $name
-      * @return bool
-      */
-     public function filterActiveModerators($name)
-     {
-         return in_array($name, $this->activeChatters['moderators']);
-     }
-
     /**
      * Execute the job.
      *
@@ -75,15 +53,34 @@ class DownloadChatListJob extends Job
          }
 
          $chatList = $twitchApi->chatList($this->channel['name']);
-         $this->activeChatters = $activeChatters->get($this->channel);
+         $activeChatters = $activeChatters->get($this->channel);
 
-         if ($this->channel->getSetting('currency.only-active-chatters', false) === true) {
-             $chatList['moderators'] = array_filter($chatList['moderators'], [$this, 'filterActiveModerators']);
-             $chatList['chatters']   = array_filter($chatList['chatters'], [$this, 'filterActiveChatters']);
+         $online = ['moderators' => [], 'chatters' => []];
+         $active = ['moderators' => [], 'chatters' => []];
+
+         foreach ($chatList['moderators'] as $username) {
+             if (in_array($username, $activeChatters['moderators'])) {
+                 $active['moderators'][] = $username;
+             } else {
+                 $online['moderators'][] = $username;
+             }
          }
 
-         $events->fire(new ChatListWasDownloaded($this->channel, $chatList, $status));
+         foreach ($chatList['chatters'] as $username) {
+             if (in_array($username, $activeChatters['chatters'])) {
+                 $active['chatters'][] = $username;
+             } else {
+                 $online['chatters'][] = $username;
+             }
+         }
 
-         return $chatList;
+         $return = [
+             'online' => $online,
+             'active' => $active
+         ];
+
+         $events->fire(new ChatListWasDownloaded($this->channel, $return, $status));
+
+         return $return;
      }
 }

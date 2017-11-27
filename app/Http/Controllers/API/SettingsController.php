@@ -45,8 +45,9 @@ class SettingsController extends Controller
             'currency__keyword'      => 'required|regex:/^!?\w{2,20}$/',
             'currency__status'       => 'required|boolean_real',
 
-            'currency__only-active-chatters' => 'required|boolean_real',
-            'currency__active-minutes'       => 'required|integer|min:1|max:60',
+            'currency__only-active-chatters'    => 'required|boolean_real',
+            'currency__active-minutes'          => 'required|integer|min:1|max:60',
+            'currency__active-chatters-double'  => 'required|boolean_real',
 
             'giveaway__ticket-cost'  => 'required|integer|min:1|max:1000',
             'giveaway__ticket-max'   => 'required|integer|min:1|max:100',
