@@ -68,6 +68,8 @@ class EventServiceProvider extends ServiceProvider
         ],
 
         \App\Events\NewFollower::class => [
+            \App\Listeners\AwardCurrency::class,
+            \App\Listeners\PushToBot::class
             \App\Listeners\PushToBot::class
         ],
 

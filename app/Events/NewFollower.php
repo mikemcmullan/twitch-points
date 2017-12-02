@@ -16,7 +16,7 @@ class NewFollower extends Event
     /**
      * @var Collection
      */
-    protected $followers;
+    public $followers;
 
     /**
      * Create a new event instance.

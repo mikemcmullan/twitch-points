@@ -43,7 +43,7 @@ class AwardCurrency
 		}
 
 		$users->each(function ($user) use ($event, $amount) {
-			$this->currencyManager->add($event->channel, $user['twitch_id'], $amount);
+			$this->currencyManager->add($event->channel, $user['id'], $amount);
 		});
 	}
 }
