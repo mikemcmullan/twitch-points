@@ -70,6 +70,15 @@ class EventServiceProvider extends ServiceProvider
         \App\Events\NewFollower::class => [
             \App\Listeners\AwardCurrency::class,
             \App\Listeners\PushToBot::class
+        ],
+
+        \App\Events\NewSubscription::class => [
+            \App\Listeners\AwardCurrency::class,
+            \App\Listeners\PushToBot::class
+        ],
+
+        \App\Events\ReSubscription::class => [
+            \App\Listeners\AwardCurrency::class,
             \App\Listeners\PushToBot::class
         ],
 

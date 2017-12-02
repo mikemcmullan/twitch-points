@@ -23,6 +23,19 @@ Route::post('/followers', [
 ]);
 
 /**
+ * Subscription Routes
+ */
+Route::post('/subscriptions/new', [
+    'uses'  => 'SubscriptionsController@newSubscription',
+    'as'    => 'api_new_subscription'
+]);
+
+Route::post('/subscriptions/re', [
+    'uses'  => 'SubscriptionsController@reSubscription',
+    'as'    => 'api_re_subscription'
+]);
+
+/**
  * Chatters Routes
  */
 Route::get('/chatters/active', [
