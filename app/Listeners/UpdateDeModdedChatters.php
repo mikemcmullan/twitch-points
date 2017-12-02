@@ -33,16 +33,17 @@ class UpdateDeModdedChatters
     public function handle(ChatListWasDownloaded $event)
     {
         $currentMods = $this->chatterRepository->allModsForChannel($event->channel);
+        $chatters = array_merge($event->chatList['active']['chatters'], $event->chatList['online']['chatters']);
+        $demodded = [];
 
-        $demmoded = array_filter($event->chatList['chatters'], function ($chatter) use ($currentMods) {
-            return $currentMods->get($chatter);
-        });
+        foreach ($chatters as $chatter) {
+            if ($currentMods->get($chatter['twitch_id'])) {
+                $demodded[] = $chatter;
+            }
+        }
 
-        // \Log::info($event->chatList);
-        // \Log::info($demmoded);
-
-        foreach ($demmoded as $handle) {
-            $this->chatterRepository->removeMod($event->channel, $handle);
+        foreach ($demodded as $chatter) {
+            $this->chatterRepository->removeMod($event->channel, $chatter['twitch_id']);
         }
     }
 }

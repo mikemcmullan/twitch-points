@@ -22,6 +22,7 @@ class CurrencyController extends Controller
     public function __construct(Manager $manager)
     {
         $this->middleware(['jwt.auth', 'auth.api:currency'], ['except' => 'index']);
+        $this->middleware('resolveTwitchUsername', ['only' => ['addCurrency', 'removeCurrency']]);
 
         $this->currencyManager = $manager;
     }
@@ -54,7 +55,7 @@ class CurrencyController extends Controller
     {
         $data = $request->only(['username', 'amount', 'source']);
 
-        return response()->json($this->currencyManager->addPoints($channel, $data['username'], $data['amount'], $data['source']));
+        return response()->json($this->currencyManager->addPoints($channel, $data['username']['twitch_id'], $data['amount'], $data['source']['twitch_id']));
     }
 
     /**
@@ -69,7 +70,7 @@ class CurrencyController extends Controller
     {
         $data = $request->only(['username', 'amount']);
 
-        return response()->json($this->currencyManager->removePoints($channel, $data['username'], $data['amount']));
+        return response()->json($this->currencyManager->removePoints($channel, $data['username']['twitch_id'], $data['amount']));
     }
 
     /**

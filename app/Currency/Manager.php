@@ -59,26 +59,24 @@ class Manager
      * Get a chatter by their handle who belongs to a channel.
      *
      * @param Channel $channel
-     * @param $handle
+     * @param $twitchId
      *
      * @return mixed
      *
      * @throws UnknownHandleException
      * @throws UnknownUserException
      */
-    public function getViewer(Channel $channel, $handle)
+    public function getViewer(Channel $channel, $twitchId)
     {
-        if (! $handle) {
-            throw new UnknownHandleException(sprintf('Unknown username %s.', $handle));
+        if (! $twitchId) {
+            throw new UnknownHandleException(sprintf('Unknown twitch id %s.', $twitchId));
         }
 
-        $handle = strtolower($handle);
-
         // $chatter = $this->chatterRepo->findByHandle($channel, $handle);
-        $chatter = $this->scoreboardCache->findByHandle($channel, $handle);
+        $chatter = $this->scoreboardCache->findByHandle($channel, $twitchId);
 
         if (! $chatter) {
-            throw new UnknownHandleException(sprintf('Unknown username %s.', $handle));
+            throw new UnknownHandleException(sprintf('Unknown twitch id %s.', $twitchId));
         }
 
         return $chatter;
@@ -144,11 +142,11 @@ class Manager
 
     /**
      * @param string $channel The channel the handle belongs to.
-     * @param string $handle  The chat handle of the user.
+     * @param string $twitchId The twitch id of the user.
      * @param string $target  The chat handle of the user receiving or losing points.
      * @param int $points     How many points are being added or removing.
-     * @param string $source  The chat handle of the user that points will be taken from
-     *                        when awarding about chat handle.
+     * @param string $sourceId The twitch id of the user that points will be taken from
+     *                        when awarding to another user.
      * @param string $symbol  Indicate whether you are adding or removing points.
      *                        Must be either + or -.
      *
@@ -156,30 +154,30 @@ class Manager
      * @throws UnknownHandleException
      * @throws UnknownUserException
      */
-    private function updatePoints($channel, $handle, $points, $source = null, $symbol = '+')
+    private function updatePoints($channel, $twitchId, $points, $sourceId = null, $symbol = '+')
     {
         $this->validateSymbol($symbol);
 
         $channel = $this->resolveChannel($channel);
+        $chatter = $this->getViewer($channel, $twitchId);
         $sourceChatter = null;
         $points = (int) $points;
 
-        if ($handle === $source) {
+        if ($twitchId === $sourceId) {
             throw new InvalidArgumentException(sprintf('You cannot give yourself %s.', strtolower($channel->getSetting('currency.name'))));
         }
 
-        if ($source && $sourceChatter = $this->getViewer($channel, $source)) {
+        if ($sourceId && $sourceChatter = $this->getViewer($channel, $sourceId)) {
             if ($sourceChatter['points'] < $points) {
-                throw new \InvalidArgumentException(sprintf('%s does not have %s %s to give to %s.', $sourceChatter['handle'], $points, strtolower($channel->getSetting('currency.name')), $handle));
+                throw new \InvalidArgumentException(sprintf('%s does not have %s %s to give to %s.', $sourceChatter['display_name'], $points, strtolower($channel->getSetting('currency.name')), $chatter['display_name']));
             }
 
-            $this->chatterRepo->updateChatter($channel, $sourceChatter['handle'], 0, '-' . $points);
+            $this->chatterRepo->updateChatters($channel, [$sourceChatter], 0, '-' . $points, true);
             $this->scoreboardCache->addViewer($channel, array_merge($sourceChatter, [
                 'points' => $this->calculateTotalPoints($sourceChatter['points'], $points, '-')
             ]));
         }
 
-        $chatter = $this->getViewer($channel, $handle);
         $pointTotal = $this->calculateTotalPoints($chatter['points'], $points, $symbol);
 
         // Make sure chatter does not get negative points.
@@ -187,15 +185,15 @@ class Manager
             $points = $chatter['points'];
         }
 
-        $this->chatterRepo->updateChatter($channel, $chatter['handle'], 0, $symbol . $points);
+        $this->chatterRepo->updateChatters($channel, [$chatter], 0, $symbol . $points, true);
         $this->scoreboardCache->addViewer($channel, array_merge($chatter, ['points' => $pointTotal]));
 
         return array_merge(array_only($chatter, ['handle', 'minutes']), [
             'channel' => $channel->name,
             'points' => floor($pointTotal),
             'amount' => floor($points),
-            'source' => $source,
-            'source_display_name' => getDisplayName($source),
+            'source' => $sourceId,
+            'source_display_name' => getDisplayName($sourceChatter['username']),
             'username' => $chatter['handle'],
             'display_name' => getDisplayName($chatter['handle'])
         ]);
@@ -218,58 +216,57 @@ class Manager
 
     /**
      * @param string $channel       The channel the handle belongs to.
-     * @param string $handle        The chat handle of the user.
-     * @param string $target        The chat handle of the user receiving the points.
+     * @param string $twitchId      The twitch id of the user.
      * @param int $points           How many points are being added or removing.
-     * @param string|null $source   If provided this is who the points will be taken from.
+     * @param string|null $sourceId If provided this is the twitch id of the
+     *                              person the points will be taken from.
      * @return mixed
      */
-    public function addPoints($channel, $handle, $points, $source = null)
+    public function addPoints($channel, $twitchId, $points, $sourceId = null)
     {
-        $this->validate($channel, $handle, $points, $source);
+        $this->validate($channel, $twitchId, $points, $sourceId);
 
-        return $this->updatePoints($channel, $handle, $points, $source);
+        return $this->updatePoints($channel, $twitchId, $points, $sourceId);
     }
 
     /**
      * @param string $channel      The channel the handle belongs to.
-     * @param string $handle       The chat handle of the user.
-     * @param string $target       The chat handle of the user losing the points.
+     * @param string $twitchId     The twitch id of the user.
      * @param string $points       How many points are being added or removing.
      *
      * @return mixed
      */
-    public function removePoints($channel, $handle, $points)
+    public function removePoints($channel, $twitchId, $points)
     {
-        $this->validate($channel, $handle, $points);
+        $this->validate($channel, $twitchId, $points);
 
-        return $this->updatePoints($channel, $handle, $points, null, '-');
+        return $this->updatePoints($channel, $twitchId, $points, null, '-');
     }
 
     /**
      * Alias for addPoints.
      *
      * @param $channel
-     * @param $handle
+     * @param $twitchId
      * @param $target
      * @param $points
      * @param $source
      */
-    public function add($channel, $handle, $points, $source = null)
+    public function add($channel, $twitchId, $points, $source = null)
     {
-        return $this->addPoints($channel, $handle, $points, $source);
+        return $this->addPoints($channel, $twitchId, $points, $source);
     }
 
     /**
      * Alias for RemovePoints.
      *
      * @param $channel
-     * @param $handle
+     * @param $twitchId
      * @param $target
      * @param $points
      */
-    public function remove($channel, $handle, $points)
+    public function remove($channel, $twitchId, $points)
     {
-        return $this->removePoints($channel, $handle, $points);
+        return $this->removePoints($channel, $twitchId, $points);
     }
 }

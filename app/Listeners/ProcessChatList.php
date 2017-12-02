@@ -102,47 +102,41 @@ class ProcessChatList
      */
     private function updateChatters(Channel $channel, $chatList, $minutes, $points)
     {
-        $chatters = $this->chatterRepository->updateChatter($channel, $chatList['chatters'], $minutes, $points);
-        $mods     = $this->chatterRepository->updateModerator($channel, $chatList['moderators'], $minutes, $points);
+        $chatters = collect(array_merge($chatList['chatters'], $chatList['moderators']));
+        $modIds = array_pluck($chatList['moderators'], 'twitch_id');
 
-        foreach ($chatters['existing'] as $chatter) {
-            $chatter['points'] += $chatters['points'];
-            $chatter['minutes'] += $chatters['minutes'];
+
+        $existingChatters = $this->chatterRepository
+            ->findByTwitchId($channel, array_pluck($chatters, 'twitch_id'))
+            ->map(function ($chatter) use ($chatters) {
+                $new = $chatters->where('twitch_id', $chatter['twitch_id']);
+
+                if (! $new->isEmpty()) {
+                    $chatter['username'] = $new->first()['username'];
+                    $chatter['display_name'] = $new->first()['display_name'];
+                }
+
+                return $chatter;
+            });
+
+        $newChatters = collect($chatList['chatters'])->filter(function ($chatter) use ($existingChatters) {
+            return $existingChatters->where('twitch_id', $chatter['twitch_id'])->count() === 0;
+        });
+
+        $this->chatterRepository->newChatters($channel, $newChatters, $minutes, $points);
+        $this->chatterRepository->updateChatters($channel, $existingChatters, $minutes, $points);
+
+        foreach ($modIds as $modId) {
+            $this->chatterRepository->addMod($channel, $modId);
+        }
+
+        foreach ($existingChatters as $chatter) {
+            $chatter['points'] += $points;
+            $chatter['minutes'] += $minutes;
 
             if ($chatter['hidden'] === 0) {
                 $this->scoreboardCache->addViewer($channel, $chatter);
             }
-        }
-
-        foreach ($mods['existing'] as $chatter) {
-            $chatter['points'] += $chatters['points'];
-            $chatter['minutes'] += $chatters['minutes'];
-
-            if ($chatter['hidden'] === 0) {
-                $this->scoreboardCache->addViewer($channel, $chatter);
-            }
-        }
-
-        foreach ($chatters['new'] as $handle) {
-            $chatter = [
-                'handle'        => $handle['username'],
-                'points'        => $chatters['points'],
-                'minutes'       => $chatters['minutes'],
-                'moderator'     => false
-            ];
-
-            $this->scoreboardCache->addViewer($channel, $chatter);
-        }
-
-        foreach ($mods['new'] as $handle) {
-            $chatter = [
-                'handle'        => $handle['username'],
-                'points'        => $chatters['points'],
-                'minutes'       => $chatters['minutes'],
-                'moderator'     => true
-            ];
-
-            $this->scoreboardCache->addViewer($channel, $chatter);
         }
     }
 

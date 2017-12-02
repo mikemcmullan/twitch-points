@@ -105,12 +105,38 @@ function getUserFromRedis($username)
 
         if ($user) {
             $user = json_decode($user, true);
-
+            $user['twitch_id'] = $user['user_id'];
             return $user;
         }
     }
 
     return null;
+}
+
+function addUserToRedis($user)
+{
+    if (! isset($user['username'])) {
+        return null;
+    }
+
+    $redis = app('redis');
+
+    $exists = $redis->hexists('twitch:usernameIdMap', $user['username']);
+
+    if ($exists === 0) {
+        $redis->hset('twitch:usernameIdMap', $user['username'], $user['id']);
+    }
+
+    $data = [
+        'user_id'       => $user['id'],
+        'username'      => $user['username'],
+        'display_name'  => $user['display_name'],
+        'createdAt'     => time()
+    ];
+
+    $redis->hset('twitch:chatUsers', $user['id'], json_encode($data));
+
+    return $data;
 }
 
 /**

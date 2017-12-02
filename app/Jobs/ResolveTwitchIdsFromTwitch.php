@@ -10,7 +10,7 @@ use App\Chatter;
 use App\Services\TwitchApi;
 use DB;
 
-class ResolveServiceIdsFromTwitch implements ShouldQueue
+class ResolveTwitchIdsFromTwitch implements ShouldQueue
 {
     /**
      * Create a new job instance.
@@ -29,7 +29,7 @@ class ResolveServiceIdsFromTwitch implements ShouldQueue
      */
     public function handle(TwitchApi $twitchApi)
     {
-        $chatters = Chatter::whereNull('service_id')->get();
+        $chatters = Chatter::whereNull('twitch_id')->get();
 
         $chatters->chunk(100)->each(function ($chunk) use ($twitchApi) {
             $response = $twitchApi->getUsersByUsername($chunk->pluck('username')->toArray());
@@ -38,7 +38,7 @@ class ResolveServiceIdsFromTwitch implements ShouldQueue
                 foreach ($response as $user) {
                     DB::table('chatters')
                         ->where('username', $user['login'])
-                        ->update(['service_id' => $user['id']]);
+                        ->update(['twitch_id' => $user['id']]);
                 }
             });
 

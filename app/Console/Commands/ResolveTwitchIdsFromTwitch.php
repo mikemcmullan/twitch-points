@@ -4,9 +4,9 @@ namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
 use Illuminate\Foundation\Bus\DispatchesJobs;
-use App\Jobs\ResolveServiceIdsFromTwitch as ResolveServiceIdsFromTwitchJob;
+use App\Jobs\ResolveTwitchIdsFromTwitch as ResolveTwitchIdsFromTwitchJob;
 
-class ResolveServiceIdsFromTwitch extends Command
+class ResolveTwitchIdsFromTwitch extends Command
 {
     use DispatchesJobs;
 
@@ -22,7 +22,7 @@ class ResolveServiceIdsFromTwitch extends Command
      *
      * @var string
      */
-    protected $description = 'Find chatters with a null service_id and get the id from the twitch api.';
+    protected $description = 'Find chatters with a null twitch_id and get the id from the twitch api.';
 
     /**
      * Create a new command instance.
@@ -41,6 +41,6 @@ class ResolveServiceIdsFromTwitch extends Command
      */
     public function handle()
     {
-        $this->dispatch(new ResolveServiceIdsFromTwitchJob());
+        $this->dispatch(new ResolveTwitchIdsFromTwitchJob());
     }
 }

@@ -63,12 +63,12 @@ class ScoreboardCache
             $end = $start + $this->perPage - 1;
         }
 
-		$viewers = $this->redis->zrange("#{$channel->slug}:sbIndex", $start, $end);
+		$viewers = $this->redis->zrange("{$channel->id}:sbIndex", $start, $end);
 
 		// For some unknown reason some installations of php won't let me pass
 		// reference to the mapViewer method directly to the map method.
-		$viewers = collect($viewers)->map(function ($handle) use ($channel) {
-			$viewer = $this->redis->hget("#{$channel->slug}:sb", $handle);
+		$viewers = collect($viewers)->map(function ($twitchId) use ($channel) {
+			$viewer = $this->redis->hget("{$channel->id}:sb", $twitchId);
 
 			return $this->mapViewer($viewer);
 		});
@@ -91,19 +91,19 @@ class ScoreboardCache
 	 */
 	public function countForChannel(Channel $channel)
 	{
-		return $this->redis->zcard("#{$channel->slug}:sbIndex");
+		return $this->redis->zcard("{$channel->id}:sbIndex");
 	}
 
 	/**
 	 * Find a viewer by their handle.
 	 *
 	 * @param  Channel $channel
-	 * @param  String  $handle
+	 * @param  String  $twitchId
 	 * @return Array
 	 */
-	public function findByHandle(Channel $channel, $handle)
+	public function findByHandle(Channel $channel, $twitchId)
 	{
-		$viewer = $this->redis->hget("#{$channel->slug}:sb", $handle);
+		$viewer = $this->redis->hget("{$channel->id}:sb", $twitchId);
 
 		if ($viewer) {
 			return $this->mapViewer($viewer);
@@ -119,10 +119,10 @@ class ScoreboardCache
 	public function addViewer(Channel $channel, $viewer)
 	{
 		if (! isset($viewer['rank'])) {
-			$viewer['rank'] = $this->redis->zscore("#{$channel->slug}:sbIndex", $viewer['username']);
+			$viewer['rank'] = $this->redis->zscore("{$channel->id}:sbIndex", $viewer['twitch_id']);
 
 			if (! $viewer['rank']) {
-				$viewer['rank'] = $this->redis->zrevrange("#{$channel->slug}:sbIndex", 0, 0, 'WITHSCORES');
+				$viewer['rank'] = $this->redis->zrevrange("{$channel->id}:sbIndex", 0, 0, 'WITHSCORES');
 				$viewer['rank'] = (int) array_shift($viewer['rank']);
 			}
 		}
@@ -131,6 +131,8 @@ class ScoreboardCache
 		$viewer['moderator'] = array_get($viewer, 'moderator', false);
 
 		$data = [
+			'id'			=> $viewer['id'],
+			'twitch_id'		=> $viewer['twitch_id'],
 			'username' 		=> $viewer['username'],
 			'display_name'	=> $viewer['display_name'] ? $viewer['display_name'] : $viewer['username'],
 			'rank' 			=> (int) $viewer['rank'],
@@ -141,8 +143,8 @@ class ScoreboardCache
 			'administrator' => (bool) $viewer['administrator'],
 		];
 
-		$this->redis->hset("#{$channel->slug}:sb", $viewer['username'], json_encode($data));
-		$this->redis->zadd("#{$channel->slug}:sbIndex", $viewer['rank'], $viewer['username']);
+		$this->redis->hset("{$channel->id}:sb", $viewer['twitch_id'], json_encode($data));
+		$this->redis->zadd("{$channel->id}:sbIndex", $viewer['rank'], $viewer['twitch_id']);
 	}
 
 	/**
@@ -153,8 +155,8 @@ class ScoreboardCache
 	 */
 	public function deleteViewer(Channel $channel, $username)
 	{
-		$this->redis->hdel("#{$channel->slug}:sb", $username);
-		$this->redis->zrem("#{$channel->slug}:sbIndex", $username);
+		$this->redis->hdel("{$channel->id}:sb", $username);
+		$this->redis->zrem("{$channel->id}:sbIndex", $username);
 	}
 
 	/**
@@ -164,8 +166,8 @@ class ScoreboardCache
 	 */
 	public function clear(Channel $channel)
 	{
-		$this->redis->del("#{$channel->slug}:sb");
-		$this->redis->del("#{$channel->slug}:sbIndex");
+		$this->redis->del("{$channel->id}:sb");
+		$this->redis->del("{$channel->id}:sbIndex");
 	}
 
 	/**
@@ -178,8 +180,8 @@ class ScoreboardCache
 	{
 		$seconds = $minutes * 60;
 
-		$this->redis->expire("#{$channel->slug}:sb", $seconds);
-		$this->redis->expire("#{$channel->slug}:sbIndex", $seconds);
+		$this->redis->expire("{$channel->id}:sb", $seconds);
+		$this->redis->expire("{$channel->id}:sbIndex", $seconds);
 	}
 
 	/**
@@ -193,6 +195,8 @@ class ScoreboardCache
 		$data = json_decode($string, true);
 
 		return [
+			'id'			=> $data['id'],
+			'twitch_id'		=> $data['twitch_id'],
 			'handle' 		=> $data['username'],
 			'username'		=> $data['username'],
 			'display_name' 	=> $data['display_name'],

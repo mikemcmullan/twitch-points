@@ -59,6 +59,7 @@ class Kernel extends HttpKernel
         'guest' => \App\Http\Middleware\RedirectIfAuthenticated::class,
         'jwt.auth' => \Tymon\JWTAuth\Middleware\GetUserFromToken::class,
         'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
-        'featureDetection' => \App\Http\Middleware\FeatureDetection::class
+        'featureDetection' => \App\Http\Middleware\FeatureDetection::class,
+        'resolveTwitchUsername' => \App\Http\Middleware\ResolveTwitchUsername::class,
     ];
 }

@@ -70,6 +70,14 @@ class MySQLChatterRepository implements ChatterRepository
         return $query->first();
     }
 
+    public function findByTwitchId(Channel $channel, $ids)
+    {
+        return DB::table('chatters')
+            ->where('channel_id', '=', $channel->id)
+            ->whereIn('twitch_id', (array) $ids)
+            ->get();
+    }
+
     /**
      * Get all chatters belonging to a channel.
      *
@@ -111,7 +119,7 @@ class MySQLChatterRepository implements ChatterRepository
         return (new Collection(DB::table('chatters')
             ->where('channel_id', '=', $channel->id)
             ->where('moderator', '=', true)
-            ->get()))->keyBy('username');
+            ->get()))->keyBy('twitch_id');
     }
 
     /**
@@ -120,15 +128,15 @@ class MySQLChatterRepository implements ChatterRepository
      * @param Channel $channel
      * @param array $username
      */
-    public function removeMod(Channel $channel, $username)
+    public function removeMod(Channel $channel, $twitchId)
     {
-        if ($username instanceof Collection) {
-            $username = $username->toArray();
+        if ($twitchId instanceof Collection) {
+            $twitchId = $twitchId->toArray();
         }
 
         return DB::table('chatters')
             ->where('channel_id', '=', $channel->id)
-            ->whereIn('username', (array) $username)
+            ->whereIn('twitch_id', (array) $twitchId)
             ->update([ 'moderator' => false ]);
     }
 
@@ -138,15 +146,15 @@ class MySQLChatterRepository implements ChatterRepository
      * @param Channel $channel
      * @param array $username
      */
-    public function addMod(Channel $channel, $username)
+    public function addMod(Channel $channel, $twitchId)
     {
-        if ($username instanceof Collection) {
-            $username = $username->toArray();
+        if ($twitchId instanceof Collection) {
+            $twitchId = $twitchId->toArray();
         }
 
         return DB::table('chatters')
             ->where('channel_id', '=', $channel->id)
-            ->whereIn('username', (array) $username)
+            ->whereIn('twitch_id', (array) $twitchId)
             ->update([ 'moderator' => true ]);
     }
 
@@ -170,15 +178,15 @@ class MySQLChatterRepository implements ChatterRepository
      * @param Channel $channel
      * @param array $handle
      */
-    public function removeAdmin(Channel $channel, $username)
+    public function removeAdmin(Channel $channel, $twitchId)
     {
-        if ($username instanceof Collection) {
-            $username = $username->toArray();
+        if ($twitchId instanceof Collection) {
+            $twitchId = $twitchId->toArray();
         }
 
         return DB::table('chatters')
             ->where('channel_id', '=', $channel->id)
-            ->whereIn('username', (array) $username)
+            ->whereIn('twitch_id', (array) $twitchId)
             ->update([ 'administrator' => false ]);
     }
 
@@ -188,15 +196,15 @@ class MySQLChatterRepository implements ChatterRepository
      * @param Channel $channel
      * @param array $username
      */
-    public function addAdmin(Channel $channel, $username)
+    public function addAdmin(Channel $channel, $twitchId)
     {
-        if ($username instanceof Collection) {
-            $username = $username->toArray();
+        if ($twitchId instanceof Collection) {
+            $twitchId = $twitchId->toArray();
         }
 
         return DB::table('chatters')
             ->where('channel_id', '=', $channel->id)
-            ->whereIn('username', (array) $username)
+            ->whereIn('twitch_id', (array) $twitchId)
             ->update([ 'administrator' => true ]);
     }
 
@@ -208,15 +216,15 @@ class MySQLChatterRepository implements ChatterRepository
      *
      * @return bool
      */
-    public function deleteChatter(Channel $channel, $username)
+    public function deleteChatter(Channel $channel, $twitchId)
     {
-        if ($username instanceof Collection) {
-            $username = $username->toArray();
+        if ($twitchId instanceof Collection) {
+            $twitchId = $twitchId->toArray();
         }
 
         return DB::table('chatters')
             ->where('channel_id', '=', $channel->id)
-            ->whereIn('username', (array) $username)
+            ->whereIn('twitch_id', (array) $twitchId)
             ->delete();
     }
 
@@ -231,7 +239,7 @@ class MySQLChatterRepository implements ChatterRepository
     }
 
     /**
-     * Update/Create a chatter.
+     * Create a new chatter.
      *
      * @param Channel $channel
      * @param string|array $username
@@ -239,81 +247,59 @@ class MySQLChatterRepository implements ChatterRepository
      * @param int $points
      * @return array
      */
-    public function updateChatter(Channel $channel, $username, $minutes = 0, $points = 0)
+    public function newChatters(Channel $channel, $chatters, $minutes = 0, $points = 0)
     {
-        if (! $username instanceof Collection) {
-            $username = new Collection($username);
+        if (! $chatters instanceof Collection) {
+            $chatters = new Collection($chatters);
         }
-
-        $exists = new Collection();
-
-        $username->chunk(500)->each(function ($usernames) use (&$exists, $channel) {
-            $result = DB::table('chatters')->where('channel_id', '=', $channel->id)->whereIn('username', $usernames)->get();
-            $exists = $exists->merge($result);
-        });
-
-        $notExists = $username->diff($exists->pluck('username'))->map(function ($username) {
-            $user = getUserFromRedis($username);
-
-            if (! $user) {
-                return [
-                    'user_id'       => null,
-                    'username'      => $username,
-                    'display_name'  => null
-                ];
-            }
-
-            return [
-                'user_id'       => $user['user_id'],
-                'username'      => $user['username'],
-                'display_name'  => $user['display_name']
-            ];
-        });
-
-        $exists = $exists->map(function ($chatter) {
-            $user = getUserFromRedis($chatter['username']);
-
-            if ($user) {
-                $chatter['service_id'] = $user['user_id'];
-                $chatter['display_name'] = $user['display_name'];
-            }
-
-            return $chatter;
-        });
 
         DB::beginTransaction();
 
-        foreach ($exists as $chatter) {
+        $chatters->each(function ($chatter) use ($channel, $minutes, $points) {
+            DB::table('chatters')
+                ->insert([
+                    'channel_id'    => $channel->id,
+                    'twitch_id'     => $chatter['twitch_id'],
+                    'username'      => $chatter['username'],
+                    'display_name'  => $chatter['display_name'],
+                    'points'        => $points,
+                    'minutes'       => $minutes
+                ]);
+        });
+
+        DB::commit();
+    }
+
+    /**
+     * Update a chatter.
+     *
+     * @param Channel $channel
+     * @param array $username
+     * @param int $minutes
+     * @param int $points
+     * @return array
+     */
+    public function updateChatters(Channel $channel, $chatters, $minutes = 0, $points = 0)
+    {
+        if (! $chatters instanceof Collection) {
+            $chatters = new Collection($chatters);
+        }
+
+        DB::beginTransaction();
+
+        $chatters->each(function ($chatter) use ($channel, $minutes, $points) {
             DB::table('chatters')
                 ->where('id', '=', $chatter['id'])
                 ->update([
-                    'service_id'    => $chatter['service_id'],
+                    'twitch_id'     => $chatter['twitch_id'],
+                    'username'      => $chatter['username'],
                     'display_name'  => $chatter['display_name'],
                     'points'        => DB::raw("points + {$points}"),
                     'minutes'       => DB::raw("minutes + {$minutes}")
                 ]);
-        }
-
-        foreach ($notExists as $username) {
-            DB::table('chatters')
-                ->insert([
-                    'channel_id'    => $channel->id,
-                    'service_id'    => $username['user_id'],
-                    'username'      => $username['username'],
-                    'display_name'  => $username['display_name'],
-                    'points'        => $points,
-                    'minutes'       => $minutes
-                ]);
-        }
+        });
 
         DB::commit();
-
-        return [
-            'points' => $points,
-            'minutes' => $minutes,
-            'existing' => $exists,
-            'new' => $notExists
-        ];
     }
 
     /**
@@ -325,10 +311,10 @@ class MySQLChatterRepository implements ChatterRepository
      * @param int $points
      * @return array
      */
-    public function updateModerator(Channel $channel, $username, $minutes = 0, $points = 0)
+    public function updateModerator(Channel $channel, $user, $minutes = 0, $points = 0)
     {
-        $this->addMod($channel, $username);
-        return $this->updateChatter($channel, $username, $minutes, $points);
+        $this->addMod($channel, $user['id']);
+        return $this->updateChatter($channel, $user, $minutes, $points);
     }
 
     private function chattersQuery(Channel $channel)

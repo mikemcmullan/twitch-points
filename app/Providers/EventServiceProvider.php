@@ -26,6 +26,7 @@ class EventServiceProvider extends ServiceProvider
         ],
 
         \App\Events\ChatListWasDownloaded::class => [
+            \App\Listeners\RetrieveUserInfo::class,
             \App\Listeners\ProcessChatList::class,
             \App\Listeners\UpdateDeModdedChatters::class
         ],

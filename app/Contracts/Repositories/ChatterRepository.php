@@ -104,24 +104,24 @@ interface ChatterRepository
     public function paginate($page = 1, $limit = 100);
 
     /**
-     * Update/Create a chatter.
+     * Update a chatter.
      *
      * @param Channel $channel
-     * @param string|array $handles
+     * @param array $chatters
      * @param int $minutes
      * @param int $points
-     * @param Pipeline $pipe
+     * @param bool $skipExistsCheck
      */
-    public function updateChatter(Channel $channel, $handle, $minutes = 0, $points = 0);
+    public function updateChatters(Channel $channel, $chatters, $minutes = 0, $points = 0);
 
     /**
-     * Update/Create a moderator.
+     * Create a chatter.
      *
      * @param Channel $channel
-     * @param string|array $handles
+     * @param array $chatters
      * @param int $minutes
      * @param int $points
      * @param Pipeline $pipe
      */
-    public function updateModerator(Channel $channel, $handle, $minutes = 0, $points = 0);
+    public function newChatters(Channel $channel, $chatters, $minutes = 0, $points = 0);
 }
