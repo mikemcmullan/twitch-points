@@ -31,6 +31,8 @@ class ViewerController extends Controller
     {
         $this->currencyManager = $manager;
         $this->chatterRepository = $chatterRepository;
+
+        $this->middleware('resolveTwitchUsername', ['only' => ['getViewer', 'deleteViewer']]);
     }
 
     /**
@@ -47,7 +49,7 @@ class ViewerController extends Controller
             throw new InvalidArgumentException('Username is a required parameter.');
         }
 
-        $viewer = $manager->getViewer($channel, $username);
+        $viewer = $this->currencyManager->getViewer($channel, $username['twitch_id']);
         $viewer['channel'] = $channel->name;
         $viewer['points'] = floor($viewer['points']);
         $viewer['time_online'] = presentTimeOnline($viewer['minutes']);
@@ -68,7 +70,7 @@ class ViewerController extends Controller
      */
     public function deleteViewer(Channel $channel, ScoreboardCache $scoreboardCache, $username)
     {
-        $viewer = $this->currencyManager->getViewer($channel, $username);
+        $viewer = $this->currencyManager->getViewer($channel, $username['twitch_id']);
 
         $deleted = $this->chatterRepository->deleteChatter($channel, $viewer['username']);
 
