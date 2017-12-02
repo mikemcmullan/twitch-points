@@ -72,10 +72,10 @@ class ViewerController extends Controller
     {
         $viewer = $this->currencyManager->getViewer($channel, $username['twitch_id']);
 
-        $deleted = $this->chatterRepository->deleteChatter($channel, $viewer['username']);
+        $deleted = $this->chatterRepository->deleteChatter($channel, $viewer['twitch_id']);
 
         if ($deleted) {
-            $scoreboardCache->deleteViewer($channel, $viewer['username']);
+            $scoreboardCache->deleteViewer($channel, $viewer['twitch_id']);
         }
 
         return response()->json([
