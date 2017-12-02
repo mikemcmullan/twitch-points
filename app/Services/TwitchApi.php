@@ -153,4 +153,60 @@ class TwitchApi
             throw new \Exception('Unable to get stream, twitch api error.');
         }
     }
+
+    /**
+     * Get a users information from the twitch api by their id.
+     *
+     * @param  string $userId Twitch User ID]
+     * @return mixed
+     */
+    public function getUserById($userId)
+    {
+        try {
+            $response = $this->httpClient->request('GET', 'https://api.twitch.tv/helix/users?id=' . $userId);
+
+            return array_get(json_decode($response->getBody(), true), 'data.0');
+        } catch (ServerException $e) {
+            $this->logger->error('Unable to get user, twitch api error.');
+            throw new \Exception('Unable to get user, twitch api error.');
+        }
+    }
+
+    /**
+     * Get a users information from the twitch api by their username.
+     *
+     * @param  string $userId Twitch User ID]
+     * @return mixed
+     */
+    public function getUserByUsername($username)
+    {
+        try {
+            $response = $this->httpClient->request('GET', 'https://api.twitch.tv/helix/users?login=' . $username);
+
+            return array_get(json_decode($response->getBody(), true), 'data.0');
+        } catch (ServerException $e) {
+            $this->logger->error('Unable to get user, twitch api error.');
+            throw new \Exception('Unable to get user, twitch api error.');
+        }
+    }
+
+    /**
+     * Get users information from the twitch api by their usernames.
+     *
+     * @param  string $userId Twitch User ID]
+     * @return mixed
+     */
+    public function getUsersByUsername($usernames)
+    {
+        try {
+            $query = '?login=' . implode('&login=', $usernames);
+
+            $response = $this->httpClient->request('GET', 'https://api.twitch.tv/helix/users' . $query);
+
+            return array_get(json_decode($response->getBody(), true), 'data');
+        } catch (ServerException $e) {
+            $this->logger->error('Unable to get user, twitch api error.');
+            throw new \Exception('Unable to get user, twitch api error.');
+        }
+    }
 }
