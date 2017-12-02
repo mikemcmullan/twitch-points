@@ -21,6 +21,7 @@ class Kernel extends ConsoleKernel
         \App\Console\Commands\GenerateUserJWTToken::class,
         \App\Console\Commands\UpdateScoreboardCache::class,
         \App\Console\Commands\UpdateCommandsCache::class,
+        \App\Console\Commands\ResolveServiceIdsFromTwitch::class,
     ];
 
     /**
