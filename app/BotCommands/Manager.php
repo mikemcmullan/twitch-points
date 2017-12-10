@@ -147,8 +147,12 @@ class Manager extends BasicManager implements BasicManagerInterface
             throw new ValidationException($validator);
         }
 
-        $count = $data['count'];
-        unset($data['count']);
+        if (isset($data['count'])) {
+            $count = $data['count'];
+            unset($data['count']);
+        } else {
+            $count = 0;
+        }
 
         $data['type']    = 'custom';
 
