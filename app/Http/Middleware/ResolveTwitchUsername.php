@@ -23,7 +23,7 @@ class ResolveTwitchUsername
     protected function addToCache($user)
     {
         addUserToRedis([
-            'id'            => $user['id'],
+            'id'            => $user['id'] ?? $user['twitch_id'],
             'username'      => $user['username'],
             'display_name'  => $user['display_name']
         ]);
@@ -38,7 +38,7 @@ class ResolveTwitchUsername
      */
     public function handle($request, Closure $next)
     {
-        if ($username = $request->get('username')) {
+        if ($username = strtolower($request->get('username'))) {
             $usernames = collect([$username]);
             $final = collect();
 

@@ -22,7 +22,7 @@ class CurrencyController extends Controller
      */
     public function __construct(Request $request)
     {
-        $this->middleware(['featureDetection:currency']);
+        $this->middleware(['featureDetection:currency', 'resolveTwitchUsername']);
     }
 
     /**
@@ -32,14 +32,16 @@ class CurrencyController extends Controller
      */
     public function scoreboard(Request $request, Channel $channel, StreamRepository $streamRepo, ScoreboardCache $scoreboardCache)
     {
+        $username = $request->get('username');
+
         $data = [
-            'username'  => strtolower($request->get('username')),
+            'username'  => $username['username'] ?? false,
             'chatter'   => '{}',
             'streaming' => (bool) $streamRepo->findIncompletedStream($channel)
         ];
 
         if ($data['username']) {
-            $chatter = $scoreboardCache->findByHandle($channel, $data['username']);
+            $chatter = $scoreboardCache->findByHandle($channel, $username['twitch_id']);
             $error = ['error' => 'Not Found', 'message' => 'Unknown username.'];
 
             $data['chatter'] = json_encode($chatter ? $chatter : $error);
