@@ -16,6 +16,7 @@ class GiveawayController extends Controller
     public function __construct(Manager $manager)
     {
         $this->middleware(['jwt.auth', 'auth.api:quotes']);
+        $this->middleware('resolveTwitchUsername', ['only' => ['enter']]);
 
         $this->giveawayManager = $manager;
     }
