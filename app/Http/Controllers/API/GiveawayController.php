@@ -45,10 +45,10 @@ class GiveawayController extends Controller
      */
     public function enter(Request $request, Channel $channel)
     {
-        $handle = $request->get('handle');
+        $user = $request->get('username');
         $tickets = $request->get('tickets');
 
-        $response = $this->giveawayManager->enter(new Entry($channel, $handle, $tickets));
+        $response = $this->giveawayManager->enter(new Entry($channel, $user, $tickets));
 
         return response()->json(['status' => $response]);
     }

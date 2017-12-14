@@ -12,9 +12,9 @@ class Entry
     private $channel;
 
     /**
-     * @var string
+     * @var array
      */
-    private $handle;
+    private $user;
 
     /**
      * @var int
@@ -26,10 +26,10 @@ class Entry
      * @param $handle
      * @param $tickets
      */
-    public function __construct(Channel $channel, $handle, $tickets)
+    public function __construct(Channel $channel, $user, $tickets)
     {
         $this->channel = $channel;
-        $this->handle = $handle;
+        $this->user = $user;
         $this->tickets = $tickets;
     }
 
@@ -44,9 +44,9 @@ class Entry
     /**
      * @return string
      */
-    public function getHandle()
+    public function getUser()
     {
-        return $this->handle;
+        return $this->user;
     }
 
     /**

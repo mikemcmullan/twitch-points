@@ -68,7 +68,7 @@ class Manager
     {
         $this->events->fire(new GiveawayWasStarted($channel));
 
-        return $this->redis->set("#{$channel->id}:giveaway:started", 1);
+        return $this->redis->set("{$channel->id}:giveaway:started", 1);
     }
 
     /**
@@ -80,7 +80,7 @@ class Manager
     {
         $this->events->fire(new GiveawayWasStopped($channel));
 
-        return $this->redis->set("#{$channel->id}:giveaway:started", 0);
+        return $this->redis->set("{$channel->id}:giveaway:started", 0);
     }
 
     /**
@@ -92,7 +92,7 @@ class Manager
     {
         $entries = $this->entries($channel, true);
 
-        $this->redis->del("#{$channel->name}:giveaway:entries");
+        $this->redis->del("{$channel->id}:giveaway:entries");
 
         $this->events->fire(new GiveawayWasCleared($channel));
 
@@ -108,7 +108,7 @@ class Manager
      */
     public function entries(Channel $channel, $grouped = false)
     {
-        $entries = $this->redis->smembers("#{$channel->name}:giveaway:entries");
+        $entries = $this->redis->smembers("{$channel->id}:giveaway:entries");
 
         if ($grouped === false) {
             return $entries;
@@ -153,7 +153,7 @@ class Manager
         $winner = $entries[array_rand($entries)];
 
         if ($removeWinner) {
-            $this->redis->srem("#{$channel->name}:giveaway:entries", $winner);
+            $this->redis->srem("{$channel->id}:giveaway:entries", $winner);
         }
 
         return $winner;
@@ -165,7 +165,7 @@ class Manager
      */
     public function isGiveAwayRunning(Channel $channel)
     {
-        return (bool) $this->redis->get("#{$channel->id}:giveaway:started");
+        return (bool) $this->redis->get("{$channel->id}:giveaway:started");
     }
 
     /**
@@ -175,7 +175,7 @@ class Manager
      */
     public function checkIfEntered($entry)
     {
-        return (bool) $this->redis->sismember("#{$entry->getChannel()->name}:giveaway:entries", $entry->getHandle());
+        return (bool) $this->redis->sismember("{$entry->getChannel()->id}:giveaway:entries", $entry->getUser()['username']);
     }
 
     /**
@@ -204,20 +204,20 @@ class Manager
         $useTickets = $entry->getChannel()->getSetting('giveaway.use-tickets');
         $tickets = $entry->getTickets();
 
-        if ($entry->getHandle() == '') {
-            throw new InvalidArgumentException('Handle parameter is missing.');
+        if (! $entry->getUser()) {
+            throw new InvalidArgumentException('Invalid Username.');
         }
 
-        if (! $this->validHandle($entry->getHandle())) {
-            throw new UnknownHandleException('Handle may only contain alpha numeric characters, underscores and be between 2 and 25 characters in length.');
-        }
+        // if (! $this->validHandle($entry->getHandle())) {
+        //     throw new UnknownHandleException('Handle may only contain alpha numeric characters, underscores and be between 2 and 25 characters in length.');
+        // }
 
         if ($entry->getChannel()->getSetting('giveaway.use-tickets') === false) {
             $tickets = 1;
         }
 
         if ($tickets > $ticketMax) {
-            throw new InvalidArgumentException(sprintf('%s: %d ticket max.', $entry->getHandle(), $ticketMax));
+            throw new InvalidArgumentException(sprintf('%s: %d ticket max.', $entry->getUser()['display_name'], $ticketMax));
         }
 
         if ($tickets < 1) {
@@ -225,37 +225,26 @@ class Manager
         }
 
         if ($this->checkIfEntered($entry)) {
-            throw new GiveAwayException(sprintf('%s has already entered the giveaway.', $entry->getHandle()));
+            throw new GiveAwayException(sprintf('%s has already entered the giveaway.', $entry->getUser()['display_name']));
         }
 
         if ($useTickets) {
-            $viewer = $this->currencyManager->getViewer($entry->getChannel(), $entry->getHandle());
+            $viewer = $this->currencyManager->getViewer($entry->getChannel(), $entry->getUser()['twitch_id']);
             $cost = $this->calculateCost($entry->getChannel(), $tickets);
 
             if ($cost > $viewer['points']) {
-                throw new GiveAwayException(sprintf('%s does not have enough %s.', $viewer['handle'], strtolower($entry->getChannel()->getSetting('currency.name'))));
+                throw new GiveAwayException(sprintf('%s does not have enough %s.', $viewer['display_name'], strtolower($entry->getChannel()->getSetting('currency.name'))));
             }
 
-            $this->currencyManager->remove($entry->getChannel(), $entry->getHandle(), $cost);
+            $this->currencyManager->remove($entry->getChannel(), $entry->getUser()['twitch_id'], $cost);
         }
 
         for ($i = 0; $i < $tickets; $i++) {
-            $this->redis->sadd("#{$entry->getChannel()->name}:giveaway:entries", $entry->getHandle());
+            $this->redis->sadd("{$entry->getChannel()->id}:giveaway:entries", $entry->getUser()['username']);
         }
 
-        $this->events->fire(new GiveawayWasEntered($entry->getChannel(), $entry->getHandle(), $tickets));
+        $this->events->fire(new GiveawayWasEntered($entry->getChannel(), $entry->getUser()['username'], $tickets));
 
         return true;
-    }
-
-    /**
-     * Test whether a handle is valid.
-     *
-     * @param  string  $entry
-     * @return boolean
-     */
-    protected function validHandle($handle)
-    {
-        return preg_match('/^[\d\w]{2,25}$/', $handle);
     }
 }
