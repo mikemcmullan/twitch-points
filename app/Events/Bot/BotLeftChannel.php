@@ -30,7 +30,7 @@ class BotLeftChannel extends Event
     public function broadcastWith()
     {
         return [
-            'command' => '!leave',
+            'command' => '!leave7555e76d90d269d647f04aa1db19e67',
             'response' => $this->channel->getSetting('bot.outro', '')
         ];
     }
