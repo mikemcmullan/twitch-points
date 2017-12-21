@@ -6,6 +6,28 @@ Route::get('/', [
 ]);
 
 /**
+ * Sound Effects Routes
+ */
+Route::get('/sound-effects', [
+    'uses'  => function() {
+        return view('sound-effects');
+    },
+    'as'    => 'sound_effects_path'
+]);
+
+/**
+ * Sound Effects Routes
+ */
+Route::get('/queue', [
+    'uses'  => function(App\Channel $channel) {
+        $status = (bool) Redis::get("{$channel->id}:queueOpen") ? 'open' : 'closed';
+
+        return view('queue', ['status' => $status]);
+    },
+    'as'    => 'queue_path'
+]);
+
+/**
  * Commands Routes
  */
 Route::get('/commands', [

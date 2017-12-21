@@ -831,3 +831,216 @@ if (document.querySelector('#chat-logs')) {
         }
     });
 }
+
+//------------------------------------------------------------------------------
+// Queue
+//------------------------------------------------------------------------------
+
+import Errors from './forms/Errors.js';
+
+if (document.querySelector('#queue')) {
+    const echo = new Echo({
+        broadcaster: 'socket.io',
+        host: options.echo.url,
+    });
+
+    new Vue({
+        el: '#queue',
+
+        data: {
+            entries: [],
+            disableButtons: false,
+            keyword: '',
+            cost: 0,
+            openedText: '',
+            closedText: '',
+            level: options.queue.level,
+            levelArgument: 0,
+            saving: false,
+            status: options.queue.status,
+            alert: {
+                visible: false,
+                class: {
+                    'text-success': true,
+                    'text-danger': false
+                },
+                text: ''
+            },
+
+            errors: new Errors()
+        },
+
+        computed: {
+            isStatusOpen() {
+                if (this.status === 'open') {
+                    return true;
+                }
+            },
+
+            isStatusClosed() {
+                if (this.status === 'closed') {
+                    return true;
+                }
+            }
+        },
+
+        ready() {
+            echo.listen(options.channel, '.queue.was-joined', (data) => {
+                this.entries.push({ id: data.twitchId, display_name: data.name, comment: data.comment })
+            });
+
+            this.$http.get('queue').then((response) => {
+                this.entries = response.data.entrants;
+            }, (response) => {
+                if (response.status === 401 || response.status === 403) {
+                    alert('There was a problem authenticating with the api. Please refresh the page.');
+                }
+            });
+        },
+
+        methods: {
+            submit() {
+                let request = this.$http.put('settings', {
+                    'queue__keyword': this.keyword,
+                    'queue__level': this.level,
+                    'queue__level_argument': this.levelArgument,
+                    'queue__cost': this.cost,
+                    'queue__opened-text': this.openedText,
+                    'queue__closed-text': this.closedText,
+                }, {
+                    beforeSend: (request) => {
+                        this.saving = true;
+                    }
+                });
+
+                request.then((response) => {
+                    this.saving = false;
+                    this.alert.visible = true;
+                    this.alert.text = 'Settings saved.';
+                    this.errors.clear();
+
+                    setTimeout(() => {
+                        this.alert.visible = false;
+                    }, 2000);
+                }, (response) => {
+                    this.saving = false;
+                    this.errors.clear();
+                    this.errors.record(response.data.message.validation_errors);
+                    if (response.status === 401 || response.status === 403) {
+                        alert('There was a problem authenticating with the api. Please refresh the page.');
+                    }
+                });
+            },
+
+            openQueue() {
+                if (this.status === 'open') {
+                    return;
+                }
+
+                this.$http.post('queue', {}, {
+                    beforeSend: (request) => {
+                        this.disableButtons = true;
+                    }
+                }).then((response) => {
+                    this.status = 'open';
+                    this.disableButtons = false;
+                },(response) => {
+                    this.disableButtons = false;
+
+                    if (response.status === 401 || response.status === 403) {
+                        alert('There was a problem authenticating with the api. Please refresh the page.');
+                    }
+                });
+            },
+
+            closeQueue() {
+                if (this.status === 'closed') {
+                    return;
+                }
+
+                this.$http.delete('queue', {}, {
+                    beforeSend: (request) => {
+                        this.disableButtons = true;
+                    }
+                }).then((response) => {
+                    this.status = 'closed';
+                    this.disableButtons = false;
+                },(response) => {
+                    this.disableButtons = false;
+
+                    if (response.status === 401 || response.status === 403) {
+                        alert('There was a problem authenticating with the api. Please refresh the page.');
+                    }
+                });
+            },
+
+            clearEntries() {
+                this.$http.delete('queue/clear', {}, {
+                    beforeSend: (request) => {
+                        this.disableButtons = true;
+                    }
+                }).then((response) => {
+                    this.disableButtons = false;
+                    this.entries = [];
+                }, (response) => {
+                    if (response.status === 401 || response.status === 403) {
+                        alert('There was a problem authenticating with the api. Please refresh the page.');
+                    }
+                });
+            },
+
+            deleteEntrant(id) {
+                const index = this.entries.findIndex((entry) => {
+                    return entry.id === id;
+                });
+
+                this.entries.splice(index, 1);
+
+                this.$http.delete('queue/remove', { twitchId: id }, {
+                    beforeSend: (request) => {
+                        this.disableButtons = true;
+                    }
+                }).then((response) => {
+                    this.disableButtons = false;
+                }, (response) => {
+                    if (response.status === 401 || response.status === 403) {
+                        alert('There was a problem authenticating with the api. Please refresh the page.');
+                    }
+                });
+            }
+        }
+    });
+}
+
+//------------------------------------------------------------------------------
+// Sound Effects
+//------------------------------------------------------------------------------
+import soundEffect from './components/soundEffects/soundEffect.vue'
+import createSoundEffect from './components/soundEffects/createSoundEffect.vue'
+
+if (document.querySelector('#soundEffects')) {
+    const echo = new Echo({
+        broadcaster: 'socket.io',
+        host: options.echo.url,
+    });
+
+    new Vue({
+        el: '#soundEffects',
+
+        data: {
+
+        },
+
+        components: {
+            'sound-effect': soundEffect,
+            'create-sound-effect': createSoundEffect
+        },
+
+        ready() {
+            echo.listen(options.channel, '.sfx.was-played', (data) => {
+                this.$broadcast('play', data);
+            });
+        }
+    });
+
+}

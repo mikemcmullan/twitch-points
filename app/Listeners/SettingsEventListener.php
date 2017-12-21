@@ -58,6 +58,43 @@ class SettingsEventListener
     }
 
     /**
+     * Update the queue command when the giveaway keyword is updated in the settings.
+     *
+     * @param Channel $channel
+     * @param string $oldSetting
+     * @param string $newSetting
+     *
+     * @return void
+     */
+    public function queueKeywordUpdated(Channel $channel, $oldSetting, $newSetting)
+    {
+        $this->commandsManager->update($channel, 'queue.join', [
+            'command'   => str_replace($oldSetting, $newSetting, config('commands.system.queue.join.command')),
+            'usage'     => str_replace($oldSetting, $newSetting, config('commands.system.queue.join.usage'))
+        ]);
+    }
+
+    /**
+     * Update the queue command level when the level is updated in the settings.
+     *
+     * @param Channel $channel
+     * @param string $oldSetting
+     * @param string $newSetting
+     *
+     * @return void
+     */
+    public function queueLevelUpdated(Channel $channel, $oldSetting, $newSetting)
+    {
+        if (in_array($newSetting, ['min_currency', 'min_time'])) {
+            $newSetting = 'everyone';
+        }
+
+        $this->commandsManager->update($channel, 'queue.join', [
+            'level' => $newSetting
+        ]);
+    }
+
+    /**
      *
      *
      * @param  Channel $channel
@@ -107,5 +144,7 @@ class SettingsEventListener
        $events->listen('settings.updated.currency.keyword', 'App\Listeners\SettingsEventListener@currencyKeywordUpdated');
        $events->listen('settings.updated.giveaway.keyword', 'App\Listeners\SettingsEventListener@giveawayKeywordUpdated');
        $events->listen('settings.updated.followers.alert', 'App\Listeners\SettingsEventListener@followersAlertUpdated');
+       $events->listen('settings.updated.queue.keyword', 'App\Listeners\SettingsEventListener@queueKeywordUpdated');
+       $events->listen('settings.updated.queue.level', 'App\Listeners\SettingsEventListener@queueLevelUpdated');
    }
 }

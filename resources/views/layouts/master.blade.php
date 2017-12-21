@@ -65,6 +65,10 @@
                     @endif
 
                     @if ($user)
+                        @if ($channel->hasFeature('queue'))
+                            <li{!! Route::currentRouteName() === 'queue_path' ? ' class="active"' : '' !!}><a href="{!! route('queue_path', [$channel->slug]) !!}"><i class="fa fa-bars"></i> <span>Queue</span></a></li>
+                        @endif
+
                         @if ($channel->hasFeature('giveaway'))
                             <li{!! Route::currentRouteName() === 'giveaway_path' ? ' class="active"' : '' !!}><a href="{!! route('giveaway_path', [$channel->slug]) !!}"><i class="fa fa-gift"></i> <span>Giveaways</span></a></li>
                         @endif

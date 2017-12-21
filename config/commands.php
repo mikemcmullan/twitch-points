@@ -297,6 +297,19 @@ return [
                 'response' => '',
                 'disabled' => false
             ]
+        ],
+        'queue' => [
+            'join' => [
+                'command' => '%s',
+                'usage' => '%s <comment>',
+                'description' => 'Join the queue.',
+                'level' => 'everyone',
+                'cool_down' => 3,
+                'global_cool_down' => false,
+                'module' => 'Queue/Join',
+                'response' => '',
+                'disabled' => false
+            ]
         ]
     ]
 ];

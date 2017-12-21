@@ -15,6 +15,39 @@ Route::get('/vips', [
     'as'    => 'api_vips_path'
 ]);
 
+/**
+ * Queue Routes
+ */
+Route::get('/queue', [
+    'uses'  => 'QueueController@index',
+    'as'    => 'api_queue_index_path'
+]);
+
+Route::post('/queue', [
+    'uses'  => 'QueueController@open',
+    'as'    => 'api_queue_open_path'
+]);
+
+Route::delete('/queue', [
+    'uses'  => 'QueueController@close',
+    'as'    => 'api_queue_close_path'
+]);
+
+Route::delete('/queue/clear', [
+    'uses'  => 'QueueController@clear',
+    'as'    => 'api_queue_clear_path'
+]);
+
+Route::post('/queue/add', [
+    'uses'  => 'QueueController@add',
+    'as'    => 'api_queue_add_to_queue_path'
+]);
+
+Route::delete('/queue/remove', [
+    'uses'  => 'QueueController@remove',
+    'as'    => 'api_queue_remove_from_path'
+]);
+
 /*
  * Follower Routes
  */

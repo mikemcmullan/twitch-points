@@ -55,6 +55,14 @@ class EventServiceProvider extends ServiceProvider
             \App\Listeners\PushToBot::class
         ],
 
+        \App\Events\Queue\QueueWasOpened::class => [
+            \App\Listeners\PushToBot::class
+        ],
+
+        \App\Events\Queue\QueueWasClosed::class => [
+            \App\Listeners\PushToBot::class
+        ],
+
         \App\Events\TimerWasExecuted::class => [
             \App\Listeners\PushToBot::class
         ],
