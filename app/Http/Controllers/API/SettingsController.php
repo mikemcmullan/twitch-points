@@ -59,6 +59,14 @@ class SettingsController extends Controller
             'followers__alert'                  => 'required|boolean_real',
             'followers__display-alert-in-chat'  => 'required|boolean_real',
             'followers__welcome-msg'            => 'max:140',
+
+            'queue__name'           => 'required|min:1|max:20',
+            'queue__keyword'        => 'required|regex:/^!?\w{2,20}$/',
+            'queue__level'          => 'required|in:everyone,sub,mod,admin,owner,min_currency,min_time',
+            'queue__level_argument' => 'required|integer|min:',
+            'queue__cost'           => 'required|integer|max:1000000',
+            'queue__opened-text'    => 'max:250',
+            'queue__closed-text'    => 'max:250',
         ];
 
         $toValidate = [];
