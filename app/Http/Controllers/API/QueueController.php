@@ -94,13 +94,19 @@ class QueueController extends Controller
 
         if ($level === 'min_currency') {
             if ($viewer['points'] < $levelArg) {
-                return response()->json(['message' => 'Not enough currency.'], 409);
+                return response()->json([
+                    'status' => 409,
+                    'message' => 'Not enough currency.'
+                ], 409);
             }
         }
 
         if ($level === 'min_time') {
             if ($viewer['minutes'] < $levelArg) {
-                return response()->json(['message' => 'Have not spent enough time in the channel.'], 409);
+                return response()->json([
+                    'status' => 409,
+                    'message' => 'Have not spent enough time in the channel.'
+                ], 409);
             }
         }
 
