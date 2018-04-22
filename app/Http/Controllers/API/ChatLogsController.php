@@ -30,9 +30,18 @@ class ChatLogsController extends Controller
         $term = $request->get('term');
         $limit = (int) $request->get('limit', 500) ?: 500;
 
-        $messages = \App\ChatLogs::where('channel', $channel->name)
-            ->where('message', 'LIKE', "%{$term}%")
-            ->orderBy('created_at', 'DESC')
+        $messages = \App\ChatLogs::where('channel', $channel->name);
+
+        if (preg_match('/^user:(\w+)/', substr($term, 0, 30), $username)) {
+            $messages = $messages->where('username', '=', $username[1]);
+            $term = trim(str_replace($username[0], '', $term));
+        }
+
+        if (strlen($term) > 0) {
+            $messages = $messages->where('message', 'LIKE', "%{$term}%");
+        }
+
+        $messages = $messages->orderBy('created_at', 'DESC')
             ->simplePaginate($limit);
 
         return response()->json($messages);
@@ -53,7 +62,7 @@ class ChatLogsController extends Controller
             ->where('channel', $channel->name)
             ->where('created_at', '>=', $date)
             ->orderBy('created_at', 'asc')
-            ->take(20);
+            ->take(6);
 
         $second = \DB::table('chat_logs')
             ->where('channel', $channel->name)
