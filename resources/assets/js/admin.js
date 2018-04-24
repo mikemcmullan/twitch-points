@@ -1,4 +1,5 @@
 import Vue from 'vue';
+import axios from 'axios';
 import vuePagination from './components/paginator2.vue';
 import Echo from 'laravel-echo';
 
@@ -7,6 +8,9 @@ Vue.use(require('vue-validator'));
 
 Vue.http.options.root = options.api.root;
 Vue.http.headers.common['Authorization'] = `Bearer ${options.api.token}`;
+
+axios.defaults.baseURL = options.api.root;
+axios.defaults.headers.common['Authorization'] = `Bearer ${options.api.token}`;
 
 Vue.transition('fade', {
     enterClass: 'fadeIn',
@@ -676,7 +680,7 @@ if (document.querySelector('#chat-logs')) {
                     const date = this.logs[this.logs.length-1].created_at;
                     const perPage = 100;
 
-                    this.$http.get(`chat-logs?page=1&starting-from=${date}&limit=${perPage}`)
+                    axios.get(`chat-logs?page=1&starting-from=${date}&limit=${perPage}`)
                         .then((response) => {
                             this.loadingBottom = false;
 
@@ -695,7 +699,7 @@ if (document.querySelector('#chat-logs')) {
                     const date = this.logs[0].created_at;
                     const perPage = 100;
 
-                    this.$http.get(`chat-logs?page=1&starting-from=${date}&limit=${perPage}&direction=newer`)
+                    axios.get(`chat-logs?page=1&starting-from=${date}&limit=${perPage}&direction=newer`)
                         .then((response) => {
                             this.loadingTop = false;
 
@@ -747,7 +751,7 @@ if (document.querySelector('#chat-logs')) {
 
                 const perPage = 500;
 
-                this.$http.get(`chat-logs?page=${++this.page}&starting-from=${this.loadedTime}&limit=${perPage}&direction=older`)
+                axios.get(`chat-logs?page=${++this.page}&starting-from=${this.loadedTime}&limit=${perPage}&direction=older`)
                     .then((response) => {
                         this.loadingBottom = false;
 
@@ -778,7 +782,7 @@ if (document.querySelector('#chat-logs')) {
 
                 const perPage = 100;
 
-                this.$http.get(`chat-logs/search?page=${++this.page}&term=${this.searchKeyword}&limit=${perPage}`)
+                axios.get(`chat-logs/search?page=${++this.page}&term=${this.searchKeyword}&limit=${perPage}`)
                     .then((response) => {
                         this.loadingBottom = false;
 
@@ -799,7 +803,7 @@ if (document.querySelector('#chat-logs')) {
                 this.moreResultsOlder = true;
                 this.moreResultsNewer = true;
 
-                this.$http.get(`chat-logs/conversation?date=${message.created_at}`)
+                axios.get(`chat-logs/conversation?date=${message.created_at}`)
                     .then((response) => {
                         this.loadingBottom = false;
 
