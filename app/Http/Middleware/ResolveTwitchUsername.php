@@ -54,16 +54,20 @@ class ResolveTwitchUsername
                 }
             }
 
-            collect($this->twitchApi->getUsersByUsername($usernames->toArray()))->each(function ($user) use ($final) {
-                $user = [
-                    'twitch_id'     => $user['id'],
-                    'username'      => $user['login'],
-                    'display_name'  => $user['display_name']
-                ];
+            if (! $usernames->isEmpty()) {
 
-                $final->put($user['username'], $user);
-                $this->addToCache($user);
-            });
+                collect($this->twitchApi->getUsersByUsername($usernames->toArray()))->each(function ($user) use ($final) {
+                    $user = [
+                        'twitch_id'     => $user['id'],
+                        'username'      => $user['login'],
+                        'display_name'  => $user['display_name']
+                    ];
+
+                    $final->put($user['username'], $user);
+                    $this->addToCache($user);
+                });
+
+            }
 
             $newRequest = collect();
 
