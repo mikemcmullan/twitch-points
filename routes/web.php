@@ -19,11 +19,7 @@ Route::get('/sound-effects', [
  * Sound Effects Routes
  */
 Route::get('/queue', [
-    'uses'  => function(App\Channel $channel) {
-        $status = (bool) Redis::get("{$channel->id}:queueOpen") ? 'open' : 'closed';
-
-        return view('queue', ['status' => $status]);
-    },
+    'uses'  => 'QueueController@index',
     'as'    => 'queue_path'
 ]);
 
@@ -39,11 +35,8 @@ Route::get('/commands', [
  * Chat Log Routes
  */
 Route::get('/chat-logs', [
-    'middleware' => 'auth',
     'as'   => 'chat_logs_path',
-    'uses' => function () {
-        return view('chat-logs');
-    }
+    'uses' => 'ChatLogsController@index'
 ]);
 
 /**

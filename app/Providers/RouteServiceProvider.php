@@ -95,7 +95,7 @@ class RouteServiceProvider extends ServiceProvider
         Route::group([
             'domain' => config('app.auth_domain'),
             'prefix' => '',
-            'middleware' => 'auth',
+            'middleware' => 'twitch-auth',
             'namespace' => $this->namespace
         ], function ($router) {
             require base_path('routes/auth.php');
