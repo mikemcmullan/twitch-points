@@ -57,7 +57,7 @@ class TwitchApi
             'headers' => $headers
         ]);
 
-        $headers['Authorization'] = 'Bearer ' . $this->getAppAccessToken();
+        $headers['Authorization'] = 'Bearer ' . $this->getAppAccessToken($client);
 
         $client = new Client([
             'headers' => $headers
@@ -66,13 +66,13 @@ class TwitchApi
         return $client;
     }
 
-    public function getAppAccessToken()
+    public function getAppAccessToken($httpClient)
     {
         if ($accessToken = $this->cache->get('app_access_token')) {
             return $accessToken;
         }
 
-        $response = $this->httpClient->request('POST', 'https://id.twitch.tv/oauth2/token', [
+        $response = $httpClient->request('POST', 'https://id.twitch.tv/oauth2/token', [
             'query' => [
                 'client_id' => config('twitch.credentials.client_id'),
                 'client_secret' => config('twitch.credentials.client_secret'),
