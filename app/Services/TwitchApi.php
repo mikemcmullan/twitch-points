@@ -37,10 +37,11 @@ class TwitchApi
      */
     public function __construct(CacheRepository $cache, ConfigRepository $config, Writer $logger)
     {
-        $this->httpClient = $this->setupHttpClient();
         $this->cache = $cache;
         $this->config = $config;
         $this->logger = $logger;
+
+        $this->httpClient = $this->setupHttpClient();
     }
 
     /**
@@ -48,14 +49,48 @@ class TwitchApi
      */
     private function setupHttpClient()
     {
+        $headers = [
+            'Client-ID' => config('twitch.credentials.client_id')
+        ];
+
         $client = new Client([
-            'headers' => [
-                'Accept' => 'application/vnd.twitchtv.v5+json',
-                'Client-ID' => config('twitch.credentials.client_id')
-            ]
+            'headers' => $headers
+        ]);
+
+        $headers['Authorization'] = 'Bearer ' . $this->getAppAccessToken();
+
+        $client = new Client([
+            'headers' => $headers
         ]);
 
         return $client;
+    }
+
+    public function getAppAccessToken()
+    {
+        if ($accessToken = $this->cache->get('app_access_token')) {
+            return $accessToken;
+        }
+
+        $response = $this->httpClient->request('POST', 'https://id.twitch.tv/oauth2/token', [
+            'query' => [
+                'client_id' => config('twitch.credentials.client_id'),
+                'client_secret' => config('twitch.credentials.client_secret'),
+                'grant_type' => 'client_credentials',
+                'scope' => ''
+
+            ]
+        ]);
+
+        $json = json_decode($response->getBody());
+
+        if (! $json->access_token) {
+            throw new \Exception('Unable to get app access token, twitch api error. ' . $response->getBody());
+        }
+
+        $this->cache->put('app_access_token', $json->access_token, 60*24*30);
+
+        return $json->access_token;
     }
 
     /**
@@ -66,15 +101,15 @@ class TwitchApi
      */
     public function getUserIDByName($username)
     {
-        $response = $this->httpClient->get('https://api.twitch.tv/kraken/users?login=' . $username);
+        $response = $this->httpClient->get('https://api.twitch.tv/helix/users?login=' . $username);
 
         $json = json_decode($response->getBody());
 
-        if ($json->_total === 0) {
+        if (count($json->data) === 0) {
             return false;
         }
 
-        return (int) $json->users[0]->_id;
+        return (int) $json->data[0]->id;
     }
 
     /**
@@ -143,7 +178,7 @@ class TwitchApi
     public function getStream($channelIDs)
     {
         try {
-            $response = $this->httpClient->request('GET', 'https://api.twitch.tv/kraken/streams?channel=' . implode(',', $channelIDs) . '&_nocachetp=' . time());
+            $response = $this->httpClient->request('GET', 'https://api.twitch.tv/helix/streams?user_id=' . implode('&user_id=', $channelIDs));
             return json_decode($response->getBody(), true);
         } catch (ClientException $e) {
             $this->logger->error('Invalid channel.', ['channel' => $channel]);

@@ -37,8 +37,8 @@ class SyncSystemStatus extends Job
             return;
         }
 
-        $streams = collect($twitchApi->getStream($channels->pluck('service_id')->toArray())['streams']);
-        $channelStreams = $streams->groupBy('channel.name');
+        $streams = collect($twitchApi->getStream($channels->pluck('service_id')->toArray())['data']);
+        $channelStreams = $streams->groupBy('user_login');
 
         foreach ($channels as $channel) {
             $currentChannelStatus = (bool) $streamRepo->findIncompletedStream($channel);

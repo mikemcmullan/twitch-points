@@ -34,9 +34,9 @@ class UpdateChannelInfo
 
         if ($stream) {
             $metric = new StreamMetric([
-                'viewers'   => $info['viewers'],
-                'game'      => $info['game'],
-                'title'     => $info['channel']['status']
+                'viewers'   => $info['viewer_count'],
+                'game'      => $info['game_name'],
+                'title'     => $info['title']
             ]);
 
             $stream->metrics()->save($metric);

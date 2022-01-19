@@ -8,7 +8,7 @@
 		"php": ">=5.6.4",
 		"laravel/framework": "5.3.*",
 		"salsify/json-streaming-parser": "~3.0",
-		"guzzlehttp/guzzle": "~6.2",
+		"guzzlehttp/guzzle": "~6.5",
 		"predis/predis": "~1.0",
 		"ritero/twitch-sdk": "dev-master",
 		"laravelcollective/html": "5.3.*",
@@ -19,7 +19,7 @@
 	  	"egeloen/http-adapter": "~0.6",
 		"pusher/pusher-php-server": "^2.2",
 		"tymon/jwt-auth": "^0.5.6",
-		"bschmitt/laravel-amqp": "dev-master",
+		"bschmitt/laravel-amqp": "^1.2",
 		"mtdowling/supervisor-event": "^1.0",
 		"socialiteproviders/manager": "^2.0",
 		"socialiteproviders/twitch": "^2.0"
