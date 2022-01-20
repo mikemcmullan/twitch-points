@@ -11,22 +11,15 @@ use Gate;
 class AuthenticateUser
 {
     /**
-     * @var TwitchSDKAdapter
-     */
-    private $twitchSDK;
-
-    /**
      * @var Authenticator
      */
     private $auth;
 
     /**
-     * @param TwitchSDKAdapter $twitchSDK
      * @param Guard $auth
      */
-    public function __construct(TwitchSDKAdapter $twitchSDK, Guard $auth)
+    public function __construct(Guard $auth)
     {
-        $this->twitchSDK = $twitchSDK;
         $this->auth = $auth;
     }
 

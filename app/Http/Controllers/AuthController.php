@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
 use App\Services\AuthenticateUser;
-use App\Services\TwitchSDKAdapter;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use App\Channel;
@@ -22,11 +21,10 @@ class AuthController extends Controller
 
     /**
      * @param Request $request
-     * @param TwitchSDKAdapter $twitchSDK
      *
      * @return \Illuminate\Http\RedirectResponse|Response|\Illuminate\Routing\Redirector
      */
-    public function loginProxy(Request $request, TwitchSDKAdapter $twitchSDK)
+    public function loginProxy(Request $request)
     {
         $args = $request->only(['code', 'scope', 'state', 'error', 'error_description']);
         $slug = cache()->get('authState:' . $args['state']);

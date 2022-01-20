@@ -10,7 +10,6 @@
 		"salsify/json-streaming-parser": "~3.0",
 		"guzzlehttp/guzzle": "~6.5",
 		"predis/predis": "~1.0",
-		"ritero/twitch-sdk": "dev-master",
 		"laravelcollective/html": "5.3.*",
 		"doctrine/dbal": "^2.5",
 		"jasongrimes/paginator": "~1.0",
