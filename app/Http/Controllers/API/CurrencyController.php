@@ -55,7 +55,7 @@ class CurrencyController extends Controller
     {
         $data = $request->only(['username', 'amount', 'source']);
 
-        return response()->json($this->currencyManager->addPoints($channel, $data['username']['twitch_id'], $data['amount'], $data['source']['twitch_id']));
+        return response()->json($this->currencyManager->addPoints($channel, $data['username']['twitch_id'], $data['amount'], $data['source']['twitch_id'] ?? null));
     }
 
     /**

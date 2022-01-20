@@ -193,7 +193,7 @@ class Manager
             'points' => floor($pointTotal),
             'amount' => floor($points),
             'source' => $sourceId,
-            'source_display_name' => getDisplayName($sourceChatter['username']),
+            'source_display_name' => $sourceChatter ? getDisplayName($sourceChatter['username']) : null,
             'username' => $chatter['handle'],
             'display_name' => getDisplayName($chatter['handle'])
         ]);
