@@ -15,6 +15,13 @@ class ChatLogs extends Model
     public $incrementing = false;
 
     /**
+     * The storage format of the model's date columns.
+     *
+     * @var string
+     */
+    protected $dateFormat = 'Y-m-d H:i:s.u';
+    
+    /**
      * Get the line count for a specific period of time.
      *
      * @param  Channel $channel
